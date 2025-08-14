@@ -1,0 +1,144 @@
+.movie-section {
+  padding: 40px 0;
+  background: white;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 32px !important;
+  color: #262626;
+  font-weight: 600;
+}
+
+.movie-carousel-container {
+  position: relative;
+  padding: 0 16px;
+}
+
+/* Navigation buttons */
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #d9d9d9 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: white !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-btn-left {
+  left: 10px;
+}
+
+.nav-btn-right {
+  right: 10px;
+}
+
+.movie-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 16px 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  cursor: grab;
+  user-select: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.movie-carousel:active {
+  cursor: grabbing;
+}
+
+.movie-carousel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.movie-slide {
+  flex: 0 0 auto;
+  width: 160px;
+  scroll-snap-align: start;
+}
+
+/* Pagination dots */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #d9d9d9;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.dot:hover {
+  background-color: #bfbfbf;
+  transform: scale(1.1);
+}
+
+.dot.active {
+  background-color: #262626;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .movie-section {
+    padding: 24px 0;
+  }
+  
+  .section-title {
+    font-size: 20px !important;
+    margin-bottom: 24px !important;
+  }
+  
+  .movie-carousel-container {
+    padding: 0 12px;
+  }
+  
+  .movie-slide {
+    width: 140px;
+  }
+  
+  .movie-carousel {
+    gap: 12px;
+  }
+  
+  .nav-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .nav-btn-left {
+    left: 5px;
+  }
+  
+  .nav-btn-right {
+    right: 5px;
+  }
+}
