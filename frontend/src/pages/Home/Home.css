@@ -1,4 +1,12 @@
-.home-content {
+/* Home Page Styles - Compact Version */
+.home-page {
   background: #f5f5f5;
   min-height: calc(100vh - 64px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .home-page {
+    min-height: calc(100vh - 55px);
+  }
 }

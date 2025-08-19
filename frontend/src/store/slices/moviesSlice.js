@@ -4,79 +4,458 @@ const initialState = {
   movies: [
     {
       id: 1,
-      title: 'Mang Mẹ Đi Bò',
-      poster: 'data:image/jpeg;base64,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',
-      date: '01/08',
-      rating: 68,
+      title: 'Thanh Gươm Diệt Quỷ',
+      poster: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=400&fit=crop',
+      date: '15/08',
+      rating: 95,
       isEarlyShow: false,
       isComingSoon: false,
-      genre: 'comedy',
-      language: 'vietnamese'
+      genre: 'action',
+      language: 'japanese',
+      duration: '120 phút',
+      director: 'Haruo Sotozaki',
+      cast: ['Natsuki Hanae', 'Akari Kitō', 'Hiro Shimono'],
+      description: 'Câu chuyện về Tanjiro, một cậu thiếu niên trở thành Diệt Quỷ để cứu em gái Nezuko khỏi lời nguyền biến thành quỷ. Bộ phim kể về hành trình đầy thử thách của anh để tìm cách chữa lành cho em gái và tiêu diệt những con quỷ độc ác.',
+      trailer: 'https://www.youtube.com/embed/VQGCKyvzIM4',
+      locations: [
+        {
+          id: 1,
+          name: 'Đồng Nai',
+          cinemas: [
+            {
+              id: 1,
+              name: 'Beta Cinemas',
+              address: 'Tầng 6, The Pegasus Plaza, 53-55 Võ Thị Sáu, P. Quyết Thắng, Biên Hoà, Đồng Nai.',
+              showtimes: [
+                {
+                  id: 1,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '08:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '09:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '11:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '13:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '13:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '13:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '15:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '15:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '16:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '16:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '16:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '18:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '18:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '20:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '21:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:20', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:40', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '23:20', price: '40000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                },
+                {
+                  id: 2,
+                  date: '20/8',
+                  day: 'Th 4',
+                  times: [
+                    { time: '09:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:00', price: '40000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                },
+                {
+                  id: 3,
+                  date: '21/8',
+                  day: 'Th 5',
+                  times: [
+                    { time: '09:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:00', price: '40000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                },
+                {
+                  id: 4,
+                  date: '22/8',
+                  day: 'Th 6',
+                  times: [
+                    { time: '09:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:00', price: '40000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                },
+                {
+                  id: 5,
+                  date: '23/8',
+                  day: 'Th 7',
+                  times: [
+                    { time: '09:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:00', price: '40000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                },
+                {
+                  id: 6,
+                  date: '24/8',
+                  day: 'CN',
+                  times: [
+                    { time: '09:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '10:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:00', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:30', price: '40000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:00', price: '40000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 2,
+              name: 'CGV Aeon Mall',
+              address: 'Tầng 3, Aeon Mall Tân Phú, 30 Bờ Bao Tân Thắng, P. Sơn Kỳ, Q. Tân Phú, TP.HCM',
+              showtimes: [
+                {
+                  id: 7,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '09:00', price: '85000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '11:30', price: '85000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '14:00', price: '120000', type: '3D Phụ Đề Việt', available: true },
+                    { time: '16:30', price: '85000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '19:00', price: '120000', type: '3D Phụ Đề Việt', available: true },
+                    { time: '21:30', price: '85000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       id: 2,
-      title: 'Thanh Gươm Diệt Quỷ',
-      poster: 'data:image/jpeg;base64,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',
-      date: '15/08',
-      rating: null,
-      isEarlyShow: true,
+      title: 'Mang Mẹ Đi Bo',
+      poster: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop',
+      date: '01/08',
+      rating: 69,
+      isEarlyShow: false,
       isComingSoon: false,
-      genre: 'action',
-      language: 'japanese'
+      genre: 'comedy',
+      language: 'vietnamese',
+      duration: '105 phút',
+      director: 'Vũ Ngọc Đãng',
+      cast: ['Minh Hằng', 'Hồng Ánh', 'Quốc Khánh'],
+      description: 'Bộ phim hài hước kể về hành trình của một cô gái trẻ khi cô quyết định đưa mẹ đi du lịch để thay đổi không khí gia đình. Những tình huống hài hước và cảm động sẽ khiến khán giả cười ra nước mắt.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 3,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 3,
+              name: 'BHD Star Bitexco',
+              address: 'Tầng 5, Bitexco Financial Tower, 2 Hải Triều, P. Bến Nghé, Q.1, TP.HCM',
+              showtimes: [
+                {
+                  id: 8,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '10:00', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '12:30', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '15:00', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:30', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '20:00', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:30', price: '75000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       id: 3,
-      title: 'Dính Leo',
-      poster: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=600&fit=crop',
+      title: 'Dính Lẹo',
+      poster: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1200&h=400&fit=crop',
       date: '15/08',
       rating: null,
-      isEarlyShow: true,
-      isComingSoon: false
+      isEarlyShow: false,
+      isComingSoon: false,
+      genre: 'romance',
+      language: 'vietnamese',
+      duration: '95 phút',
+      director: 'Nguyễn Quang Dũng',
+      cast: ['Minh Hằng', 'Đức Thịnh', 'Hồng Ánh'],
+      description: 'Một câu chuyện tình yêu lãng mạn về hai người trẻ gặp gỡ trong hoàn cảnh đặc biệt và dần dần phát hiện ra tình cảm dành cho nhau.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 4,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 4,
+              name: 'Galaxy Cinema',
+              address: 'Tầng 4, Vincom Center, 72 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM',
+              showtimes: [
+                {
+                  id: 9,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '13:00', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '15:30', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '18:00', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '20:30', price: '75000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       id: 4,
-      title: 'Zombie Cung Bà',
-      poster: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=600&fit=crop',
+      title: 'Zombie Cung Cua Ba',
+      poster: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=400&fit=crop',
       date: '08/08',
       rating: 100,
       isEarlyShow: false,
-      isComingSoon: false
+      isComingSoon: false,
+      genre: 'horror',
+      language: 'vietnamese',
+      duration: '110 phút',
+      director: 'Lê Hoàng',
+      cast: ['Minh Hằng', 'Hồng Ánh', 'Quốc Khánh'],
+      description: 'Bộ phim kinh dị hài hước về một nhóm bạn trẻ phải đối mặt với những con zombie trong một cung điện cổ đầy bí ẩn.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 5,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 5,
+              name: 'Galaxy Cinema',
+              address: 'Tầng 4, Vincom Center, 72 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM',
+              showtimes: [
+                {
+                  id: 10,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '20:00', price: '80000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '22:30', price: '80000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       id: 5,
-      title: 'Kẻ Vô Danh 2',
-      poster: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&h=600&fit=crop',
-      date: '15/08',
-      rating: null,
-      isEarlyShow: false,
-      isComingSoon: true
-    },
-    {
-      id: 6,
       title: 'Conan Movie 27',
-      poster: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=600&fit=crop',
+      poster: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1200&h=400&fit=crop',
       date: '25/07',
       rating: 92,
       isEarlyShow: false,
-      isComingSoon: false
+      isComingSoon: false,
+      genre: 'animation',
+      language: 'japanese',
+      duration: '115 phút',
+      director: 'Yuzuru Tachikawa',
+      cast: ['Minami Takayama', 'Wakana Yamazaki', 'Rikiya Koyama'],
+      description: 'Phim hoạt hình Nhật Bản về thám tử Conan trong một vụ án mới đầy thách thức và nguy hiểm.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 6,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 6,
+              name: 'CGV Aeon Mall',
+              address: 'Tầng 3, Aeon Mall Tân Phú, 30 Bờ Bao Tân Thắng, P. Sơn Kỳ, Q. Tân Phú, TP.HCM',
+              showtimes: [
+                {
+                  id: 11,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '15:00', price: '90000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '17:30', price: '90000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '20:00', price: '90000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 6,
+      title: 'Trại Tu Nuôi Quỷ',
+      poster: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&h=400&fit=crop',
+      date: '15/08',
+      rating: null,
+      isEarlyShow: false,
+      isComingSoon: false,
+      genre: 'horror',
+      language: 'vietnamese',
+      duration: '100 phút',
+      director: 'Nguyễn Quang Dũng',
+      cast: ['Minh Hằng', 'Đức Thịnh'],
+      description: 'Bộ phim kinh dị về một trại tu đầy bí ẩn nơi những con quỷ được nuôi dưỡng và huấn luyện.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 7,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 7,
+              name: 'Galaxy Cinema',
+              address: 'Tầng 4, Vincom Center, 72 Lê Thánh Tôn, P. Bến Nghé, Q.1, TP.HCM',
+              showtimes: [
+                {
+                  id: 12,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '22:00', price: '80000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       id: 7,
-      title: 'Tôi Có Bệnh Tình Yêu',
-      poster: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=400&h=600&fit=crop',
+      title: 'Tôi Có Bệnh Mà Thích Cậu',
+      poster: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=400&fit=crop',
       date: '15/08',
       rating: null,
       isEarlyShow: false,
-      isComingSoon: true
+      isComingSoon: false,
+      genre: 'romance',
+      language: 'vietnamese',
+      duration: '90 phút',
+      director: 'Lê Hoàng',
+      cast: ['Minh Hằng', 'Đức Thịnh'],
+      description: 'Một câu chuyện tình yêu ngọt ngào về hai người trẻ với những căn bệnh đặc biệt và tình yêu đặc biệt.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 8,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 8,
+              name: 'BHD Star Bitexco',
+              address: 'Tầng 5, Bitexco Financial Tower, 2 Hải Triều, P. Bến Nghé, Q.1, TP.HCM',
+              showtimes: [
+                {
+                  id: 13,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '18:00', price: '75000', type: '2D Phụ Đề Việt', available: true },
+                    { time: '20:30', price: '75000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       id: 8,
-      title: 'Ngày Thứ Sáu Đen Tối',
-      poster: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=600&fit=crop',
+      title: 'Kẻ Vô Danh 2',
+      poster: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=160&h=240&fit=crop',
+      banner: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=1200&h=400&fit=crop',
       date: '15/08',
       rating: null,
       isEarlyShow: false,
-      isComingSoon: true
+      isComingSoon: false,
+      genre: 'action',
+      language: 'vietnamese',
+      duration: '125 phút',
+      director: 'Nguyễn Quang Dũng',
+      cast: ['Minh Hằng', 'Đức Thịnh', 'Quốc Khánh'],
+      description: 'Phần tiếp theo của bộ phim hành động đình đám về một kẻ vô danh phải đối mặt với những thử thách mới.',
+      trailer: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      locations: [
+        {
+          id: 9,
+          name: 'TP. Hồ Chí Minh',
+          cinemas: [
+            {
+              id: 9,
+              name: 'CGV Aeon Mall',
+              address: 'Tầng 3, Aeon Mall Tân Phú, 30 Bờ Bao Tân Thắng, P. Sơn Kỳ, Q. Tân Phú, TP.HCM',
+              showtimes: [
+                {
+                  id: 14,
+                  date: '19/8',
+                  day: 'Th 3',
+                  times: [
+                    { time: '21:00', price: '85000', type: '2D Phụ Đề Việt', available: true }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   selectedMovie: null,

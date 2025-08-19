@@ -7,6 +7,7 @@ import 'antd/dist/reset.css'
 import App from './App'
 import { store } from './store'
 import './index.css'
+import './styles/utilities.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

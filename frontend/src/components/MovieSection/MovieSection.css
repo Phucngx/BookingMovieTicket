@@ -1,144 +1,117 @@
+/* MovieSection Component Styles - Compact Version */
 .movie-section {
   padding: 40px 0;
-  background: white;
+  background: #f5f5f5;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
 .section-title {
   text-align: center;
-  margin-bottom: 32px !important;
+  margin-bottom: 30px !important;
   color: #262626;
   font-weight: 600;
+  font-size: 28px;
 }
 
 .movie-carousel-container {
   position: relative;
-  padding: 0 16px;
-}
-
-/* Navigation buttons */
-.nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid #d9d9d9 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.nav-btn:hover {
-  background: white !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.nav-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.nav-btn-left {
-  left: 10px;
-}
-
-.nav-btn-right {
-  right: 10px;
+  max-width: 100%;
 }
 
 .movie-carousel {
   display: flex;
-  gap: 12px;
+  gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 16px 0;
+  padding: 20px 0;
+  cursor: grab;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  cursor: grab;
-  user-select: none;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-.movie-carousel:active {
-  cursor: grabbing;
 }
 
 .movie-carousel::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
+.movie-carousel:active {
+  cursor: grabbing;
+}
+
 .movie-slide {
-  flex: 0 0 auto;
-  width: 160px;
-  scroll-snap-align: start;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
 }
 
 /* Pagination dots */
 .carousel-dots {
   display: flex;
   justify-content: center;
-  gap: 6px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 20px;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
+  background: #ddd;
   border-radius: 50%;
-  background-color: #d9d9d9;
-  transition: all 0.3s ease;
   cursor: pointer;
-}
-
-.dot:hover {
-  background-color: #bfbfbf;
-  transform: scale(1.1);
+  transition: background 0.3s;
 }
 
 .dot.active {
-  background-color: #262626;
-  transform: scale(1.2);
+  background: #1890ff;
+}
+
+.dot:hover {
+  background: #1890ff;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .movie-carousel {
+    gap: 16px;
+  }
 }
 
 @media (max-width: 768px) {
+  .movie-section {
+    padding: 30px 0;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    margin-bottom: 24px !important;
+  }
+  
+  .movie-carousel {
+    gap: 15px;
+    padding: 16px 0;
+  }
+  
+  .carousel-dots {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 480px) {
   .movie-section {
     padding: 24px 0;
   }
   
   .section-title {
-    font-size: 20px !important;
-    margin-bottom: 24px !important;
-  }
-  
-  .movie-carousel-container {
-    padding: 0 12px;
-  }
-  
-  .movie-slide {
-    width: 140px;
+    font-size: 20px;
+    margin-bottom: 20px !important;
   }
   
   .movie-carousel {
     gap: 12px;
-  }
-  
-  .nav-btn {
-    width: 36px;
-    height: 36px;
-  }
-  
-  .nav-btn-left {
-    left: 5px;
-  }
-  
-  .nav-btn-right {
-    right: 5px;
+    padding: 12px 0;
   }
 }

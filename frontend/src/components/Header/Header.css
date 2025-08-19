@@ -22,13 +22,13 @@
   display: flex;
   align-items: center;
   gap: 24px;
+  flex: 1;
 }
 
 .header-center {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -37,12 +37,13 @@
 
 .logo h1 {
   margin: 0;
-  color: #1890ff;
-  font-size: 22px;
+  color: #ff4d4f;
+  font-size: 24px;
   font-weight: bold;
   font-family: 'Arial', sans-serif;
   text-align: center;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(255, 77, 79, 0.3);
 }
 
 /* Override Ant Design Menu styles */
@@ -164,6 +165,8 @@
   display: flex;
   align-items: center;
   gap: 18px;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .header-search {

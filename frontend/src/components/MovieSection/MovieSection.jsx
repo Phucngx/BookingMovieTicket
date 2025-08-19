@@ -87,6 +87,13 @@ const MovieSection = () => {
     }
   }
 
+  // Calculate number of dots based on visible movies
+  const calculateDots = () => {
+    const visibleMovies = Math.ceil(carouselRef.current?.offsetWidth / 180) || 1
+    const totalDots = Math.ceil(movies.length / visibleMovies)
+    return Math.min(totalDots, 5) // Max 5 dots
+  }
+
   return (
     <div className="movie-section">
       <div className="container">
@@ -116,7 +123,7 @@ const MovieSection = () => {
           
           {/* Pagination dots */}
           <div className="carousel-dots">
-            {[0, 1, 2, 3, 4].map((index) => (
+            {Array.from({ length: calculateDots() }, (_, index) => (
               <div
                 key={index}
                 className={`dot ${currentSlide === index ? 'active' : ''}`}

@@ -169,10 +169,6 @@ const Header = () => {
           />
         </div>
         
-        <div className="header-center">
-          <div className="logo">moveek</div>
-        </div>
-        
         <div className="header-right">
           <Search
             placeholder="Từ khóa tìm kiếm..."
