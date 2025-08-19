@@ -100,19 +100,20 @@ const Payment = () => {
 
   return (
     <div className="payment">
-      {/* Progress Bar */}
+      {/* Progress Bar - Tối giản */}
       <div className="progress-container">
         <Progress
           percent={75}
           showInfo={false}
-          strokeColor="#ff4d4f"
+          strokeColor="#1890ff"
           trailColor="#f0f0f0"
+          size="small"
         />
         <div className="progress-steps">
           <div className="step completed">Chọn ghế</div>
           <div className="step completed">Bắp nước</div>
           <div className="step active">Thanh toán</div>
-          <div className="step">Thông tin vé</div>
+          <div className="step">Hoàn tất</div>
         </div>
       </div>
 
@@ -189,7 +190,6 @@ const Payment = () => {
                         rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
                       >
                         <TextArea 
-                          prefix={<EnvironmentOutlined />} 
                           placeholder="Nhập địa chỉ chi tiết"
                           rows={3}
                         />
@@ -208,7 +208,7 @@ const Payment = () => {
                       onChange={(e) => setPaymentMethod(e.target.value)}
                       className="payment-methods"
                     >
-                      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                      <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                         <Radio value="credit_card" className="payment-method-option">
                           <div className="payment-method-content">
                             <CreditCardOutlined className="payment-icon" />
@@ -311,7 +311,7 @@ const Payment = () => {
                       <Text>{foodTotal.toLocaleString('vi-VN')} ₫</Text>
                     </div>
                   )}
-                  <Divider />
+                  <Divider style={{ margin: '12px 0' }} />
                   <div className="total-row grand-total">
                     <Text strong>Tổng cộng:</Text>
                     <Text strong className="final-total">

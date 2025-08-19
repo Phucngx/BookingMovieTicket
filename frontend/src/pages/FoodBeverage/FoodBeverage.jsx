@@ -10,13 +10,22 @@ import {
   InputNumber,
   Space,
   Divider,
-  Badge
+  Badge,
+  Empty,
+  Tag,
+  Tooltip,
+  message
 } from 'antd';
 import { 
   LeftOutlined,
   PlusOutlined,
   MinusOutlined,
-  ShoppingCartOutlined
+  ShoppingCartOutlined,
+  CoffeeOutlined,
+  FireOutlined,
+  StarOutlined,
+  HeartOutlined,
+  HeartFilled
 } from '@ant-design/icons';
 import './FoodBeverage.css';
 
@@ -29,44 +38,55 @@ const FoodBeverage = () => {
   
   const [cart, setCart] = useState([]);
   const [currentStep, setCurrentStep] = useState(2);
+  const [favorites, setFavorites] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Dữ liệu đồ ăn và thức uống
+  // Dữ liệu đồ ăn và thức uống - cải thiện với thông tin chi tiết hơn
   const foodItems = [
     {
       id: 1,
       name: 'Bắp rang bơ',
-      description: 'Bắp rang bơ thơm ngon, giòn tan',
       price: 45000,
       image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
       category: 'food',
-      available: true
+      description: 'Bắp rang bơ thơm ngon, giòn tan',
+      rating: 4.8,
+      popular: true,
+      discount: 10
     },
     {
       id: 2,
       name: 'Bắp rang phô mai',
-      description: 'Bắp rang phô mai béo ngậy',
       price: 55000,
       image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
       category: 'food',
-      available: true
+      description: 'Bắp rang phô mai béo ngậy',
+      rating: 4.9,
+      popular: true,
+      discount: 0
     },
     {
       id: 3,
-      name: 'Hot dog',
-      description: 'Hot dog thịt bò với sốt đặc biệt',
-      price: 65000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'food',
-      available: true
-    },
-    {
-      id: 4,
       name: 'Khoai tây chiên',
-      description: 'Khoai tây chiên giòn rụm',
       price: 35000,
       image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
       category: 'food',
-      available: true
+      description: 'Khoai tây chiên giòn rụm',
+      rating: 4.6,
+      popular: false,
+      discount: 15
+    },
+    {
+      id: 4,
+      name: 'Hot dog',
+      price: 65000,
+      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
+      category: 'food',
+      description: 'Hot dog với xúc xích và rau củ',
+      rating: 4.7,
+      popular: true,
+      discount: 0
     }
   ];
 
@@ -74,40 +94,50 @@ const FoodBeverage = () => {
     {
       id: 5,
       name: 'Coca Cola',
-      description: 'Nước ngọt Coca Cola 500ml',
       price: 25000,
       image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
       category: 'beverage',
-      available: true
+      description: 'Nước ngọt Coca Cola mát lạnh',
+      rating: 4.5,
+      popular: true,
+      discount: 0
     },
     {
       id: 6,
-      name: 'Pepsi',
-      description: 'Nước ngọt Pepsi 500ml',
-      price: 25000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'beverage',
-      available: true
-    },
-    {
-      id: 7,
       name: 'Nước cam',
-      description: 'Nước cam tươi 350ml',
       price: 30000,
       image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
       category: 'beverage',
-      available: true
+      description: 'Nước cam tươi nguyên chất',
+      rating: 4.8,
+      popular: false,
+      discount: 20
     },
     {
-      id: 8,
+      id: 7,
       name: 'Cà phê sữa',
-      description: 'Cà phê sữa đặc Việt Nam',
       price: 35000,
       image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
       category: 'beverage',
-      available: true
+      description: 'Cà phê sữa đậm đà',
+      rating: 4.9,
+      popular: true,
+      discount: 0
+    },
+    {
+      id: 8,
+      name: 'Trà sữa trân châu',
+      price: 45000,
+      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
+      category: 'beverage',
+      description: 'Trà sữa trân châu ngọt ngào',
+      rating: 4.7,
+      popular: true,
+      discount: 0
     }
   ];
+
+  const allItems = [...foodItems, ...beverageItems];
 
   useEffect(() => {
     if (!movie || !showtime || !selectedSeats) {
@@ -129,10 +159,12 @@ const FoodBeverage = () => {
     } else {
       setCart(prevCart => [...prevCart, { ...item, quantity: 1 }]);
     }
+    message.success(`Đã thêm ${item.name} vào giỏ hàng!`);
   };
 
   const removeFromCart = (itemId) => {
     setCart(prevCart => prevCart.filter(item => item.id !== itemId));
+    message.info('Đã xóa sản phẩm khỏi giỏ hàng');
   };
 
   const updateQuantity = (itemId, quantity) => {
@@ -147,6 +179,14 @@ const FoodBeverage = () => {
     }
   };
 
+  const toggleFavorite = (itemId) => {
+    setFavorites(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
   const getCartTotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
@@ -156,7 +196,6 @@ const FoodBeverage = () => {
   };
 
   const handleContinue = () => {
-    // Chuyển sang bước tiếp theo: Thanh toán
     navigate('/thanh-toan', {
       state: {
         movie,
@@ -170,25 +209,52 @@ const FoodBeverage = () => {
     });
   };
 
+  const filteredItems = allItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   if (!movie || !showtime || !selectedSeats) {
     return null;
   }
 
   return (
     <div className="food-beverage">
-      {/* Progress Bar */}
+      {/* Enhanced Progress Bar */}
       <div className="progress-container">
+        <div className="progress-header">
+          <Title level={4} className="progress-title">
+            Đặt vé xem phim - Bước 2/4
+          </Title>
+          <Text type="secondary">Chọn đồ ăn và thức uống</Text>
+        </div>
         <Progress
           percent={50}
           showInfo={false}
-          strokeColor="#ff4d4f"
+          strokeColor="#1890ff"
           trailColor="#f0f0f0"
+          size="small"
+          className="progress-bar"
         />
         <div className="progress-steps">
-          <div className="step completed">Chọn ghế</div>
-          <div className="step active">Bắp nước</div>
-          <div className="step">Thanh toán</div>
-          <div className="step">Thông tin vé</div>
+          <div className="step completed">
+            <div className="step-icon">✓</div>
+            <span>Chọn ghế</span>
+          </div>
+          <div className="step active">
+            <div className="step-icon">2</div>
+            <span>Bắp nước</span>
+          </div>
+          <div className="step">
+            <div className="step-icon">3</div>
+            <span>Thanh toán</span>
+          </div>
+          <div className="step">
+            <div className="step-icon">4</div>
+            <span>Hoàn tất</span>
+          </div>
         </div>
       </div>
 
@@ -196,18 +262,57 @@ const FoodBeverage = () => {
         <Row gutter={24}>
           {/* Left Side - Food & Beverage Items */}
           <Col xs={24} lg={16}>
+            {/* Search and Filter Section */}
+            <div className="search-filter-section">
+              <div className="search-box">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm đồ ăn, thức uống..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+              <div className="filter-buttons">
+                <Button
+                  type={selectedCategory === 'all' ? 'primary' : 'default'}
+                  size="small"
+                  onClick={() => setSelectedCategory('all')}
+                >
+                  Tất cả
+                </Button>
+                <Button
+                  type={selectedCategory === 'food' ? 'primary' : 'default'}
+                  size="small"
+                  onClick={() => setSelectedCategory('food')}
+                >
+                  Đồ ăn
+                </Button>
+                <Button
+                  type={selectedCategory === 'beverage' ? 'primary' : 'default'}
+                  size="small"
+                  onClick={() => setSelectedCategory('beverage')}
+                >
+                  Thức uống
+                </Button>
+              </div>
+            </div>
+
             <div className="items-container">
               {/* Food Section */}
               <div className="section">
-                <Title level={3} className="section-title">
-                  🍿 Đồ ăn
+                <Title level={4} className="section-title">
+                  <FireOutlined className="section-icon" /> 
+                  Đồ ăn
+                  <span className="section-count">({foodItems.length})</span>
                 </Title>
                 <Row gutter={[16, 16]}>
-                  {foodItems.map((item) => (
-                    <Col xs={24} sm={12} key={item.id}>
+                  {filteredItems.filter(item => item.category === 'food').map((item) => (
+                    <Col xs={24} sm={12} md={8} key={item.id}>
                       <Card 
-                        className="item-card"
+                        className={`item-card ${item.popular ? 'popular' : ''}`}
                         hoverable
+                        bodyStyle={{ padding: '16px' }}
                         cover={
                           <div className="item-image-container">
                             <img 
@@ -215,26 +320,55 @@ const FoodBeverage = () => {
                               src={item.image}
                               className="item-image"
                             />
+                            {item.discount > 0 && (
+                              <div className="discount-badge">
+                                -{item.discount}%
+                              </div>
+                            )}
+                            {item.popular && (
+                              <div className="popular-badge">
+                                <StarOutlined /> Phổ biến
+                              </div>
+                            )}
                             <Button
-                              type="primary"
-                              shape="circle"
-                              icon={<PlusOutlined />}
-                              className="add-to-cart-btn"
-                              onClick={() => addToCart(item)}
+                              type="text"
+                              icon={favorites.includes(item.id) ? <HeartFilled /> : <HeartOutlined />}
+                              className={`favorite-btn ${favorites.includes(item.id) ? 'favorited' : ''}`}
+                              onClick={() => toggleFavorite(item.id)}
                             />
                           </div>
                         }
                       >
-                        <div className="item-info">
-                          <Title level={5} className="item-name">{item.name}</Title>
-                          <Text type="secondary" className="item-description">
-                            {item.description}
-                          </Text>
-                          <div className="item-price">
-                            <Text strong className="price-text">
-                              {item.price.toLocaleString('vi-VN')} ₫
-                            </Text>
+                        <div className="item-content">
+                          <div className="item-info">
+                            <Title level={5} className="item-name">{item.name}</Title>
+                            <Text className="item-description">{item.description}</Text>
+                            <div className="item-rating">
+                              <StarOutlined className="star-icon" />
+                              <span>{item.rating}</span>
+                            </div>
+                            <div className="item-price-section">
+                              {item.discount > 0 && (
+                                <Text delete className="original-price">
+                                  {item.price.toLocaleString('vi-VN')} ₫
+                                </Text>
+                              )}
+                              <Text strong className="item-price">
+                                {item.discount > 0 
+                                  ? ((item.price * (100 - item.discount)) / 100).toLocaleString('vi-VN')
+                                  : item.price.toLocaleString('vi-VN')
+                                } ₫
+                              </Text>
+                            </div>
                           </div>
+                          <Button
+                            type="primary"
+                            shape="circle"
+                            size="large"
+                            icon={<PlusOutlined />}
+                            className="add-btn"
+                            onClick={() => addToCart(item)}
+                          />
                         </div>
                       </Card>
                     </Col>
@@ -244,15 +378,18 @@ const FoodBeverage = () => {
 
               {/* Beverage Section */}
               <div className="section">
-                <Title level={3} className="section-title">
-                  🥤 Thức uống
+                <Title level={4} className="section-title">
+                  <CoffeeOutlined className="section-icon" /> 
+                  Thức uống
+                  <span className="section-count">({beverageItems.length})</span>
                 </Title>
                 <Row gutter={[16, 16]}>
-                  {beverageItems.map((item) => (
-                    <Col xs={24} sm={12} key={item.id}>
+                  {filteredItems.filter(item => item.category === 'beverage').map((item) => (
+                    <Col xs={24} sm={12} md={8} key={item.id}>
                       <Card 
-                        className="item-card"
+                        className={`item-card ${item.popular ? 'popular' : ''}`}
                         hoverable
+                        bodyStyle={{ padding: '16px' }}
                         cover={
                           <div className="item-image-container">
                             <img 
@@ -260,26 +397,55 @@ const FoodBeverage = () => {
                               src={item.image}
                               className="item-image"
                             />
+                            {item.discount > 0 && (
+                              <div className="discount-badge">
+                                -{item.discount}%
+                              </div>
+                            )}
+                            {item.popular && (
+                              <div className="popular-badge">
+                                <StarOutlined /> Phổ biến
+                              </div>
+                            )}
                             <Button
-                              type="primary"
-                              shape="circle"
-                              icon={<PlusOutlined />}
-                              className="add-to-cart-btn"
-                              onClick={() => addToCart(item)}
+                              type="text"
+                              icon={favorites.includes(item.id) ? <HeartFilled /> : <HeartOutlined />}
+                              className={`favorite-btn ${favorites.includes(item.id) ? 'favorited' : ''}`}
+                              onClick={() => toggleFavorite(item.id)}
                             />
                           </div>
                         }
                       >
-                        <div className="item-info">
-                          <Title level={5} className="item-name">{item.name}</Title>
-                          <Text type="secondary" className="item-description">
-                            {item.description}
-                          </Text>
-                          <div className="item-price">
-                            <Text strong className="price-text">
-                              {item.price.toLocaleString('vi-VN')} ₫
-                            </Text>
+                        <div className="item-content">
+                          <div className="item-info">
+                            <Title level={5} className="item-name">{item.name}</Title>
+                            <Text className="item-description">{item.description}</Text>
+                            <div className="item-rating">
+                              <StarOutlined className="star-icon" />
+                              <span>{item.rating}</span>
+                            </div>
+                            <div className="item-price-section">
+                              {item.discount > 0 && (
+                                <Text delete className="original-price">
+                                  {item.price.toLocaleString('vi-VN')} ₫
+                                </Text>
+                              )}
+                              <Text strong className="item-price">
+                                {item.discount > 0 
+                                  ? ((item.price * (100 - item.discount)) / 100).toLocaleString('vi-VN')
+                                  : item.price.toLocaleString('vi-VN')
+                                } ₫
+                              </Text>
+                            </div>
                           </div>
+                          <Button
+                            type="primary"
+                            shape="circle"
+                            size="large"
+                            icon={<PlusOutlined />}
+                            className="add-btn"
+                            onClick={() => addToCart(item)}
+                          />
                         </div>
                       </Card>
                     </Col>
@@ -296,20 +462,22 @@ const FoodBeverage = () => {
               <Card 
                 title={
                   <Space>
-                    <ShoppingCartOutlined />
+                    <ShoppingCartOutlined className="cart-icon" />
                     <span>Giỏ hàng</span>
                     {cart.length > 0 && (
-                      <Badge count={cart.length} size="small" />
+                      <Badge count={cart.length} size="small" className="cart-badge" />
                     )}
                   </Space>
                 }
                 className="cart-card"
+                bodyStyle={{ padding: '16px' }}
               >
                 {cart.length === 0 ? (
-                  <div className="empty-cart">
-                    <Text type="secondary">Giỏ hàng trống</Text>
-                    <Text type="secondary">Hãy chọn đồ ăn và thức uống</Text>
-                  </div>
+                  <Empty 
+                    description="Giỏ hàng trống"
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    className="empty-cart"
+                  />
                 ) : (
                   <div className="cart-items">
                     {cart.map((item) => (
@@ -317,30 +485,36 @@ const FoodBeverage = () => {
                         <div className="cart-item-info">
                           <img src={item.image} alt={item.name} className="cart-item-image" />
                           <div className="cart-item-details">
-                            <Text strong>{item.name}</Text>
-                            <Text type="secondary">
-                              {item.price.toLocaleString('vi-VN')} ₫
+                            <Text strong className="cart-item-name">{item.name}</Text>
+                            <Text type="secondary" className="cart-item-price">
+                              {item.discount > 0 
+                                ? ((item.price * (100 - item.discount)) / 100).toLocaleString('vi-VN')
+                                : item.price.toLocaleString('vi-VN')
+                              } ₫
                             </Text>
                           </div>
                         </div>
                         <div className="cart-item-actions">
-                          <Space>
+                          <Space size="small">
                             <Button
                               size="small"
                               icon={<MinusOutlined />}
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="quantity-btn"
                             />
                             <InputNumber
                               size="small"
                               min={1}
                               value={item.quantity}
                               onChange={(value) => updateQuantity(item.id, value)}
-                              style={{ width: 60 }}
+                              style={{ width: 50 }}
+                              className="quantity-input"
                             />
                             <Button
                               size="small"
                               icon={<PlusOutlined />}
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="quantity-btn"
                             />
                           </Space>
                         </div>
@@ -351,7 +525,7 @@ const FoodBeverage = () => {
               </Card>
 
               {/* Order Summary */}
-              <Card title="TỔNG ĐƠN HÀNG" className="summary-card">
+              <Card title="Tổng đơn hàng" className="summary-card">
                 <div className="summary-row">
                   <Text>Vé xem phim:</Text>
                   <Text>{totalPrice.toLocaleString('vi-VN')} ₫</Text>
@@ -360,7 +534,7 @@ const FoodBeverage = () => {
                   <Text>Đồ ăn & thức uống:</Text>
                   <Text>{getCartTotal().toLocaleString('vi-VN')} ₫</Text>
                 </div>
-                <Divider />
+                <Divider style={{ margin: '12px 0' }} />
                 <div className="summary-row total">
                   <Text strong>Tổng cộng:</Text>
                   <Text strong className="grand-total">
@@ -384,6 +558,7 @@ const FoodBeverage = () => {
                   size="large"
                   onClick={handleContinue}
                   className="continue-btn"
+                  disabled={cart.length === 0}
                 >
                   Tiếp tục
                 </Button>

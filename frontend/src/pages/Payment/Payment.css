@@ -1,28 +1,28 @@
 .payment {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #f8f9fa;
   padding: 0;
 }
 
 /* Progress Container */
 .progress-container {
   background: white;
-  padding: 20px 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
 .progress-container .ant-progress {
-  max-width: 600px;
-  margin: 0 auto 16px;
+  max-width: 400px;
+  margin: 0 auto 8px;
 }
 
 .progress-steps {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 32px;
-  max-width: 700px;
+  gap: 20px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -30,8 +30,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   position: relative;
+  font-size: 12px;
+  color: #8c8c8c;
 }
 
 .step.completed {
@@ -39,54 +41,48 @@
 }
 
 .step.active {
-  color: #ff4d4f;
+  color: #1890ff;
   font-weight: 600;
 }
 
 /* Container */
 .container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 16px;
 }
 
 /* Payment Form Container */
 .payment-form-container {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .section-title {
-  color: #1a1a1a;
-  margin-bottom: 24px;
-  font-weight: 700;
+  color: #262626;
+  margin-bottom: 20px;
+  font-weight: 600;
   text-align: center;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 /* Form Cards */
 .form-card {
-  margin-bottom: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.form-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+  margin-bottom: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
 .form-card .ant-card-head {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-bottom: none;
-  padding: 16px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 16px;
+  border-radius: 10px 10px 0 0;
 }
 
 .form-card .ant-card-head-title {
-  color: white;
-  font-size: 18px;
+  color: #262626;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -96,9 +92,9 @@
 }
 
 .payment-form .ant-form-item-label > label {
-  font-weight: 600;
-  color: #1a1a1a;
-  font-size: 14px;
+  font-weight: 500;
+  color: #262626;
+  font-size: 13px;
 }
 
 .payment-form .ant-input,
@@ -106,9 +102,8 @@
 .payment-form .ant-input-textarea {
   border-radius: 6px;
   border: 1px solid #f0f0f0;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   font-size: 13px;
-  height: 36px;
 }
 
 .payment-form .ant-input:hover,
@@ -128,8 +123,8 @@
 }
 
 .payment-form .ant-input-prefix {
-  color: #666;
-  margin-right: 8px;
+  color: #8c8c8c;
+  margin-right: 6px;
 }
 
 /* Payment Methods */
@@ -139,11 +134,11 @@
 
 .payment-method-option {
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   padding: 12px;
-  border: 2px solid #f0f0f0;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .payment-method-option:hover {
@@ -159,11 +154,11 @@
 .payment-method-content {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .payment-icon {
-  font-size: 24px;
+  font-size: 18px;
   color: #1890ff;
   flex-shrink: 0;
 }
@@ -171,7 +166,7 @@
 .payment-method-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .payment-method-info .ant-typography {
@@ -179,79 +174,69 @@
 }
 
 .payment-method-info .ant-typography:first-child {
-  font-size: 16px;
-  color: #1a1a1a;
+  font-size: 13px;
+  color: #262626;
+  font-weight: 600;
 }
 
 .payment-method-info .ant-typography:last-child {
-  font-size: 14px;
-  color: #666;
+  font-size: 12px;
+  color: #8c8c8c;
 }
 
 /* Form Actions */
 .form-actions {
-  margin-top: 32px;
+  margin-top: 20px;
   text-align: center;
 }
 
 .submit-btn {
-  height: 44px;
-  border-radius: 8px;
+  height: 40px;
+  border-radius: 6px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   background: #1890ff;
   border: 1px solid #1890ff;
   color: white;
   transition: all 0.2s ease;
-  box-shadow: none;
 }
 
 .submit-btn:hover {
   background: #40a9ff;
   border-color: #40a9ff;
-  transform: none;
-  box-shadow: none;
-}
-
-.submit-btn:active {
-  transform: none;
 }
 
 /* Order Summary */
 .order-summary {
   position: sticky;
-  top: 24px;
+  top: 20px;
 }
 
 .summary-title {
-  color: #1a1a1a;
-  margin-bottom: 24px;
-  font-weight: 700;
+  color: #262626;
+  margin-bottom: 20px;
+  font-weight: 600;
   text-align: center;
+  font-size: 14px;
 }
 
 .summary-card {
-  margin-bottom: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.summary-card:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  margin-bottom: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
 }
 
 .summary-card .ant-card-head {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-bottom: none;
-  padding: 16px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 16px;
+  border-radius: 10px 10px 0 0;
 }
 
 .summary-card .ant-card-head-title {
-  color: white;
-  font-size: 16px;
+  color: #262626;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -268,28 +253,28 @@
 
 .movie-info {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: flex-start;
 }
 
 .movie-poster {
-  width: 80px;
-  height: 120px;
+  width: 60px;
+  height: 90px;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .movie-details {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .movie-title {
-  font-size: 16px;
-  color: #1a1a1a;
+  font-size: 13px;
+  color: #262626;
   font-weight: 600;
   line-height: 1.3;
   margin: 0;
@@ -297,22 +282,22 @@
 
 .movie-details .ant-typography {
   margin: 0;
-  font-size: 14px;
-  color: #666;
+  font-size: 12px;
+  color: #8c8c8c;
 }
 
 /* Food Summary */
 .food-summary {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .food-summary-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 6px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -325,28 +310,26 @@
 }
 
 .food-summary-item .ant-typography:first-child {
-  color: #1a1a1a;
+  color: #262626;
+  font-size: 12px;
 }
 
 .food-summary-item .ant-typography:last-child {
   color: #52c41a;
   font-weight: 600;
+  font-size: 12px;
 }
 
 /* Total Summary */
-.total-summary .ant-card-head {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
 .total-breakdown {
-  padding: 8px 0;
+  padding: 6px 0;
 }
 
 .total-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -354,73 +337,62 @@
   border-bottom: none;
 }
 
-.total-divider {
-  margin: 16px 0;
-  border-color: #f0f0f0;
-}
-
 .grand-total {
-  padding: 16px 0;
+  padding: 12px 0;
   border-top: 2px solid #f0f0f0;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .final-total {
-  font-size: 20px;
+  font-size: 16px;
   color: #52c41a;
   font-weight: 700;
 }
 
-/* Back Button - Minimal Design */
+/* Back Button */
 .back-btn {
   height: 40px;
-  width: 40px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   background: white;
   border: 1px solid #d9d9d9;
-  color: #333;
+  color: #595959;
   transition: all 0.2s ease;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .back-btn:hover {
   border-color: #1890ff;
   color: #1890ff;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .progress-steps {
-    gap: 24px;
+    gap: 16px;
     flex-wrap: wrap;
   }
   
   .step {
-    min-width: 80px;
+    min-width: 60px;
+    font-size: 11px;
   }
   
   .order-summary {
     position: static;
-    margin-top: 24px;
+    margin-top: 20px;
   }
   
   .container {
-    padding: 0 16px;
+    padding: 0 12px;
   }
   
   .form-card .ant-card-head {
-    padding: 16px 20px;
+    padding: 12px 16px;
   }
   
   .summary-card .ant-card-head {
-    padding: 12px 16px;
+    padding: 10px 14px;
   }
   
   .movie-info {
@@ -430,50 +402,50 @@
   }
   
   .movie-poster {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 }
 
 @media (max-width: 480px) {
   .progress-steps {
-    gap: 16px;
-  }
-  
-  .step {
-    font-size: 12px;
-  }
-  
-  .section-title {
-    font-size: 20px;
-  }
-  
-  .payment-method-option {
-    padding: 12px;
-  }
-  
-  .payment-method-content {
     gap: 12px;
   }
   
-  .payment-icon {
-    font-size: 20px;
+  .step {
+    font-size: 10px;
   }
   
-  .submit-btn {
-    height: 48px;
-    font-size: 16px;
-  }
-  
-  .movie-poster {
-    width: 60px;
-    height: 90px;
-  }
-  
-  .movie-title {
+  .section-title {
     font-size: 14px;
   }
   
-  .movie-details .ant-typography {
+  .payment-method-option {
+    padding: 10px;
+  }
+  
+  .payment-method-content {
+    gap: 10px;
+  }
+  
+  .payment-icon {
+    font-size: 16px;
+  }
+  
+  .submit-btn {
+    height: 44px;
+    font-size: 14px;
+  }
+  
+  .movie-poster {
+    width: 50px;
+    height: 75px;
+  }
+  
+  .movie-title {
     font-size: 12px;
+  }
+  
+  .movie-details .ant-typography {
+    font-size: 11px;
   }
 }

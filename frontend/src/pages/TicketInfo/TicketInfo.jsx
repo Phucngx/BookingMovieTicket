@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Typography, 
@@ -11,7 +11,10 @@ import {
   Divider,
   Tag,
   message,
-  Result
+  Result,
+  Tooltip,
+  Badge,
+  Avatar
 } from 'antd';
 import { 
   CheckCircleOutlined,
@@ -21,7 +24,12 @@ import {
   ClockCircleOutlined,
   UserOutlined,
   CreditCardOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  StarOutlined,
+  HeartOutlined,
+  DownloadOutlined,
+  PrinterOutlined,
+  QrcodeOutlined
 } from '@ant-design/icons';
 import './TicketInfo.css';
 
@@ -43,6 +51,9 @@ const TicketInfo = () => {
     transactionId 
   } = location.state || {};
 
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   useEffect(() => {
     if (!movie || !showtime || !selectedSeats) {
       navigate('/');
@@ -58,11 +69,34 @@ const TicketInfo = () => {
     return methods[method] || method;
   };
 
+  const getPaymentMethodIcon = (method) => {
+    const icons = {
+      credit_card: <CreditCardOutlined />,
+      bank_transfer: <CreditCardOutlined />,
+      e_wallet: <CreditCardOutlined />
+    };
+    return icons[method] || <CreditCardOutlined />;
+  };
+
   const handleShareTicket = () => {
-    message.success('Đang chia sẻ vé...');
+    message.success('Đã chia sẻ vé thành công!');
+  };
+
+  const handlePrintTicket = () => {
+    setIsPrinting(true);
     setTimeout(() => {
-      message.success('Đã chia sẻ vé thành công!');
-    }, 2000);
+      window.print();
+      setIsPrinting(false);
+      message.success('Đã chuẩn bị in vé!');
+    }, 1000);
+  };
+
+  const handleDownloadTicket = () => {
+    setIsDownloading(true);
+    setTimeout(() => {
+      setIsDownloading(false);
+      message.success('Đã tải xuống vé thành công!');
+    }, 1500);
   };
 
   if (!movie || !showtime || !selectedSeats) {
@@ -71,14 +105,21 @@ const TicketInfo = () => {
 
   return (
     <div className="ticket-info">
-      {/* Progress Bar */}
+      {/* Enhanced Progress Bar */}
       <div className="progress-container">
+        <div className="progress-header">
+          <Title level={4} className="progress-title">
+            Đặt vé xem phim - Hoàn tất
+          </Title>
+          <Text type="secondary">Vé đã được đặt thành công</Text>
+        </div>
         <Progress
           percent={100}
           showInfo={false}
           strokeColor="#52c41a"
           trailColor="#f0f0f0"
-          strokeWidth={6}
+          size="small"
+          className="progress-bar"
         />
         <div className="progress-steps">
           <div className="step completed">
@@ -95,34 +136,81 @@ const TicketInfo = () => {
           </div>
           <div className="step active">
             <div className="step-icon">✓</div>
-            <span>Thông tin vé</span>
+            <span>Hoàn tất</span>
           </div>
         </div>
       </div>
 
       <div className="container">
-        {/* Success Result */}
+        {/* Enhanced Success Result */}
         <Result
           status="success"
-          icon={<CheckCircleOutlined className="success-icon-large" />}
+          icon={<CheckCircleOutlined className="success-icon" />}
           title="Đặt vé thành công!"
           subTitle="Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Vé đã được gửi đến email của bạn."
           className="success-result"
+          extra={[
+            <Button 
+              key="print" 
+              icon={<PrinterOutlined />} 
+              onClick={handlePrintTicket}
+              loading={isPrinting}
+              size="large"
+              className="action-btn print-btn"
+            >
+              In vé
+            </Button>,
+            <Button 
+              key="download" 
+              icon={<DownloadOutlined />} 
+              onClick={handleDownloadTicket}
+              loading={isDownloading}
+              size="large"
+              className="action-btn download-btn"
+            >
+              Tải xuống
+            </Button>
+          ]}
         />
 
         <Row gutter={[32, 32]}>
           {/* Left Side - Main Content */}
           <Col xs={24} lg={16}>
-            {/* Movie Ticket Card */}
+            {/* Enhanced Movie Ticket Card */}
             <Card 
               title={
                 <Space>
                   <FileTextOutlined className="card-title-icon" />
                   <span>Thông tin vé xem phim</span>
+                  <Badge 
+                    status="success" 
+                    text="Đã xác nhận" 
+                    className="ticket-status"
+                  />
                 </Space>
               } 
               className="ticket-card main-card"
               bordered={false}
+              extra={
+                <div className="ticket-actions">
+                  <Tooltip title="Xem QR Code">
+                    <Button 
+                      type="text" 
+                      icon={<QrcodeOutlined />} 
+                      size="small"
+                      className="qr-btn"
+                    />
+                  </Tooltip>
+                  <Tooltip title="Yêu thích">
+                    <Button 
+                      type="text" 
+                      icon={<HeartOutlined />} 
+                      size="small"
+                      className="favorite-btn"
+                    />
+                  </Tooltip>
+                </div>
+              }
             >
               <div className="ticket-header">
                 <div className="movie-poster-container">
@@ -131,13 +219,25 @@ const TicketInfo = () => {
                     <Tag color="blue" className="movie-type">{showtime.type}</Tag>
                     <Tag color="green" className="cinema-name">{showtime.cinema}</Tag>
                   </div>
+                  <div className="movie-rating">
+                    <StarOutlined className="star-icon" />
+                    <span className="rating-text">9.2</span>
+                  </div>
                 </div>
                 <div className="movie-info">
                   <Title level={3} className="movie-title">{movie.title}</Title>
                   <div className="movie-meta">
-                    <Text type="secondary">
-                      <ClockCircleOutlined /> {movie.duration} • {movie.language === 'vietnamese' ? 'Tiếng Việt' : movie.language}
+                    <Text type="secondary" className="movie-duration">
+                      <ClockCircleOutlined /> {movie.duration} phút
                     </Text>
+                    <Text type="secondary" className="movie-language">
+                      {movie.language === 'vietnamese' ? 'Tiếng Việt' : movie.language}
+                    </Text>
+                  </div>
+                  <div className="movie-genre">
+                    <Tag color="purple">Action</Tag>
+                    <Tag color="blue">Adventure</Tag>
+                    <Tag color="green">Fantasy</Tag>
                   </div>
                 </div>
               </div>
@@ -150,7 +250,9 @@ const TicketInfo = () => {
                     <ClockCircleOutlined className="detail-icon" />
                     <div className="detail-content">
                       <Text strong>Suất chiếu</Text>
-                      <Text className="detail-value">{showtime.time} {showtime.date}/{showtime.day}</Text>
+                      <Text className="detail-value">
+                        {showtime.time} {showtime.date}/{showtime.day}
+                      </Text>
                     </div>
                   </div>
                 </Col>
@@ -159,7 +261,7 @@ const TicketInfo = () => {
                     <UserOutlined className="detail-icon" />
                     <div className="detail-content">
                       <Text strong>Phòng chiếu</Text>
-                      <Text className="detail-value">P6</Text>
+                      <Text className="detail-value">P6 - 2D</Text>
                     </div>
                   </div>
                 </Col>
@@ -168,7 +270,9 @@ const TicketInfo = () => {
                     <CalendarOutlined className="detail-icon" />
                     <div className="detail-content">
                       <Text strong>Ghế đã chọn</Text>
-                      <Text className="detail-value seats-value">{selectedSeats.join(', ')}</Text>
+                      <Text className="detail-value seats-value">
+                        {selectedSeats.join(', ')}
+                      </Text>
                     </div>
                   </div>
                 </Col>
@@ -184,15 +288,33 @@ const TicketInfo = () => {
                   </div>
                 </Col>
               </Row>
+
+              {/* QR Code Section */}
+              <div className="qr-section">
+                <Divider className="qr-divider" />
+                <div className="qr-content">
+                  <div className="qr-placeholder">
+                    <QrcodeOutlined className="qr-icon" />
+                    <Text className="qr-text">QR Code vé</Text>
+                  </div>
+                  <div className="qr-info">
+                    <Text strong>Mã vé:</Text>
+                    <Text className="ticket-code">
+                      {transactionId || 'TKT' + Date.now().toString().slice(-8)}
+                    </Text>
+                  </div>
+                </div>
+              </div>
             </Card>
 
-            {/* Food & Beverage Order */}
+            {/* Enhanced Food & Beverage Order */}
             {cart && cart.length > 0 && (
               <Card 
                 title={
                   <Space>
                     <span className="food-icon">🍿</span>
                     <span>Đồ ăn & thức uống đã đặt</span>
+                    <Badge count={cart.length} size="small" className="food-badge" />
                   </Space>
                 } 
                 className="food-card main-card"
@@ -202,12 +324,24 @@ const TicketInfo = () => {
                   {cart.map((item) => (
                     <div key={item.id} className="food-item">
                       <div className="food-item-info">
-                        <Text strong className="food-name">{item.name}</Text>
-                        <Text type="secondary" className="food-quantity">x{item.quantity}</Text>
+                        <Avatar 
+                          src={item.image} 
+                          size={40} 
+                          className="food-avatar"
+                        />
+                        <div className="food-details">
+                          <Text strong className="food-name">{item.name}</Text>
+                          <Text type="secondary" className="food-description">
+                            {item.description || 'Món ăn ngon'}
+                          </Text>
+                        </div>
                       </div>
-                      <Text strong className="food-price">
-                        {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
-                      </Text>
+                      <div className="food-quantity-price">
+                        <Text type="secondary" className="food-quantity">x{item.quantity}</Text>
+                        <Text strong className="food-price">
+                          {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
+                        </Text>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -221,7 +355,7 @@ const TicketInfo = () => {
               </Card>
             )}
 
-            {/* Customer Information */}
+            {/* Enhanced Customer Information */}
             {customerInfo && (
               <Card 
                 title={
@@ -262,7 +396,7 @@ const TicketInfo = () => {
           {/* Right Side - Summary & Actions */}
           <Col xs={24} lg={8}>
             <div className="summary-sidebar">
-              {/* Transaction Summary */}
+              {/* Enhanced Transaction Summary */}
               <Card 
                 title={
                   <Space>
@@ -282,16 +416,23 @@ const TicketInfo = () => {
                   </div>
                   <div className="transaction-row">
                     <Text>Phương thức thanh toán:</Text>
-                    <Text>{getPaymentMethodText(paymentMethod)}</Text>
+                    <div className="payment-method">
+                      {getPaymentMethodIcon(paymentMethod)}
+                      <Text>{getPaymentMethodText(paymentMethod)}</Text>
+                    </div>
                   </div>
                   <div className="transaction-row">
                     <Text>Thời gian đặt:</Text>
                     <Text>{new Date().toLocaleString('vi-VN')}</Text>
                   </div>
+                  <div className="transaction-row">
+                    <Text>Trạng thái:</Text>
+                    <Tag color="success" className="status-tag">Đã thanh toán</Tag>
+                  </div>
                 </div>
               </Card>
 
-              {/* Total Summary */}
+              {/* Enhanced Total Summary */}
               <Card 
                 title={
                   <Space>
@@ -323,7 +464,7 @@ const TicketInfo = () => {
                 </div>
               </Card>
 
-              {/* Important Notice */}
+              {/* Enhanced Important Notice */}
               <Card 
                 title={
                   <Space>
@@ -347,10 +488,13 @@ const TicketInfo = () => {
                   <div className="notice-item">
                     <Text type="secondary">• Không thể hoàn vé sau khi đặt</Text>
                   </div>
+                  <div className="notice-item">
+                    <Text type="secondary">• Có thể sử dụng QR Code để vào rạp</Text>
+                  </div>
                 </div>
               </Card>
 
-              {/* Action Buttons */}
+              {/* Enhanced Action Buttons */}
               <div className="action-buttons">
                 <Button 
                   icon={<ShareAltOutlined />}
