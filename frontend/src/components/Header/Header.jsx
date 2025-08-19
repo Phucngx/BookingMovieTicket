@@ -19,7 +19,7 @@ const Header = () => {
   const onMenuClick = (e) => {
     console.log('Menu clicked:', e.key)
     if (e.key === 'schedule') {
-      navigate('/dang-chieu')
+      navigate('/lich-chieu')
     } else if (e.key === 'booking') {
       navigate('/')
     } else if (e.key === 'community') {
@@ -169,7 +169,9 @@ const Header = () => {
           />
         </div>
         
-      
+        <div className="header-center">
+          <div className="logo">moveek</div>
+        </div>
         
         <div className="header-right">
           <Search

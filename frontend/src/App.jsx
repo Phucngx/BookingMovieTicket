@@ -4,6 +4,7 @@ import { Layout } from 'antd'
 import Header from './components/Header/Header'
 import Home from './pages/Home/Home'
 import NowShowing from './pages/Movies/NowShowing'
+import Schedule from './pages/Schedule/Schedule'
 import Community from './pages/Community/Community'
 import './App.css'
 
@@ -17,8 +18,9 @@ function App() {
         <Content className="app-content">
           <Routes>
             <Route path="/" element={<Home />} />
-                                    <Route path="/dang-chieu" element={<NowShowing />} />
-                        <Route path="/community" element={<Community />} />
+            <Route path="/dang-chieu" element={<NowShowing />} />
+            <Route path="/lich-chieu" element={<Schedule />} />
+            <Route path="/community" element={<Community />} />
           </Routes>
         </Content>
       </Layout>
