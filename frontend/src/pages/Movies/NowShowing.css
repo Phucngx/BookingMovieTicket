@@ -228,157 +228,6 @@
   font-weight: 600;
 }
 
-/* Footer Section */
-.footer-section {
-  background: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-  padding: 40px 0;
-  margin-top: 40px;
-}
-
-.footer-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.footer-columns {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 40px;
-  align-items: start;
-}
-
-/* Company Information Column */
-.footer-column.company-info {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.company-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.logo-square {
-  width: 40px;
-  height: 40px;
-  background: #e74c3c;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 18px;
-  border-radius: 4px;
-}
-
-.company-info h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-.company-info p {
-  margin: 0;
-  font-size: 13px;
-  color: #666;
-  line-height: 1.4;
-}
-
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 8px;
-}
-
-.footer-links a {
-  color: #1890ff;
-  text-decoration: none;
-  font-size: 13px;
-  transition: color 0.3s;
-}
-
-.footer-links a:hover {
-  color: #40a9ff;
-}
-
-.version {
-  color: #999 !important;
-  font-size: 12px !important;
-  margin-top: 8px !important;
-}
-
-/* Partners Column */
-.footer-column.partners h3 {
-  margin: 0 0 20px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-}
-
-.partner-logos {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.partner-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.partner-logo {
-  background: white;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 11px;
-  color: #666;
-  font-weight: 500;
-  text-align: center;
-  min-width: 80px;
-  transition: all 0.3s;
-}
-
-.partner-logo:hover {
-  border-color: #1890ff;
-  color: #1890ff;
-  background: #f0f8ff;
-}
-
-/* Certification Column */
-.footer-column.certification {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.cert-badge {
-  background: #1890ff;
-  color: white;
-  border-radius: 50px;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  text-align: center;
-  max-width: 200px;
-  line-height: 1.3;
-}
-
-.check-icon {
-  font-size: 16px;
-  flex-shrink: 0;
-}
 
 /* Responsive Design */
 @media (max-width: 1200px) {
@@ -426,22 +275,178 @@
   }
 }
 
-/* Responsive Footer */
-@media (max-width: 1200px) {
-  .footer-columns {
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-  }
-  
-  .footer-column.certification {
-    grid-column: 1 / -1;
-    justify-content: flex-start;
-  }
+/* Footer Section - New Compact Design */
+.footer-section {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 20px 0 10px;
+  margin-top: 40px;
 }
 
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  gap: 11px;
+  margin-bottom: 12px;
+}
+
+/* Company Information Column */
+.footer-column.company-info {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.company-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.logo-square {
+  width: 24px;
+  height: 24px;
+  background: #e74c3c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  border-radius: 3px;
+}
+
+.company-info h3 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.company-info p {
+  margin: 0;
+  font-size: 0.7rem;
+  color: #666;
+  line-height: 1.3;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.footer-links a {
+  color: #1890ff;
+  text-decoration: none;
+  font-size: 0.7rem;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: #40a9ff;
+}
+
+.version {
+  color: #999 !important;
+  font-size: 0.6rem !important;
+  margin-top: 6px !important;
+}
+
+/* Partners Column */
+.footer-column.partners {
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.footer-column.partners h3 {
+  margin: 0 0 8px 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #1890ff;
+}
+
+.partner-logos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.partner-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.partner-logo {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 0.6rem;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+  min-width: 50px;
+  transition: all 0.3s;
+}
+
+.partner-logo:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+  background: #f0f8ff;
+}
+
+/* Certification Column */
+.footer-column.certification {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.cert-badge {
+  background: #1890ff;
+  color: white;
+  border-radius: 20px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-align: center;
+  max-width: 150px;
+  line-height: 1.2;
+}
+
+.check-icon {
+  font-size: 8px;
+  flex-shrink: 0;
+}
+
+/* Responsive Footer */
 @media (max-width: 768px) {
   .footer-section {
-    padding: 30px 0;
+    padding: 15px 0 8px;
     margin-top: 30px;
   }
   
@@ -451,11 +456,11 @@
   
   .footer-columns {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 9px;
   }
   
-  .footer-column.certification {
-    justify-content: center;
+  .footer-column {
+    padding: 4px;
   }
   
   .partner-row {
@@ -466,3 +471,4 @@
     justify-content: center;
   }
 }
+

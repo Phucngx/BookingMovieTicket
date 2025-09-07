@@ -2,6 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Layout } from 'antd'
 import Header from './components/Header/Header'
+import Footer from './components/Footer/Footer'
 import Home from './pages/Home/Home'
 import NowShowing from './pages/Movies/NowShowing'
 import Schedule from './pages/Schedule/Schedule'
@@ -33,6 +34,7 @@ function App() {
             <Route path="/thong-tin-ve" element={<TicketInfo />} />
           </Routes>
         </Content>
+        <Footer />
       </Layout>
     </Router>
   )
