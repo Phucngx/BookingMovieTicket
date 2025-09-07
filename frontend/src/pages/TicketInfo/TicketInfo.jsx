@@ -113,14 +113,6 @@ const TicketInfo = () => {
           </Title>
           <Text type="secondary">Vé đã được đặt thành công</Text>
         </div>
-        <Progress
-          percent={100}
-          showInfo={false}
-          strokeColor="#52c41a"
-          trailColor="#f0f0f0"
-          size="small"
-          className="progress-bar"
-        />
         <div className="progress-steps">
           <div className="step completed">
             <div className="step-icon">✓</div>

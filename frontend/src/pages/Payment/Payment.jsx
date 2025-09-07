@@ -100,20 +100,31 @@ const Payment = () => {
 
   return (
     <div className="payment">
-      {/* Progress Bar - Tối giản */}
+      {/* Enhanced Progress Bar */}
       <div className="progress-container">
-        <Progress
-          percent={75}
-          showInfo={false}
-          strokeColor="#1890ff"
-          trailColor="#f0f0f0"
-          size="small"
-        />
+        <div className="progress-header">
+          <Title level={4} className="progress-title">
+            Đặt vé xem phim - Bước 3/4
+          </Title>
+          <Text type="secondary">Thanh toán</Text>
+        </div>
         <div className="progress-steps">
-          <div className="step completed">Chọn ghế</div>
-          <div className="step completed">Bắp nước</div>
-          <div className="step active">Thanh toán</div>
-          <div className="step">Hoàn tất</div>
+          <div className="step completed">
+            <div className="step-icon">✓</div>
+            <span>Chọn ghế</span>
+          </div>
+          <div className="step completed">
+            <div className="step-icon">✓</div>
+            <span>Bắp nước</span>
+          </div>
+          <div className="step active">
+            <div className="step-icon">3</div>
+            <span>Thanh toán</span>
+          </div>
+          <div className="step">
+            <div className="step-icon">4</div>
+            <span>Hoàn tất</span>
+          </div>
         </div>
       </div>
 

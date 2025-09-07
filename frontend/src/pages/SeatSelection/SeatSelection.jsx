@@ -6,7 +6,6 @@ import {
   Col, 
   Button, 
   Card, 
-  Progress,
   Space,
   Divider
 } from 'antd';
@@ -105,19 +104,31 @@ const SeatSelection = () => {
 
   return (
     <div className="seat-selection">
-      {/* Progress Bar */}
+      {/* Enhanced Progress Bar */}
       <div className="progress-container">
-        <Progress
-          percent={25}
-          showInfo={false}
-          strokeColor="#ff4d4f"
-          trailColor="#f0f0f0"
-        />
+        <div className="progress-header">
+          <Title level={4} className="progress-title">
+            Đặt vé xem phim - Bước 1/4
+          </Title>
+          <Text type="secondary">Chọn ghế ngồi</Text>
+        </div>
         <div className="progress-steps">
-          <div className="step active">Chọn ghế</div>
-          <div className="step">Bắp nước</div>
-          <div className="step">Thanh toán</div>
-          <div className="step">Thông tin vé</div>
+          <div className="step active">
+            <div className="step-icon">1</div>
+            <span>Chọn ghế</span>
+          </div>
+          <div className="step">
+            <div className="step-icon">2</div>
+            <span>Bắp nước</span>
+          </div>
+          <div className="step">
+            <div className="step-icon">3</div>
+            <span>Thanh toán</span>
+          </div>
+          <div className="step">
+            <div className="step-icon">4</div>
+            <span>Hoàn tất</span>
+          </div>
         </div>
       </div>
 

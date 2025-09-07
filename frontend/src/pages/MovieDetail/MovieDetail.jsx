@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
@@ -46,6 +46,7 @@ const MovieDetail = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const bookingSectionRef = useRef(null);
   const movie = movies.find(m => m.id === parseInt(id));
 
   useEffect(() => {
@@ -74,6 +75,19 @@ const MovieDetail = () => {
     message.success(`Đã đặt vé thành công cho suất ${selectedShowtime.time} tại ${selectedShowtime.cinema}`);
     setIsBookingModalVisible(false);
     setSelectedShowtime(null);
+  };
+
+  const handleBookNowClick = () => {
+    setActiveTab('3');
+    // Cuộn xuống phần booking sau khi chuyển tab
+    setTimeout(() => {
+      if (bookingSectionRef.current) {
+        bookingSectionRef.current.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 100);
   };
 
   const getGenreColor = (genre) => {
@@ -156,7 +170,7 @@ const MovieDetail = () => {
                         size="large" 
                         icon={<PlayCircleOutlined />}
                         className="book-now-btn"
-                        onClick={() => setActiveTab('3')}
+                        onClick={handleBookNowClick}
                       >
                         Mua vé ngay
                       </Button>
@@ -260,7 +274,7 @@ const MovieDetail = () => {
               </TabPane>
 
                              <TabPane tab="Mua vé" key="3">
-                 <div className="booking-section">
+                 <div className="booking-section" ref={bookingSectionRef}>
                    <Title level={3}>Mua vé trực tuyến</Title>
                    
                    {movie.locations && movie.locations.length > 0 ? (

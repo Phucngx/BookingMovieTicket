@@ -97,9 +97,14 @@ const MovieSection = () => {
   return (
     <div className="movie-section">
       <div className="container">
-        <Title level={2} className="section-title">
-          Mua vé theo phim
-        </Title>
+        <div className="section-header">
+          <Title level={2} className="section-title">
+            Mua vé theo phim
+          </Title>
+          <div className="community-filter">
+            <span className="filter-label">Cộng đồng</span>
+          </div>
+        </div>
         
         <div className="movie-carousel-container">
           <div 
