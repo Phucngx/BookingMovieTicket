@@ -225,10 +225,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
 .header-avatar:hover {
   background: #40a9ff;
+  transform: scale(1.1);
+  border-color: rgba(24, 144, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
 }
 
 /* Responsive Design */

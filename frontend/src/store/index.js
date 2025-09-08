@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
-import moviesReducer from './slices/moviesSlice'
-import cinemasReducer from './slices/cinemasSlice'
+import userReducer from './slices/userSlice'
+import movieListReducer from './slices/movieListSlice'
 import regionsReducer from './slices/regionsSlice'
+import cinemasReducer from './slices/cinemasSlice'
 
 export const store = configureStore({
   reducer: {
-    movies: moviesReducer,
-    cinemas: cinemasReducer,
+    user: userReducer,
+    movieList: movieListReducer,
     regions: regionsReducer,
+    cinemas: cinemasReducer,
   },
 })

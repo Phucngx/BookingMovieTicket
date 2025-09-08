@@ -8,11 +8,13 @@ const MovieCard = ({ movie }) => {
   const navigate = useNavigate();
   const {
     title,
-    poster,
+    posterUrl,
     rating,
-    date,
-    isEarlyShow,
-    isComingSoon
+    releaseDate,
+    durationMinutes,
+    language,
+    country,
+    genres
   } = movie;
 
   const handleMovieClick = () => {
@@ -29,17 +31,12 @@ const MovieCard = ({ movie }) => {
       <div className="movie-poster-container">
         <img 
           alt={title} 
-          src={poster || 'https://via.placeholder.com/160x240/1f1f1f/ffffff?text=Movie'} 
+          src={posterUrl || 'https://via.placeholder.com/160x240/1f1f1f/ffffff?text=Movie'} 
           className="movie-poster"
         />
         
         {/* Tags cho phim */}
-        {isEarlyShow && (
-          <div className="movie-badge badge-early-show">
-            CHIẾU SỚM
-          </div>
-        )}
-        {isComingSoon && (
+        {new Date(releaseDate) > new Date() && (
           <div className="movie-badge badge-coming-soon">
             SẮP CHIẾU
           </div>
@@ -63,22 +60,28 @@ const MovieCard = ({ movie }) => {
       
       {/* Thông tin phim */}
       <div className="movie-meta">
-        {date && <span className="movie-date">{date}</span>}
-        {rating && (
-          <span className="movie-rating">
-            <LikeOutlined className="rating-icon" />
-            {rating}%
+        {releaseDate && (
+          <span className="movie-date">
+            {new Date(releaseDate).toLocaleDateString('vi-VN')}
           </span>
+        )}
+        {durationMinutes && (
+          <span className="movie-duration">{durationMinutes} phút</span>
         )}
       </div>
       
       {/* Thông tin bổ sung */}
       <div className="movie-extra-info">
-        {movie.genre && (
-          <span className="movie-genre">{movie.genre}</span>
+        {genres && genres.length > 0 && (
+          <span className="movie-genre">{genres[0].genreName}</span>
         )}
-        {movie.language && (
-          <span className="movie-language">{movie.language === 'vietnamese' ? 'VN' : movie.language === 'japanese' ? 'JP' : movie.language === 'english' ? 'EN' : movie.language === 'korean' ? 'KR' : movie.language}</span>
+        {language && (
+          <span className="movie-language">
+            {language === 'Vietnamese' ? 'VN' : 
+             language === 'Japanese' ? 'JP' : 
+             language === 'English' ? 'EN' : 
+             language === 'Korean' ? 'KR' : language}
+          </span>
         )}
       </div>
     </div>

@@ -1,0 +1,191 @@
+.movie-management-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.movie-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.movie-management-header h2 {
+  margin-bottom: 8px;
+  color: #1890ff;
+}
+
+.add-movie-btn {
+  height: 48px;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.add-movie-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(24, 144, 255, 0.4);
+}
+
+.movie-table-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  overflow: hidden;
+}
+
+.movie-table-card .ant-card-body {
+  padding: 0;
+}
+
+/* Table styling */
+.ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 16px 12px;
+}
+
+.ant-table-tbody > tr > td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f8f9fa;
+}
+
+/* Action buttons */
+.ant-btn-text {
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.ant-btn-text:hover {
+  background: #f0f8ff;
+  transform: translateY(-1px);
+}
+
+.ant-btn-text.ant-btn-dangerous:hover {
+  background: #fff2f0;
+}
+
+/* Image styling */
+.ant-image {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Tag styling */
+.ant-tag {
+  border-radius: 12px;
+  font-size: 12px;
+  padding: 2px 8px;
+  margin: 2px;
+}
+
+/* Pagination styling */
+.ant-pagination {
+  padding: 16px 24px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .movie-management-container {
+    padding: 16px;
+  }
+  
+  .movie-management-header {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .movie-management-container {
+    padding: 12px;
+  }
+  
+  .movie-management-header {
+    padding: 16px;
+  }
+  
+  .add-movie-btn {
+    width: 100%;
+  }
+  
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .ant-table-tbody > tr > td:first-child {
+    width: 60px;
+  }
+  
+  .ant-table-tbody > tr > td:last-child {
+    width: 120px;
+  }
+}
+
+@media (max-width: 576px) {
+  .movie-management-header h2 {
+    font-size: 20px;
+  }
+  
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 6px 4px;
+    font-size: 11px;
+  }
+  
+  .ant-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+}
+
+/* Animation */
+.movie-management-container {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading state */
+.ant-spin-container {
+  min-height: 400px;
+}
+
+/* Empty state */
+.ant-empty {
+  padding: 40px 0;
+}
+
+.ant-empty-description {
+  color: #999;
+  font-size: 14px;
+}

@@ -1,13 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { Typography } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
+import { Typography, Spin } from 'antd'
 import MovieCard from '../MovieCard/MovieCard'
+import { fetchMovies } from '../../store/slices/movieListSlice'
 import './MovieSection.css'
 
 const { Title } = Typography
 
 const MovieSection = () => {
-  const { movies } = useSelector((state) => state.movies)
+  const dispatch = useDispatch()
+  const { movies, loading, error } = useSelector((state) => state.movieList)
   const carouselRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -58,6 +60,15 @@ const MovieSection = () => {
     setIsDragging(false)
   }
 
+  // Fetch movies when component mounts (for all users)
+  useEffect(() => {
+    if (movies.length === 0) {
+      dispatch(fetchMovies({ page: 1, size: 10 })).catch(error => {
+        console.error('Failed to fetch movies:', error)
+      })
+    }
+  }, [dispatch, movies.length])
+
   // Auto-hide scrollbar on mobile
   useEffect(() => {
     const carousel = carouselRef.current
@@ -92,6 +103,58 @@ const MovieSection = () => {
     const visibleMovies = Math.ceil(carouselRef.current?.offsetWidth / 180) || 1
     const totalDots = Math.ceil(movies.length / visibleMovies)
     return Math.min(totalDots, 5) // Max 5 dots
+  }
+
+  if (loading) {
+    return (
+      <div className="movie-section">
+        <div className="container">
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <Spin size="large" />
+            <p style={{ marginTop: '16px' }}>Đang tải danh sách phim...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="movie-section">
+        <div className="container">
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <p style={{ color: 'red' }}>Lỗi: {error}</p>
+            <p style={{ color: '#666', fontSize: '14px' }}>
+              Vui lòng đăng nhập để xem danh sách phim
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Fallback nếu không có movies
+  if (!loading && movies.length === 0) {
+    return (
+      <div className="movie-section">
+        <div className="container">
+          <div className="section-header">
+            <Title level={2} className="section-title">
+              Mua vé theo phim
+            </Title>
+            <div className="community-filter">
+              <span className="filter-label">Cộng đồng</span>
+            </div>
+          </div>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <p style={{ color: '#666' }}>Đang tải danh sách phim...</p>
+            <p style={{ color: '#999', fontSize: '14px' }}>
+              Vui lòng chờ trong giây lát
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

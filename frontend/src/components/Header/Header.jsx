@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout, Menu, Input, Button, Space, Avatar, Dropdown } from 'antd'
-import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined } from '@ant-design/icons'
+import { Layout, Menu, Input, Button, Space, Avatar, Dropdown, message } from 'antd'
+import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import AuthModal from '../AuthModal/AuthModal'
+import { logout, restoreAuth } from '../../store/slices/userSlice'
 import './Header.css'
 
 const { Header: AntHeader } = Layout
@@ -10,10 +13,34 @@ const { Search } = Input
 const Header = () => {
   const [moviesDropdownOpen, setMoviesDropdownOpen] = useState(false)
   const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
+  const [authModalVisible, setAuthModalVisible] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  
+  // Lấy state từ Redux
+  const { isAuthenticated, userInfo, loading } = useSelector(state => state.user)
+
+  // Khôi phục trạng thái đăng nhập khi component mount
+  useEffect(() => {
+    dispatch(restoreAuth())
+  }, [dispatch])
 
   const onSearch = (value) => {
     console.log('Search:', value)
+  }
+
+  const handleAvatarClick = () => {
+    setAuthModalVisible(true)
+  }
+
+  const handleAuthModalCancel = () => {
+    setAuthModalVisible(false)
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    message.success('Đăng xuất thành công!')
+    navigate('/')
   }
 
   const onMenuClick = (e) => {
@@ -188,13 +215,65 @@ const Header = () => {
               icon={<QuestionCircleOutlined />} 
               className="header-icon-btn"
             />
-            <Avatar 
-              icon={<UserOutlined />} 
-              className="header-avatar"
-            />
+            {isAuthenticated ? (
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: 'profile',
+                      label: `Xin chào, ${userInfo?.fullName || userInfo?.username || 'User'}`,
+                      disabled: true,
+                      style: { color: '#666', fontWeight: 'bold' }
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      key: 'account',
+                      label: 'Tài khoản của tôi',
+                      icon: <UserOutlined />,
+                      onClick: () => navigate('/tai-khoan')
+                    },
+                    ...(userInfo?.roleName === 'ADMIN' ? [{
+                      key: 'movie-management',
+                      label: 'Quản lý phim',
+                      icon: <UserOutlined />,
+                      onClick: () => navigate('/quan-ly-phim')
+                    }] : []),
+                    {
+                      key: 'logout',
+                      label: 'Đăng xuất',
+                      icon: <LogoutOutlined />,
+                      onClick: handleLogout
+                    }
+                  ]
+                }}
+                placement="bottomRight"
+                trigger={['click']}
+              >
+                <Avatar 
+                  className="header-avatar"
+                  style={{ backgroundColor: '#52c41a' }}
+                  src={userInfo?.avatarUrl}
+                >
+                  {(userInfo?.fullName || userInfo?.username || 'U').charAt(0).toUpperCase()}
+                </Avatar>
+              </Dropdown>
+            ) : (
+              <Avatar 
+                icon={<UserOutlined />} 
+                className="header-avatar"
+                onClick={handleAvatarClick}
+              />
+            )}
           </Space>
         </div>
       </div>
+      
+      <AuthModal 
+        visible={authModalVisible}
+        onCancel={handleAuthModalCancel}
+      />
     </AntHeader>
   )
 }

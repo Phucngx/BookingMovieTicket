@@ -1,0 +1,313 @@
+.auth-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.auth-modal .ant-modal-body {
+  padding: 0;
+}
+
+.auth-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  min-height: 600px;
+  position: relative;
+}
+
+.auth-header {
+  text-align: center;
+  padding: 40px 40px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.auth-header h2 {
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.auth-header p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.auth-tabs {
+  background: white;
+  margin: 0;
+  border-radius: 0;
+}
+
+.auth-tabs .ant-tabs-nav {
+  margin: 0;
+  background: white;
+  padding: 0 40px;
+}
+
+.auth-tabs .ant-tabs-tab {
+  padding: 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  border: none;
+  margin: 0 20px 0 0;
+}
+
+.auth-tabs .ant-tabs-tab-active {
+  color: #667eea;
+}
+
+.auth-tabs .ant-tabs-tab:hover {
+  color: #667eea;
+}
+
+.auth-tabs .ant-tabs-ink-bar {
+  background: #667eea;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.auth-tabs .ant-tabs-content-holder {
+  padding: 30px 40px 40px;
+  background: white;
+}
+
+.auth-input {
+  border-radius: 8px;
+  border: 2px solid #e8e8e8;
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.auth-input:hover {
+  border-color: #667eea;
+  background: white;
+}
+
+.auth-input:focus,
+.auth-input.ant-input-focused {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  background: white;
+}
+
+.auth-input .ant-input-prefix {
+  color: #999;
+  margin-right: 12px;
+}
+
+.auth-input.ant-input-focused .ant-input-prefix {
+  color: #667eea;
+}
+
+.auth-button {
+  height: 48px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.auth-button:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.forgot-password {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #5a6fd8;
+  text-decoration: underline;
+}
+
+.auth-divider {
+  margin: 30px 40px;
+  color: #999;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  border-color: #e8e8e8;
+}
+
+.social-login {
+  padding: 0 40px 40px;
+  background: white;
+}
+
+.social-button {
+  height: 48px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  border: 2px solid #e8e8e8;
+  background: white;
+  color: #333;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.social-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.social-button.facebook {
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+.social-button.facebook:hover {
+  background: #1877f2;
+  color: white;
+  border-color: #1877f2;
+}
+
+.social-button.google {
+  border-color: #db4437;
+  color: #db4437;
+}
+
+.social-button.google:hover {
+  background: #db4437;
+  color: white;
+  border-color: #db4437;
+}
+
+.social-button i {
+  font-size: 16px;
+}
+
+/* Form validation styles */
+.ant-form-item-has-error .auth-input {
+  border-color: #ff4d4f;
+  background: #fff2f0;
+}
+
+.ant-form-item-has-error .auth-input:focus {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+}
+
+.ant-form-item-explain-error {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Loading state */
+.auth-button.ant-btn-loading {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.8;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .auth-modal {
+    width: 95% !important;
+    max-width: 400px;
+  }
+  
+  .auth-header {
+    padding: 30px 20px 15px;
+  }
+  
+  .auth-header h2 {
+    font-size: 24px;
+  }
+  
+  .auth-tabs .ant-tabs-nav {
+    padding: 0 20px;
+  }
+  
+  .auth-tabs .ant-tabs-tab {
+    padding: 15px 0;
+    font-size: 14px;
+    margin: 0 10px 0 0;
+  }
+  
+  .auth-tabs .ant-tabs-content-holder {
+    padding: 20px 20px 30px;
+  }
+  
+  .auth-divider {
+    margin: 20px 20px;
+  }
+  
+  .social-login {
+    padding: 0 20px 30px;
+  }
+}
+
+/* Animation for modal */
+.auth-modal .ant-modal-content {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom scrollbar for form */
+.auth-tabs .ant-tabs-content-holder {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.auth-tabs .ant-tabs-content-holder::-webkit-scrollbar {
+  width: 4px;
+}
+
+.auth-tabs .ant-tabs-content-holder::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.auth-tabs .ant-tabs-content-holder::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.auth-tabs .ant-tabs-content-holder::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
