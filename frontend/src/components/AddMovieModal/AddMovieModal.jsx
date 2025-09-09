@@ -247,3 +247,4 @@ const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
 }
 
 export default AddMovieModal
+

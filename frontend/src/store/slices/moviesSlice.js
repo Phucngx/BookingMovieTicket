@@ -14,8 +14,22 @@ export const fetchMovies = createAsyncThunk(
   }
 )
 
+// Async thunk để lấy chi tiết phim
+export const fetchMovieDetails = createAsyncThunk(
+  'movies/fetchMovieDetails',
+  async (movieId, { rejectWithValue }) => {
+    try {
+      const response = await movieService.getMovieDetails(movieId)
+      return response
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 const initialState = {
   movies: [],
+  selectedMovie: null,
   loading: false,
   error: null,
   pagination: {
@@ -44,6 +58,11 @@ const moviesSlice = createSlice({
         total: 0,
         totalPages: 0
       }
+    },
+
+    // Set selected movie
+    setSelectedMovie: (state, action) => {
+      state.selectedMovie = action.payload
     }
   },
   extraReducers: (builder) => {
@@ -69,8 +88,23 @@ const moviesSlice = createSlice({
         state.error = action.payload
         state.movies = []
       })
+      // Fetch movie details cases
+      .addCase(fetchMovieDetails.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchMovieDetails.fulfilled, (state, action) => {
+        state.loading = false
+        state.selectedMovie = action.payload.data
+        state.error = null
+      })
+      .addCase(fetchMovieDetails.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+        state.selectedMovie = null
+      })
   }
 })
 
-export const { clearError, resetMovies } = moviesSlice.actions
+export const { clearError, resetMovies, setSelectedMovie } = moviesSlice.actions
 export default moviesSlice.reducer

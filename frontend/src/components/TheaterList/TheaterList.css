@@ -1,0 +1,159 @@
+.theater-list-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theater-list-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.theater-list-title {
+  margin: 0 0 8px 0 !important;
+  color: #262626;
+  font-weight: 600;
+}
+
+.theater-item {
+  padding: 20px 0 !important;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.theater-item:last-child {
+  border-bottom: none;
+}
+
+.theater-content {
+  width: 100%;
+}
+
+.theater-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.theater-name {
+  margin: 0 !important;
+  color: #262626;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.theater-tag {
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.theater-info {
+  margin-bottom: 16px;
+}
+
+.theater-info > div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.theater-info > div:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-right: 8px;
+  width: 16px;
+  text-align: center;
+}
+
+.info-text {
+  color: #595959;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.theater-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.book-button {
+  border-radius: 6px;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 16px;
+}
+
+/* Loading and Error States */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 12px;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #f0f0f0;
+  border-top: 2px solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .theater-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .theater-actions {
+    justify-content: flex-start;
+  }
+  
+  .theater-actions .ant-space {
+    width: 100%;
+  }
+  
+  .theater-actions .ant-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .theater-item {
+    padding: 16px 0 !important;
+  }
+  
+  .theater-name {
+    font-size: 16px;
+  }
+  
+  .theater-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .theater-actions .ant-btn {
+    width: 100%;
+  }
+}

@@ -49,6 +49,8 @@ const Header = () => {
       navigate('/lich-chieu')
     } else if (e.key === 'booking') {
       navigate('/')
+    } else if (e.key === 'theater-booking') {
+      navigate('/mua-ve-theo-rap')
     } else if (e.key === 'community') {
       navigate('/community')
     }
@@ -138,6 +140,7 @@ const Header = () => {
 
   const menuItems = [
     { key: 'booking', label: 'Đặt vé phim chiếu rạp' },
+    { key: 'theater-booking', label: 'Mua vé theo rạp' },
     { key: 'schedule', label: 'Lịch chiếu' },
     { 
       key: 'movies', 
