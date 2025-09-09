@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8083/theater-service'
+const API_BASE_URL = 'http://localhost:8080/api/v1/theater-service'
 
 export const theaterService = {
   // Lấy danh sách rạp theo thành phố (không cần đăng nhập)

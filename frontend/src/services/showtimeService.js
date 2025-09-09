@@ -1,24 +1,24 @@
 const API_BASE_URL = 'http://localhost:8080/api/v1/showtime-service'
 
 export const showtimeService = {
-  // Lấy lịch chiếu theo rạp, phim và ngày (cần đăng nhập)
+  // Lấy lịch chiếu theo rạp, phim và ngày 
   async getShowtimes(theaterId, movieId, date) {
     try {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        throw new Error('Vui lòng đăng nhập để xem lịch chiếu')
-      }
+      // const token = localStorage.getItem('accessToken')
+      // if (!token) {
+      //   throw new Error('Vui lòng đăng nhập để xem lịch chiếu')
+      // }
 
       const url = `${API_BASE_URL}/showtimes/get-showtimes/theaters/${theaterId}/movies/${movieId}?date=${date}`
       console.log('API URL:', url)
       console.log('Request params:', { theaterId, movieId, date })
 
       const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
+        method: 'GET'
+        // headers: {
+        //   'Authorization': `Bearer ${token}`,
+        //   'Content-Type': 'application/json',
+        // }
       })
 
       const data = await response.json()

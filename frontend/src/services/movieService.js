@@ -173,17 +173,17 @@ export const movieService = {
   // Lấy chi tiết phim (cần đăng nhập)
   async getMovieDetails(movieId) {
     try {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
-        throw new Error('Vui lòng đăng nhập để xem chi tiết phim')
-      }
+      // const token = localStorage.getItem('accessToken')
+      // if (!token) {
+      //   throw new Error('Vui lòng đăng nhập để xem chi tiết phim')
+      // }
 
       const response = await fetch(`${API_BASE_URL}/movies/get-details/${movieId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
+        method: 'GET'
+        // headers: {
+        //   'Authorization': `Bearer ${token}`,
+        //   'Content-Type': 'application/json',
+        // }
       })
 
       const data = await response.json()
