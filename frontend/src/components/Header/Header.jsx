@@ -238,10 +238,10 @@ const Header = () => {
                       onClick: () => navigate('/tai-khoan')
                     },
                     ...(userInfo?.roleName === 'ADMIN' ? [{
-                      key: 'movie-management',
-                      label: 'Quản lý phim',
+                      key: 'admin-dashboard',
+                      label: 'Admin Dashboard',
                       icon: <UserOutlined />,
-                      onClick: () => navigate('/quan-ly-phim')
+                      onClick: () => navigate('/admin/dashboard')
                     }] : []),
                     {
                       key: 'logout',

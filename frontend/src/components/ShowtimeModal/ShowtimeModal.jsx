@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Modal, Typography, Button, Space, Spin, Empty, message } from 'antd'
 import { ClockCircleOutlined, DollarOutlined, VideoCameraOutlined } from '@ant-design/icons'
-import { fetchShowtimes, setSelectedShowtime, clearError } from '../../store/slices/showtimesSlice'
+import { fetchShowtimesByDate, clearError } from '../../store/slices/showtimesSlice'
 import './ShowtimeModal.css'
 
 const { Title, Text } = Typography
@@ -17,24 +17,24 @@ const ShowtimeModal = ({
 }) => {
   const dispatch = useDispatch()
   const { showtimes, loading, error } = useSelector((state) => state.showtimes)
+  const { token } = useSelector((state) => state.user)
 
   // Fetch showtimes when modal opens
   useEffect(() => {
-    if (visible && theater && movie && date) {
+    if (visible && theater && date && token) {
       console.log('Fetching showtimes with params:', {
         theaterId: theater.theaterId,
-        movieId: movie.id,
         date: date,
         theater: theater,
-        movie: movie
+        token: token ? 'present' : 'missing'
       })
-      dispatch(fetchShowtimes({
+      dispatch(fetchShowtimesByDate({
         theaterId: theater.theaterId,
-        movieId: movie.id,
-        date: date
+        date: date,
+        token: token
       }))
     }
-  }, [visible, theater, movie, date, dispatch])
+  }, [visible, theater, date, token, dispatch])
 
   // Clear error when modal closes
   useEffect(() => {
@@ -44,7 +44,6 @@ const ShowtimeModal = ({
   }, [visible, dispatch])
 
   const handleShowtimeSelect = (showtime) => {
-    dispatch(setSelectedShowtime(showtime))
     onSelectShowtime(showtime)
     onCancel()
     message.success('Đã chọn suất chiếu!')
@@ -104,10 +103,10 @@ const ShowtimeModal = ({
               </Text>
               <Button 
                 type="primary" 
-                onClick={() => dispatch(fetchShowtimes({
+                onClick={() => dispatch(fetchShowtimesByDate({
                   theaterId: theater.theaterId,
-                  movieId: movie.id,
-                  date: date
+                  date: date,
+                  token: token
                 }))}
               >
                 Thử lại
@@ -125,40 +124,46 @@ const ShowtimeModal = ({
 
         {!loading && !error && showtimes.length > 0 && (
           <div className="showtimes-container">
-            <div className="showtimes-grid">
-              {showtimes.map((showtime) => (
-                <div 
-                  key={showtime.showtimeId} 
-                  className="showtime-card"
-                  onClick={() => handleShowtimeSelect(showtime)}
-                >
-                  <div className="showtime-time">
-                    <ClockCircleOutlined className="time-icon" />
-                    <div className="time-text">
-                      <div className="start-time">
-                        {formatTime(showtime.startTime)}
+            {showtimes.map((movieShowtime) => (
+              <div key={movieShowtime.movie.id} className="movie-showtime-section">
+                <div className="movie-info">
+                  <Title level={5}>{movieShowtime.movie.title}</Title>
+                  <Text type="secondary">
+                    {movieShowtime.movie.genres?.join(', ')} • {movieShowtime.movie.durationMinutes} phút
+                  </Text>
+                </div>
+                
+                <div className="showtimes-grid">
+                  {movieShowtime.showtimes.map((showtime) => (
+                    <div 
+                      key={showtime.id} 
+                      className="showtime-card"
+                      onClick={() => handleShowtimeSelect(showtime)}
+                    >
+                      <div className="showtime-time">
+                        <ClockCircleOutlined className="time-icon" />
+                        <div className="time-text">
+                          {showtime.time}
+                        </div>
                       </div>
-                      <div className="end-time">
-                        ~ {formatTime(showtime.endTime)}
+                      
+                      <div className="showtime-price">
+                        <DollarOutlined className="price-icon" />
+                        <Text className="price-text">
+                          {formatPrice(showtime.price)}
+                        </Text>
+                      </div>
+                      
+                      <div className="showtime-room">
+                        <Text type="secondary" className="room-text">
+                          Phòng {showtime.roomId}
+                        </Text>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="showtime-price">
-                    <DollarOutlined className="price-icon" />
-                    <Text className="price-text">
-                      {formatPrice(showtime.price)}
-                    </Text>
-                  </div>
-                  
-                  <div className="showtime-room">
-                    <Text type="secondary" className="room-text">
-                      Phòng {showtime.roomId}
-                    </Text>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

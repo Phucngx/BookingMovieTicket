@@ -1,23 +1,33 @@
 .theater-list-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0f0f0;
+  height: 100%;
 }
 
 .theater-list-header {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #f0f0f0;
+  padding: 16px 16px 0 16px;
 }
 
 .theater-list-title {
-  margin: 0 0 8px 0 !important;
+  margin: 0 0 6px 0 !important;
   color: #262626;
   font-weight: 600;
+  font-size: 16px;
 }
 
 .theater-item {
-  padding: 20px 0 !important;
+  padding: 12px 16px !important;
   border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theater-item:hover {
+  background-color: #f8f9fa;
 }
 
 .theater-item:last-child {
@@ -32,19 +42,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .theater-name {
   margin: 0 !important;
   color: #262626;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .theater-tag {
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: 4px;
+  font-size: 11px;
 }
 
 .theater-info {

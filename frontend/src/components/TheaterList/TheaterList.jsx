@@ -7,10 +7,10 @@ import './TheaterList.css'
 
 const { Title, Text } = Typography
 
-const TheaterList = ({ movie }) => {
+const TheaterList = ({ movie, onTheaterSelect, selectedTheater }) => {
   const { theaters, selectedCity, selectedDate, loading, error } = useSelector((state) => state.theaters)
   const [showtimeModalVisible, setShowtimeModalVisible] = useState(false)
-  const [selectedTheater, setSelectedTheater] = useState(null)
+  const [internalSelectedTheater, setInternalSelectedTheater] = useState(null)
 
   // Debug Redux state
   console.log('TheaterList - Redux state:', { 
@@ -75,8 +75,12 @@ const TheaterList = ({ movie }) => {
   }
 
   const handleShowtimeClick = (theater) => {
-    setSelectedTheater(theater)
-    setShowtimeModalVisible(true)
+    if (onTheaterSelect) {
+      onTheaterSelect(theater)
+    } else {
+      setInternalSelectedTheater(theater)
+      setShowtimeModalVisible(true)
+    }
   }
 
   const handleSelectShowtime = (showtime) => {
@@ -138,12 +142,12 @@ const TheaterList = ({ movie }) => {
               <div className="theater-actions">
                 <Space>
                   <Button 
-                    type="primary" 
+                    type={selectedTheater?.theaterId === theater.theaterId ? "primary" : "default"}
                     icon={<VideoCameraOutlined />}
                     className="book-button"
                     onClick={() => handleShowtimeClick(theater)}
                   >
-                    Xem lịch chiếu
+                    {selectedTheater?.theaterId === theater.theaterId ? "Đã chọn" : "Xem lịch chiếu"}
                   </Button>
                   <Button type="default">
                     Thông tin rạp
@@ -158,7 +162,7 @@ const TheaterList = ({ movie }) => {
       <ShowtimeModal
         visible={showtimeModalVisible}
         onCancel={() => setShowtimeModalVisible(false)}
-        theater={selectedTheater}
+        theater={internalSelectedTheater}
         movie={movie}
         date={selectedDate}
         onSelectShowtime={handleSelectShowtime}

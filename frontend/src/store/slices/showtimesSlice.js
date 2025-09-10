@@ -1,14 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { showtimeService } from '../../services/showtimeService'
 
-// Async thunk để lấy lịch chiếu
-export const fetchShowtimes = createAsyncThunk(
-  'showtimes/fetchShowtimes',
-  async ({ theaterId, movieId, date }, { rejectWithValue }) => {
+// Async thunk để lấy lịch chiếu theo rạp và ngày
+export const fetchShowtimesByDate = createAsyncThunk(
+  'showtimes/fetchShowtimesByDate',
+  async ({ theaterId, date, token }, { rejectWithValue }) => {
     try {
-      const response = await showtimeService.getShowtimes(theaterId, movieId, date)
+      console.log('fetchShowtimesByDate - Starting API call:', { theaterId, date })
+      const response = await showtimeService.getShowtimesByDate(theaterId, date, token)
+      console.log('fetchShowtimesByDate - API response:', response)
       return response
     } catch (error) {
+      console.error('fetchShowtimesByDate - API error:', error)
       return rejectWithValue(error.message)
     }
   }
@@ -16,19 +19,26 @@ export const fetchShowtimes = createAsyncThunk(
 
 const initialState = {
   showtimes: [],
-  selectedShowtime: null,
+  selectedTheater: null,
+  selectedDate: null,
   loading: false,
-  error: null,
-  currentRequest: null // { theaterId, movieId, date }
+  error: null
 }
 
 const showtimesSlice = createSlice({
   name: 'showtimes',
   initialState,
   reducers: {
-    // Set selected showtime
-    setSelectedShowtime: (state, action) => {
-      state.selectedShowtime = action.payload
+    // Set selected theater
+    setSelectedTheater: (state, action) => {
+      console.log('showtimesSlice - setSelectedTheater:', action.payload)
+      state.selectedTheater = action.payload
+      state.showtimes = [] // Clear showtimes when theater changes
+    },
+    
+    // Set selected date
+    setSelectedDate: (state, action) => {
+      state.selectedDate = action.payload
     },
     
     // Clear error
@@ -39,31 +49,31 @@ const showtimesSlice = createSlice({
     // Reset showtimes
     resetShowtimes: (state) => {
       state.showtimes = []
-      state.selectedShowtime = null
-      state.currentRequest = null
+      state.selectedTheater = null
+      state.selectedDate = null
     }
   },
   extraReducers: (builder) => {
     builder
       // Fetch showtimes cases
-      .addCase(fetchShowtimes.pending, (state, action) => {
+      .addCase(fetchShowtimesByDate.pending, (state) => {
         state.loading = true
         state.error = null
-        state.currentRequest = action.meta.arg
       })
-      .addCase(fetchShowtimes.fulfilled, (state, action) => {
+      .addCase(fetchShowtimesByDate.fulfilled, (state, action) => {
+        console.log('showtimesSlice - fetchShowtimesByDate.fulfilled:', action.payload)
         state.loading = false
         state.showtimes = action.payload.data || []
         state.error = null
+        console.log('showtimesSlice - Updated showtimes:', state.showtimes)
       })
-      .addCase(fetchShowtimes.rejected, (state, action) => {
+      .addCase(fetchShowtimesByDate.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
         state.showtimes = []
-        state.currentRequest = null
       })
   }
 })
 
-export const { setSelectedShowtime, clearError, resetShowtimes } = showtimesSlice.actions
+export const { setSelectedTheater, setSelectedDate, clearError, resetShowtimes } = showtimesSlice.actions
 export default showtimesSlice.reducer

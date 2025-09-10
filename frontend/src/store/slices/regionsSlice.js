@@ -26,9 +26,16 @@ const regionsSlice = createSlice({
         region.isSelected = region.id === regionId
       })
       state.selectedRegion = regionId
+    },
+    updateRegionTheaterCount: (state, action) => {
+      const { regionName, theaterCount } = action.payload
+      const region = state.regions.find(r => r.name === regionName)
+      if (region) {
+        region.cinemaCount = theaterCount
+      }
     }
   }
 })
 
-export const { selectRegion } = regionsSlice.actions
+export const { selectRegion, updateRegionTheaterCount } = regionsSlice.actions
 export default regionsSlice.reducer
