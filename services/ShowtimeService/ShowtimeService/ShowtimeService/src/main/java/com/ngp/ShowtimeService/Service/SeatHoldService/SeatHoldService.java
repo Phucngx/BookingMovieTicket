@@ -4,6 +4,7 @@ import com.ngp.ShowtimeService.DTO.Response.HoldResult;
 import com.ngp.ShowtimeService.Exception.AppException;
 import com.ngp.ShowtimeService.Exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import org.redisson.api.RBucket;
 import org.redisson.api.RScript;
 import org.redisson.api.RSet;
@@ -77,18 +78,28 @@ public class SeatHoldService {
 
     public void cancelHold(String holdId) {
         String idxKey = String.format(HOLD_IDX_FMT, holdId);
-        RSet<String> idx = redisson.getSet(idxKey);
-        if (!idx.isExists()) return;
+            RSet<String> idx = redisson.getSet(idxKey);
 
-        for (String holdKey : idx) {
-            RBucket<String> b = redisson.getBucket(holdKey);
-            String v = b.get();
-            if (holdId.equals(v)) {
-                b.delete();
+            // Nếu set không tồn tại hoặc rỗng thì return
+            if (idx == null || idx.isEmpty()) {
+                return;
             }
-        }
-        idx.delete();
+
+            for (String holdKey : idx) {
+                RBucket<String> bucket = redisson.getBucket(holdKey, StringCodec.INSTANCE);
+                String value = bucket.get();
+
+                // So sánh an toàn tránh NullPointerException
+                if (holdId.equals(value)) {
+                    bucket.delete();
+                }
+            }
+
+            // Xoá set index sau khi xử lý
+            idx.delete();
     }
+
+
 }
 
 

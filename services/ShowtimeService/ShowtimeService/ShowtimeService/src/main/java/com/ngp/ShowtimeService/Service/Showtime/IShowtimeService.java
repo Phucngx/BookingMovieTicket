@@ -2,6 +2,7 @@ package com.ngp.ShowtimeService.Service.Showtime;
 
 import com.ngp.ShowtimeService.DTO.MovieShowtimesDTO;
 import com.ngp.ShowtimeService.DTO.Request.ShowtimeRequest;
+import com.ngp.ShowtimeService.DTO.Response.ShowSeatsResponse;
 import com.ngp.ShowtimeService.DTO.Response.ShowtimeResponse;
 import org.springframework.data.domain.Page;
 
@@ -18,4 +19,5 @@ public interface IShowtimeService {
     List<ShowtimeResponse> getShowtimesByMovieId(Long movieId);
     List<ShowtimeResponse> getShowtimes(Long movieId, Long theaterId, LocalDateTime startOfDay, LocalDateTime endOfDay);
     List<MovieShowtimesDTO> getShowtimesByTheaterAndDate(Long theaterId, LocalDate date);
+    ShowSeatsResponse getSeatsByShowtime(Long showtimeId);
 }

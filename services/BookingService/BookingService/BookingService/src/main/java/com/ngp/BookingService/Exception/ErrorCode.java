@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     SUCCESS(1000, "Success", HttpStatus.OK),
-    UNCATEGORIZED(1001, "Uncategorized", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNCATEGORIZED(1001, "Xảy ra lỗi khi chọn ghế!", HttpStatus.INTERNAL_SERVER_ERROR),
     NOT_FOUND(1002, "Not found", HttpStatus.BAD_REQUEST),
     SHOWTIME_NOT_FOUND(1002, "SHOWTIME not found", HttpStatus.BAD_REQUEST),
     MOVIE_NOT_FOUND(1002, "MOVIE not found", HttpStatus.BAD_REQUEST),
@@ -23,8 +23,8 @@ public enum ErrorCode {
     SHOWTIME_EXISTS(1005, "SHOWTIME is already exist", HttpStatus.BAD_REQUEST),
     NOT_EXISTS(1006, "not exist", HttpStatus.NOT_FOUND),
     SHOWTIME_NOT_EXISTS(1006, "SHOWTIME not exist", HttpStatus.NOT_FOUND),
-    USERNAME_INVALID(1007, "Username must be in {min} - {max} characters", HttpStatus.BAD_REQUEST),
-    PASSWORD_INVALID(1007, "Password must be in {min} - {max} characters", HttpStatus.BAD_REQUEST),
+    BOOKING_INVALID_STATE(1007, "BOOKING_INVALID_STATE", HttpStatus.BAD_REQUEST),
+    HOLD_INVALID(1007, "HOLD_INVALID", HttpStatus.BAD_REQUEST),
     PHONE_INVALID(1007, "Password must be {min} or {max} characters", HttpStatus.BAD_REQUEST),
     EMAIL_INVALID(1007, "This field must be email", HttpStatus.BAD_REQUEST),
     KEY_INVALID(1007, "Key invalid", HttpStatus.BAD_REQUEST),

@@ -115,10 +115,10 @@ public class ShowtimeController {
     }
 
     //Truyền holdId, hủy hold, trả về 204 No Content
-    @DeleteMapping("/internal/seat-holds/{holdId}")
-    public ApiResponse<Void> deleteHoldSeat(@PathVariable String holdId){
+    @DeleteMapping("/internal/seat-holds/cancel/{holdId}")
+    public ApiResponse<String> deleteHoldSeat(@PathVariable String holdId){
         seatHoldService.cancelHold(holdId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<String>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .message("Hold seat cancelled successfully")
                 .build();
@@ -140,6 +140,15 @@ public class ShowtimeController {
         return ApiResponse.<List<MovieShowtimesDTO>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(showtimeService.getShowtimesByTheaterAndDate(theaterId, date))
+                .build();
+    }
+
+    @GetMapping("get-seats/{showtimeId}")
+    public ApiResponse<ShowSeatsResponse> getSeats(@PathVariable Long showtimeId) {
+        ShowSeatsResponse data = showtimeService.getSeatsByShowtime(showtimeId);
+        return ApiResponse.<ShowSeatsResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(data)
                 .build();
     }
 

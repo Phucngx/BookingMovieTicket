@@ -2,6 +2,7 @@ package com.ngp.TheaterService.Service.Seat;
 
 import com.ngp.TheaterService.DTO.Response.SeatResponse;
 import com.ngp.TheaterService.DTO.Response.TheaterResponse;
+import com.ngp.TheaterService.DTO.RoomSeatDTO;
 import com.ngp.TheaterService.Entity.RoomEntity;
 import com.ngp.TheaterService.Entity.SeatEntity;
 import com.ngp.TheaterService.Entity.TheaterEntity;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -39,5 +41,22 @@ public class SeatService implements ISeatService{
             throw new AppException(ErrorCode.SEAT_NOT_FOUND);
         }
         return listSeats.stream().map(seatMapper::toSeatResponse).toList();
+    }
+
+    @Override
+    public List<RoomSeatDTO> getSeats(Long roomId) {
+        List<RoomSeatDTO> result = new ArrayList<>();
+        List<SeatEntity> list = seatRepository.findByRoom_RoomIdOrderBySeatRowAscSeatNumberAsc(roomId);
+        if (list == null) return result;
+
+        for (SeatEntity s : list) {
+            RoomSeatDTO dto = new RoomSeatDTO();
+            dto.setSeatId(s.getSeatId());
+            dto.setSeatRow(s.getSeatRow());
+            dto.setSeatNumber(s.getSeatNumber());
+            dto.setSeatType(s.getSeatType() != null ? s.getSeatType().name() : null);
+            result.add(dto);
+        }
+        return result;
     }
 }

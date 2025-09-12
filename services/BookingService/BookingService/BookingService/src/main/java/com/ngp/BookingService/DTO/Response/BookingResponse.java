@@ -4,6 +4,8 @@ import com.ngp.BookingService.Constrains.StatusType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,10 +13,10 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class BookingResponse {
     Long bookingId;
-    Long accountId;
-    Long showtimeId;
-    StatusType status;
-    Double totalPrice;
-    Long ticketId;
+    String status;          // PENDING
+    Integer amount;         // tổng tiền (đổi sang Integer VND nếu muốn)
+    String holdId;
+    LocalDateTime holdExpiresAt;
+    String qrUrl;
 }
 

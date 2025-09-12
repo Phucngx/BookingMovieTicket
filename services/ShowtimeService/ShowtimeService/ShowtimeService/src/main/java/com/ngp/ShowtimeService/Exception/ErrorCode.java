@@ -17,6 +17,7 @@ public enum ErrorCode {
     MOVIE_NOT_FOUND(1002, "MOVIE not found", HttpStatus.BAD_REQUEST),
     ROOM_NOT_FOUND(1002, "ROOM not found", HttpStatus.BAD_REQUEST),
     RESOURCE_NOT_FOUND(1002, "RESOURCE_NOT_FOUND", HttpStatus.BAD_REQUEST),
+    LOCK_SEAT_NOT_FOUND(1002, "LOCK_SEAT_NOT_FOUND", HttpStatus.BAD_REQUEST),
     DEPENDENCY_UNAVAILABLE(1007, "DEPENDENCY_UNAVAILABLE", HttpStatus.INTERNAL_SERVER_ERROR),
     NOT_EMPTY(1003, "This field is not empty", HttpStatus.BAD_REQUEST),
     NOT_NULL(1004, "This field is not null", HttpStatus.BAD_REQUEST),

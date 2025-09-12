@@ -12,4 +12,6 @@ import java.util.Optional;
 @Repository
 public interface SeatRepository extends JpaRepository<SeatEntity, Long>, JpaSpecificationExecutor<SeatEntity> {
     List<SeatEntity> findByRoom(RoomEntity room);
+
+    List<SeatEntity> findByRoom_RoomIdOrderBySeatRowAscSeatNumberAsc(Long roomId);
 }

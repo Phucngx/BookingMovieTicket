@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -34,4 +35,13 @@ public class BookingEntity extends BaseEntity{
 
     @Column(name = "total_price", nullable = false)
     Double totalPrice;
+
+    @Column(name="hold_id")
+    String holdId;
+
+    @Column(name="hold_expires_at")
+    LocalDateTime holdExpiresAt;
+
+    @Column(name = "payment_id")
+    Long paymentId;
 }

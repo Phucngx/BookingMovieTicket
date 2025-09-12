@@ -2,6 +2,8 @@ package com.ngp.TheaterService.Controller;
 
 import com.ngp.TheaterService.DTO.Response.ApiResponse;
 import com.ngp.TheaterService.DTO.Response.SeatResponse;
+import com.ngp.TheaterService.DTO.RoomSeatDTO;
+import com.ngp.TheaterService.Entity.SeatEntity;
 import com.ngp.TheaterService.Exception.ErrorCode;
 import com.ngp.TheaterService.Service.Seat.SeatService;
 import lombok.AccessLevel;
@@ -19,7 +21,7 @@ public class SeatController {
     SeatService seatService;
 
     @GetMapping("/get-all")
-    public ApiResponse<List<SeatResponse>> getAllTheater() {
+    public ApiResponse<List<SeatResponse>> getAllSeat() {
         return ApiResponse.<List<SeatResponse>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(seatService.getAllSeat())
@@ -31,6 +33,14 @@ public class SeatController {
         return ApiResponse.<List<SeatResponse>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(seatService.getSeatByRoomId(id))
+                .build();
+    }
+
+    @GetMapping("internal/get-seats-by-room/{roomId}")
+    public ApiResponse<List<RoomSeatDTO>> getSeats(@PathVariable Long roomId) {
+        return ApiResponse.<List<RoomSeatDTO>>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(seatService.getSeats(roomId))
                 .build();
     }
 

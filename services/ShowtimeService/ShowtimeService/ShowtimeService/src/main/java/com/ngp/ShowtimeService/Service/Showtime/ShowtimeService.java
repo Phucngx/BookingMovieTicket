@@ -1,23 +1,26 @@
 package com.ngp.ShowtimeService.Service.Showtime;
 
+import com.ngp.ShowtimeService.Constrains.SeatStatus;
 import com.ngp.ShowtimeService.DTO.MovieShowtimesDTO;
 import com.ngp.ShowtimeService.DTO.Request.ShowtimeRequest;
-import com.ngp.ShowtimeService.DTO.Response.MovieBriefResponse;
-import com.ngp.ShowtimeService.DTO.Response.MovieLiteResponse;
-import com.ngp.ShowtimeService.DTO.Response.RoomBriefResponse;
-import com.ngp.ShowtimeService.DTO.Response.ShowtimeResponse;
+import com.ngp.ShowtimeService.DTO.Response.*;
+import com.ngp.ShowtimeService.DTO.RoomSeatDTO;
 import com.ngp.ShowtimeService.DTO.ShowtimeItemDTO;
+import com.ngp.ShowtimeService.Entity.LockSeatEntity;
 import com.ngp.ShowtimeService.Entity.ShowtimeEntity;
 import com.ngp.ShowtimeService.Exception.AppException;
 import com.ngp.ShowtimeService.Exception.ErrorCode;
 import com.ngp.ShowtimeService.Mapper.ShowtimeMapper;
 import com.ngp.ShowtimeService.Repository.HttpClient.MovieClient;
 import com.ngp.ShowtimeService.Repository.HttpClient.RoomClient;
+import com.ngp.ShowtimeService.Repository.HttpClient.SeatClient;
+import com.ngp.ShowtimeService.Repository.LockSeatRepository.LockSeatRepository;
 import com.ngp.ShowtimeService.Repository.ShowtimeRepository.ShowtimeRepository;
-import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.redisson.api.RKeys;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +41,9 @@ public class ShowtimeService implements IShowtimeService{
     ShowtimeMapper showtimeMapper;
     MovieClient movieClient;
     RoomClient roomClient;
+    SeatClient seatClient;
+    RedissonClient redisson;
+    LockSeatRepository lockSeatRepository;
 
     @Override
     public ShowtimeResponse createShowtime(ShowtimeRequest request) {
@@ -189,7 +195,7 @@ public class ShowtimeService implements IShowtimeService{
         // 8) Sắp xếp các giờ chiếu trong từng block theo thời gian tăng dần
         for (MovieShowtimesDTO block : grouped.values()) {
             List<ShowtimeItemDTO> items = block.getShowtimes();
-            Collections.sort(items, new Comparator<ShowtimeItemDTO>() {
+            items.sort(new Comparator<ShowtimeItemDTO>() {
                 @Override
                 public int compare(ShowtimeItemDTO o1, ShowtimeItemDTO o2) {
                     // Vì định dạng "HH:mm" nên có thể so sánh chuỗi,
@@ -207,6 +213,114 @@ public class ShowtimeService implements IShowtimeService{
         }
 
         return result;
+    }
+
+    @Override
+    public ShowSeatsResponse getSeatsByShowtime(Long showtimeId) {
+        ShowSeatsResponse response = new ShowSeatsResponse();
+
+        // 1) showtime -> roomId, price
+        ShowtimeEntity st = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new AppException(ErrorCode.SHOWTIME_NOT_FOUND));
+        Long roomId = st.getRoomId();
+        Double price = st.getPrice();
+
+        // 2) seats của phòng
+        List<RoomSeatDTO> roomSeats = seatClient.getSeatsByRoom(roomId).getData();
+        if (roomSeats == null) roomSeats = new ArrayList<>();
+
+        // 3) tập ghế HOLD & BOOKED từ Redis
+        Set<Long> holdSet = findSeatIdsByPattern("seat:hold:" + showtimeId + ":*");
+        Set<Long> reservedSet = new HashSet<>();
+        List<LockSeatEntity> lockSeatEntity = lockSeatRepository.findByIdShowtimeId(showtimeId);
+        if(lockSeatEntity != null && !lockSeatEntity.isEmpty()){
+            for(LockSeatEntity lockSeat : lockSeatEntity){
+                reservedSet.add(lockSeat.getId().getSeatId());
+            }
+        }
+
+        // 4) map sang SeatView
+        List<SeatViewResponse> views = new ArrayList<>();
+        int maxRowIdx = -1;
+        int maxColIdx = -1;
+
+        for (RoomSeatDTO s : roomSeats) {
+            SeatViewResponse v = new SeatViewResponse();
+            v.setSeatId(s.getSeatId());
+            v.setSeatRow(s.getSeatRow());
+            v.setSeatNumber(s.getSeatNumber());
+            v.setSeatType(s.getSeatType());
+            v.setPrice(price);
+
+            // code, rowIndex, colIndex
+            String code = buildSeatCode(s.getSeatRow(), s.getSeatNumber());
+            v.setCode(code);
+
+            Integer ri = calcRowIndex(s.getSeatRow());
+            Integer ci = (s.getSeatNumber() != null) ? s.getSeatNumber() - 1 : null;
+            v.setRowIndex(ri);
+            v.setColIndex(ci);
+
+            if (ri != null && ri > maxRowIdx) maxRowIdx = ri;
+            if (ci != null && ci > maxColIdx) maxColIdx = ci;
+
+            // status
+            Long sid = s.getSeatId();
+            if (sid != null && reservedSet.contains(sid)) {
+                v.setStatus(SeatStatus.BOOKED);
+            } else if (sid != null && holdSet.contains(sid)) {
+                v.setStatus(SeatStatus.HOLD);
+            } else {
+                v.setStatus(SeatStatus.AVAILABLE);
+            }
+
+            views.add(v);
+        }
+
+        // 5) layout
+        SeatLayout layout = new SeatLayout();
+        layout.setRoomId(roomId);
+        layout.setRows(maxRowIdx >= 0 ? maxRowIdx + 1 : null);
+        layout.setCols(maxColIdx >= 0 ? maxColIdx + 1 : null);
+
+
+        response.setLayout(layout);
+        response.setSeats(views);
+        return response;
+    }
+
+    private Set<Long> findSeatIdsByPattern(String pattern) {
+        Set<Long> result = new HashSet<>();
+        RKeys keys = redisson.getKeys();
+        Iterable<String> it = keys.getKeysByPattern(pattern);
+        if (it == null) return result;
+
+        for (String k : it) {
+            int lastColon = k.lastIndexOf(':');
+            if (lastColon > -1 && lastColon + 1 < k.length()) {
+                String seatIdStr = k.substring(lastColon + 1);
+                try {
+                    Long sid = Long.parseLong(seatIdStr);
+                    result.add(sid);
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        return result;
+    }
+
+    // "A" + 1 -> "A01" (zero pad 2 chữ số; chỉnh width nếu muốn)
+    private String buildSeatCode(Character seatRow, Integer seatNumber) {
+        if (seatRow == null || seatNumber == null) return null;
+        String num = (seatNumber < 10) ? ("0" + seatNumber) : String.valueOf(seatNumber);
+        return String.valueOf(seatRow) + num;
+    }
+
+    // 'A' -> 0, 'B' -> 1, ...
+    private Integer calcRowIndex(Character seatRow) {
+        if (seatRow == null) return null;
+        char c = Character.toUpperCase(seatRow);
+        if (c < 'A' || c > 'Z') return null;
+        return c - 'A';
     }
 
 }
