@@ -40,6 +40,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     @NonFinal
     private String[] publicEndpoints = {
             "user-service/auth/.*",
+            "user-service/accounts/create",
             "movie-service/movies/get-all",
             "movie-service/movies/get-details/.*",
             "movie-service/genres/get-all",
@@ -87,7 +88,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     public Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
-                .message("Vui lòng đăng nhập để tiếp tục")
+                .message("Vui lòng đăng nhập để tiếp tục!")
                 .build();
 
         String body = null;
