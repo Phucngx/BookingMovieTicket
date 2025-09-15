@@ -97,8 +97,8 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
         renderItem={(item) => (
           <List.Item className="movie-showtime-item">
             <div className="movie-showtime-content">
-              <div className="movie-info">
-                <div className="movie-poster">
+              <div className="movie-info2">
+                <div className="movie-poster2">
                   <Image
                     width={60}
                     height={80}
@@ -108,12 +108,12 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
                   />
                 </div>
                 
-                <div className="movie-details">
+                <div className="movie-details2">
                   <Title level={5} className="movie-title">
                     {item.movie.title}
                   </Title>
                   
-                  <div className="movie-meta">
+                  <div className="movie-meta2">
                     <Space wrap>
                       {item.movie.genres?.map(genre => (
                         <Tag key={genre} color="blue" size="small">
@@ -122,7 +122,7 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
                       ))}
                     </Space>
                     
-                    <div className="movie-duration">
+                    <div className="movie-duration2">
                       <ClockCircleOutlined style={{ marginRight: '4px', color: '#8c8c8c' }} />
                       <Text type="secondary" style={{ fontSize: '12px' }}>
                         {item.movie.durationMinutes} phút

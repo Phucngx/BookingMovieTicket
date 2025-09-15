@@ -32,34 +32,34 @@
   width: 100%;
 }
 
-.movie-info {
+.movie-info2 {
   display: flex;
   margin-bottom: 16px;
   gap: 12px;
 }
 
-.movie-poster {
+/* .movie-poster {
   flex-shrink: 0;
-}
+} */
 
-.movie-details {
+.movie-details2 {
   flex: 1;
 }
 
-.movie-title {
+.movie-title2 {
   margin: 0 0 8px 0 !important;
   color: #262626;
   font-weight: 600;
   font-size: 15px;
 }
 
-.movie-meta {
+.movie-meta2 {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.movie-duration {
+.movie-duration2 {
   display: flex;
   align-items: center;
   font-size: 12px;

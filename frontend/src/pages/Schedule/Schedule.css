@@ -148,28 +148,29 @@
 .date-content {
   text-align: center;
   line-height: 1.1;
+  padding: 25px;
 }
 
 .date-day {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1;
 }
 
 .date-month {
-  font-size: 8px;
+  font-size: 10px;
   opacity: 0.8;
   margin-top: 1px;
 }
 
 .date-name {
-  font-size: 6px;
+  font-size: 8px;
   opacity: 0.7;
   margin-top: 1px;
 }
 
 .today-label {
-  font-size: 4px;
+  font-size: 10px;
   background-color: rgba(255, 255, 255, 0.2);
   padding: 1px 2px;
   border-radius: 2px;
@@ -214,6 +215,8 @@
   .dates-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
   }
   
   .date-button {
