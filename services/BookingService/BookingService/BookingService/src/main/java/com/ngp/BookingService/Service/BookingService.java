@@ -49,10 +49,11 @@ public class BookingService implements IBookingService{
         int amount = unit * request.getSeatIds().size();
 
         // 2) Gọi HOLD
+        int ttlSeconds = 60 * 15; // 15 phút
         HoldRequest holdReq = HoldRequest.builder()
                 .showtimeId(request.getShowtimeId())
                 .seatIds(request.getSeatIds())
-                .ttlSeconds(300)
+                .ttlSeconds(ttlSeconds)
                 .build();
         HoldResult holdRes = showtimeClient.holdSeat(holdReq).getData();
 
@@ -70,10 +71,11 @@ public class BookingService implements IBookingService{
         Map<String, Object> paymentReq = Map.of(
                 "bookingId", booking.getBookingId(),
                 "amount", booking.getTotalPrice().intValue(),
+                "accountId", booking.getAccountId(),
                 "provider", "ZALOPAY"
         );
 
-        PaymentOrderResponse paymentOrder = paymentClient.createOrder(paymentReq).getData();
+        PaymentOrderResponse paymentOrder = paymentClient.createOrder(paymentReq);
         booking.setPaymentId(paymentOrder.getPaymentId());
         bookingRepository.save(booking);
 
@@ -159,8 +161,7 @@ public class BookingService implements IBookingService{
 //        }
 //        return bookingPage.map(booking -> BookingResponse.builder()
 //                .bookingId(booking.getBookingId())
-//                .accountId(booking.getAccountId())
-//                .showtimeId(booking.getShowtimeId())
+//                .ho(booking.getShowtimeId())
 //                .status(booking.getStatus())
 //                .totalPrice(booking.getTotalPrice())
 //                .build());
@@ -210,7 +211,7 @@ public class BookingService implements IBookingService{
                             .build()
             );
         } else {
-            booking.setStatus(StatusType.CANCELLED);
+            cancelBooking(booking.getBookingId());
             bookingRepository.save(booking);
         }
     }

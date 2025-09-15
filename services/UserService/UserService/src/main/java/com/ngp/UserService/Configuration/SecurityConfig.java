@@ -29,8 +29,12 @@ public class SecurityConfig {
     @Value("${jwt.signer-key}")
     protected String SIGNER_KEY;
 
-    private static final String[] PUBLIC_ENDPOINTS = {
-            "/users", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh"
+    private static final String[] POST_PUBLIC_ENDPOINTS = {
+            "/users", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/accounts/get-detail/**"
+    };
+
+    private static final String[] GET_PUBLIC_ENDPOINTS = {
+            "/accounts/get-detail/**"
     };
 
     @Bean
@@ -40,7 +44,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+        httpSecurity.authorizeHttpRequests(request -> request
+                .requestMatchers(HttpMethod.POST, POST_PUBLIC_ENDPOINTS)
+                .permitAll()
+                .requestMatchers(HttpMethod.GET, GET_PUBLIC_ENDPOINTS)
                 .permitAll()
                 .anyRequest()
                 .authenticated());

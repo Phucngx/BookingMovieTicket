@@ -106,11 +106,12 @@ public class ShowtimeController {
 
     @PostMapping("/internal/seat-holds")
     public ApiResponse<HoldResult> holdSeat(@RequestBody HoldRequest req){
+        int defaultTtl = 60 * 15; // 15p
         return ApiResponse.<HoldResult>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(seatHoldService.createHold(req.getShowtimeId(),
                         req.getSeatIds(),
-                        req.getTtlSeconds()==null?300:req.getTtlSeconds()))
+                        req.getTtlSeconds() == null ? defaultTtl : req.getTtlSeconds()))
                 .build();
     }
 
