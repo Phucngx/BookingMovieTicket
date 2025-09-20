@@ -49,9 +49,7 @@ const Header = () => {
       navigate('/lich-chieu')
     } else if (e.key === 'booking') {
       navigate('/')
-    } else if (e.key === 'theater-booking') {
-      navigate('/mua-ve-theo-rap')
-    } else if (e.key === 'community') {
+    }  else if (e.key === 'community') {
       navigate('/community')
     }
   }
@@ -140,7 +138,6 @@ const Header = () => {
 
   const menuItems = [
     { key: 'booking', label: 'Đặt vé phim chiếu rạp' },
-    { key: 'theater-booking', label: 'Mua vé theo rạp' },
     { key: 'schedule', label: 'Lịch chiếu' },
     { 
       key: 'movies', 
@@ -162,7 +159,6 @@ const Header = () => {
         </Dropdown>
       )
     },
-    { key: 'cinemas', label: 'Rạp' },
     { 
       key: 'news', 
       label: (
@@ -190,7 +186,18 @@ const Header = () => {
   return (
     <AntHeader className="header">
       <div className="header-content">
-        <div className="header-left">
+        {/* Logo Section */}
+        <div className="header-logo">
+          <div className="logo-container" onClick={() => navigate('/')}>
+            <div className="logo-placeholder">
+              {/* Placeholder for logo image - replace with actual logo */}
+              <div className="logo-text">CinemaGo</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <div className="header-nav">
           <Menu
             mode="horizontal"
             items={menuItems}
@@ -199,24 +206,27 @@ const Header = () => {
           />
         </div>
         
-        <div className="header-right">
+        {/* Search and User Actions */}
+        <div className="header-actions">
           <Search
-            placeholder="Từ khóa tìm kiếm..."
+            placeholder="Tìm kiếm phim, rạp..."
             onSearch={onSearch}
-            style={{ width: 300 }}
+            className="header-search"
             enterButton={<SearchOutlined />}
           />
           
-          <Space size="middle">
+          <Space size="middle" className="header-user-actions">
             <Button 
               type="text" 
               icon={<EnvironmentOutlined />} 
               className="header-icon-btn"
+              title="Vị trí"
             />
             <Button 
               type="text" 
               icon={<QuestionCircleOutlined />} 
               className="header-icon-btn"
+              title="Hỗ trợ"
             />
             {isAuthenticated ? (
               <Dropdown

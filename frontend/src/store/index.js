@@ -6,6 +6,9 @@ import theatersReducer from './slices/theatersSlice'
 import showtimesReducer from './slices/showtimesSlice'
 import regionsReducer from './slices/regionsSlice'
 import cinemasReducer from './slices/cinemasSlice'
+import seatReducer from './slices/seatSlice'
+import foodsReducer from './slices/foodsSlice'
+import bookingsReducer from './slices/bookingsSlice'
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +19,8 @@ export const store = configureStore({
     showtimes: showtimesReducer,
     regions: regionsReducer,
     cinemas: cinemasReducer,
+    seats: seatReducer,
+    foods: foodsReducer,
+    bookings: bookingsReducer,
   },
 })

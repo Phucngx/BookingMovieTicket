@@ -1,12 +1,374 @@
-/* Home Page Styles - Compact Version */
+/* Home Page Styles - Enhanced Version */
 .home-page {
   background: #f5f5f5;
   min-height: calc(100vh - 64px);
 }
 
-/* Responsive */
+/* Hero Section */
+.hero-section {
+  position: relative;
+  margin-bottom: 0;
+}
+
+.hero-carousel {
+  height: 500px;
+}
+
+.hero-slide {
+  height: 500px;
+}
+
+.hero-background {
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  color: white;
+  z-index: 2;
+}
+
+.hero-title {
+  color: white !important;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+  color: rgba(255,255,255,0.9) !important;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.hero-button {
+  height: 50px;
+  padding: 0 30px;
+  font-size: 1.1rem;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.hero-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.4);
+}
+
+/* Statistics Section */
+.stats-section {
+  padding: 60px 0;
+  background: white;
+  margin-bottom: 0;
+}
+
+.stat-card {
+  text-align: center;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-card .ant-statistic-title {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.stat-card .ant-statistic-content {
+  color: #1890ff;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Section Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px !important;
+  color: #333;
+}
+
+.title-icon {
+  color: #1890ff;
+  font-size: 1.5rem;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Quick Booking Section */
+.quick-booking-section {
+  padding: 60px 0;
+  background: #f8f9fa;
+}
+
+/* Featured Movies Section */
+.featured-movies-section {
+  padding: 60px 0;
+  background: white;
+}
+
+.featured-movie-card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.featured-movie-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+.movie-poster-container {
+  position: relative;
+  overflow: hidden;
+  height: 300px;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.movie-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.featured-movie-card:hover .movie-overlay {
+  opacity: 1;
+}
+
+.featured-movie-card:hover .movie-poster {
+  transform: scale(1.1);
+}
+
+.play-button {
+  height: 45px;
+  padding: 0 25px;
+  border-radius: 25px;
+  font-weight: 600;
+}
+
+.movie-info {
+  padding: 20px;
+}
+
+.movie-title {
+  margin-bottom: 12px !important;
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.movie-meta {
+  margin-bottom: 12px;
+}
+
+.movie-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.1rem;
+}
+
+/* Promotional Banner */
+.promo-banner {
+  padding: 60px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-bottom: 0;
+}
+
+.promo-card {
+  border: none;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+}
+
+.promo-content {
+  padding: 20px;
+}
+
+.promo-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px !important;
+  color: #333;
+}
+
+.promo-icon {
+  color: #ffd700;
+  font-size: 1.5rem;
+}
+
+.promo-description {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.promo-image {
+  text-align: center;
+  padding: 20px;
+}
+
+.promo-img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .home-page {
     min-height: calc(100vh - 55px);
   }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .hero-button {
+    height: 45px;
+    padding: 0 25px;
+    font-size: 1rem;
+  }
+  
+  .stats-section,
+  .quick-booking-section,
+  .featured-movies-section,
+  .promo-banner {
+    padding: 40px 0;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .movie-poster-container {
+    height: 250px;
+  }
+  
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-carousel,
+  .hero-slide {
+    height: 400px;
+  }
+  
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .stat-card .ant-statistic-content {
+    font-size: 20px;
+  }
+  
+  .movie-poster-container {
+    height: 200px;
+  }
+}
+
+/* Animation Classes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.featured-movie-card,
+.stat-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1890ff;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #40a9ff;
 }

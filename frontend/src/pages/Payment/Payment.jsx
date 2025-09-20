@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { 
   Typography, 
   Row, 
@@ -25,6 +26,9 @@ import {
   EnvironmentOutlined
 } from '@ant-design/icons';
 import './Payment.css';
+import { bookingService } from '../../services/bookingService';
+import { setLastBooking } from '../../store/slices/bookingsSlice';
+import { clearSelectedSeats } from '../../store/slices/seatSlice';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -33,69 +37,105 @@ const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const { 
-    movie, 
-    showtime, 
-    selectedSeats, 
-    totalPrice, 
-    cart, 
-    foodTotal, 
-    grandTotal 
-  } = location.state || {};
+  const dispatch = useDispatch();
+  const reduxShowtime = useSelector((state) => state.showtimes.selectedShowtime);
+  const reduxSeats = useSelector((state) => state.seats.selectedSeats);
+  const foodsSelections = useSelector((state) => state.foods.selections);
+  const foodsArray = Object.values(foodsSelections || {});
+
+  const {
+    movie,
+    showtime,
+    selectedSeats,
+    totalPrice,
+    cart,
+    foodTotal,
+    grandTotal,
+    paymentMethod: statePaymentMethod
+  } = location.state || {
+    movie: reduxShowtime?.movie,
+    showtime: reduxShowtime,
+    selectedSeats: reduxSeats || [],
+    totalPrice: (reduxSeats || []).length > 0 ? 0 : 0,
+    cart: foodsArray,
+    foodTotal: foodsArray.reduce((s, i) => s + i.price * i.quantity, 0),
+    grandTotal: (reduxSeats || []).length > 0 ? 0 + foodsArray.reduce((s, i) => s + i.price * i.quantity, 0) : foodsArray.reduce((s, i) => s + i.price * i.quantity, 0)
+  };
   
-  const [paymentMethod, setPaymentMethod] = useState('credit_card');
+  const [paymentMethod, setPaymentMethod] = useState(statePaymentMethod || 'zalopay');
+
+  const seatLabels = (selectedSeats || []).map(seat => {
+    if (typeof seat === 'object' && seat !== null) {
+      if (seat.code) return seat.code
+      const rowLetter = typeof seat.rowIndex === 'number' ? String.fromCharCode(65 + seat.rowIndex) : ''
+      return `${rowLetter}${seat.seatNumber}`
+    }
+    return String(seat)
+  });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!movie || !showtime || !selectedSeats) {
-      navigate('/');
-    }
-  }, [movie, showtime, selectedSeats, navigate]);
+  // Remove redirect-to-home; show lightweight placeholder if missing
+  // useEffect(() => {
+  //   if (!movie || !showtime) {
+  //     navigate('/');
+  //   }
+  // }, [movie, showtime, navigate]);
+
+  const { userInfo, token } = useSelector((state) => state.user);
 
   const handleSubmit = async (values) => {
     setLoading(true);
     
     try {
-      // Giả lập xử lý thanh toán
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Tạo thông tin khách hàng
-      const customerInfo = {
-        fullName: values.fullName,
-        phone: values.phone,
-        email: values.email,
-        address: values.address
-      };
+      const accountId = userInfo?.data?.accountId || userInfo?.accountId || userInfo?.id;
+      const showtimeId = showtime?.id || showtime?.showtimeId;
+      const seatIds = (selectedSeats || []).map(s => (typeof s === 'object' ? s.seatId : s));
+      const foodIds = (cart || []).flatMap(item => Array(item.quantity).fill(item.id));
 
-      // Tạo mã giao dịch
-      const transactionId = 'TXN' + Date.now().toString().slice(-8);
+      if (!accountId || !showtimeId || seatIds.length === 0) {
+        throw new Error('Thiếu thông tin đặt vé');
+      }
 
-      message.success('Thanh toán thành công!');
-      
-      // Chuyển sang trang thông tin vé
-      navigate('/thong-tin-ve', {
-        state: {
-          movie,
-          showtime,
-          selectedSeats,
-          totalPrice,
-          cart,
-          foodTotal,
-          grandTotal,
-          customerInfo,
-          paymentMethod,
-          transactionId
-        }
+      const response = await bookingService.createBooking({
+        accountId,
+        showtimeId,
+        seatIds,
+        foodIds,
+        token
       });
+
+      if (response?.code === 1000 && response?.data?.qrUrl) {
+        // Lưu thông tin booking vào Redux
+        dispatch(setLastBooking(response.data))
+        window.location.href = response.data.qrUrl;
+        return;
+      }
+
+      throw new Error('Tạo đơn đặt vé thất bại');
     } catch (error) {
-      message.error('Có lỗi xảy ra, vui lòng thử lại!');
+      message.error(error.message || 'Có lỗi xảy ra, vui lòng thử lại!');
+      // Điều hướng về màn chọn ghế và reset lựa chọn ghế
+      dispatch(clearSelectedSeats());
+      navigate('/seat-selection');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!movie || !showtime || !selectedSeats) {
-    return null;
+  if (!movie || !showtime) {
+    return (
+      <div className="payment">
+        <div className="container">
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <Title level={4}>Đang tải thông tin đặt vé...</Title>
+            <Text>Vui lòng quay lại bước trước nếu trang không tự cập nhật.</Text>
+            <div style={{ marginTop: 16 }}>
+              <Button onClick={() => navigate(-1)}>Quay lại</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -220,17 +260,17 @@ const Payment = () => {
                       className="payment-methods"
                     >
                       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                        <Radio value="credit_card" className="payment-method-option">
+                        <Radio value="zalopay" className="payment-method-option">
                           <div className="payment-method-content">
-                            <CreditCardOutlined className="payment-icon" />
+                            <WalletOutlined className="payment-icon" />
                             <div className="payment-method-info">
-                              <Text strong>Thẻ tín dụng/ghi nợ</Text>
-                              <Text type="secondary">Visa, Mastercard, JCB</Text>
+                              <Text strong>ZaloPay</Text>
+                              <Text type="secondary">Thanh toán qua ví ZaloPay</Text>
                             </div>
                           </div>
                         </Radio>
                         
-                        <Radio value="bank_transfer" className="payment-method-option">
+                        <Radio value="bank_transfer" className="payment-method-option" disabled>
                           <div className="payment-method-content">
                             <BankOutlined className="payment-icon" />
                             <div className="payment-method-info">
@@ -240,7 +280,7 @@ const Payment = () => {
                           </div>
                         </Radio>
                         
-                        <Radio value="e_wallet" className="payment-method-option">
+                        <Radio value="e_wallet" className="payment-method-option" disabled>
                           <div className="payment-method-content">
                             <WalletOutlined className="payment-icon" />
                             <div className="payment-method-info">
@@ -285,10 +325,8 @@ const Payment = () => {
                   <div className="movie-details">
                     <Text strong className="movie-title">{movie.title}</Text>
                     <Text type="secondary">{showtime.cinema}</Text>
-                    <Text type="secondary">
-                      {showtime.time} {showtime.date}/{showtime.day}
-                    </Text>
-                    <Text type="secondary">Ghế: {selectedSeats.join(', ')}</Text>
+                    <Text type="secondary"> Suất chiếu: {showtime.time} - {showtime.date} </Text>
+                    <Text type="secondary">Ghế: {seatLabels.join(', ')}</Text>
                   </div>
                 </div>
               </Card>

@@ -1,11 +1,17 @@
 import React from 'react'
-import { Card, List, Typography, Tag, Space, Button, Empty, Spin, Image } from 'antd'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { Card, List, Typography, Tag, Space, Button, Empty, Spin, Image, message } from 'antd'
 import { ClockCircleOutlined, DollarOutlined, VideoCameraOutlined } from '@ant-design/icons'
+import { setSelectedShowtime } from '../../store/slices/showtimesSlice'
 import './ShowtimeList.css'
 
 const { Title, Text } = Typography
 
 const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  
   // Debug Redux state
   console.log('ShowtimeList - Redux state:', { 
     selectedTheater,
@@ -78,7 +84,31 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
     console.log('Selected movie:', movie)
     console.log('Selected theater:', selectedTheater)
     console.log('Selected date:', selectedDate)
-    // TODO: Navigate to seat selection or booking
+    
+    // Tạo object chứa đầy đủ thông tin: showtime, movie, theater, date
+    const selectedShowtimeData = {
+      // Thông tin showtime
+      ...showtime,
+      // Thông tin movie
+      movie: movie,
+      // Thông tin theater
+      theater: selectedTheater,
+      // Thông tin date
+      date: selectedDate
+    }
+    
+    console.log('ShowtimeList - Selected showtime data (complete):', selectedShowtimeData)
+    console.log('ShowtimeList - About to dispatch setSelectedShowtime')
+    
+    // Lưu suất chiếu đã chọn (đầy đủ thông tin) vào Redux
+    dispatch(setSelectedShowtime(selectedShowtimeData))
+    
+    console.log('ShowtimeList - About to navigate to /seat-selection')
+    
+    // Navigate to seat selection
+    navigate('/seat-selection')
+    
+    message.success('Đã chọn suất chiếu!')
   }
 
   return (
@@ -151,12 +181,12 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
                           {showtime.time}
                         </div>
                         <div className="showtime-price">
-                          <DollarOutlined style={{ marginRight: '4px' }} />
-                          {showtime.price.toLocaleString('vi-VN')} VND
+                          {/* <DollarOutlined style={{ marginRight: '4px' }} /> */}
+                          {showtime.price.toLocaleString('vi-VN')} đ
                         </div>
-                        <div className="showtime-room">
+                        {/* <div className="showtime-room">
                           Phòng {showtime.roomId}
-                        </div>
+                        </div> */}
                       </div>
                     </Button>
                   ))}

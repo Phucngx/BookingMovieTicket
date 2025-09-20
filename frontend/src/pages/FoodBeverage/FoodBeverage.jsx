@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Typography, 
   Row,
@@ -15,84 +16,78 @@ import {
   MinusOutlined
 } from '@ant-design/icons';
 import './FoodBeverage.css';
+import { fetchFoods, setSelection, clearSelections } from '../../store/slices/foodsSlice';
 
 const { Title, Text } = Typography;
 
 const FoodBeverage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { selectedShowtime } = useSelector((state) => state.showtimes);
+  const reduxSelectedSeats = useSelector((state) => state.seats.selectedSeats);
+  const { token } = useSelector((state) => state.user);
+  const foodsState = useSelector((state) => state.foods);
+  const dispatch = useDispatch();
+
   const { movie, showtime, selectedSeats, totalPrice } = location.state || {
-    movie: { title: 'Test Movie' },
-    showtime: { price: '100000' },
-    selectedSeats: ['A1'],
-    totalPrice: 100000
+    movie: selectedShowtime?.movie,
+    showtime: selectedShowtime,
+    selectedSeats: [],
+    totalPrice: 0
   };
   
   const [cart, setCart] = useState([]);
   const [currentStep, setCurrentStep] = useState(2);
 
   // Combo items
-  const comboItems = [
-    {
-      id: 13,
-      name: 'Beta Combo 69oz',
-      price: 68000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&auto=format',
-      category: 'combo',
-      description: 'TIẾT KIỆM 28K!!! Gồm: 1 Bắp (69oz) + 1 Nước có gaz (22oz)',
-      rating: 4.8,
-      popular: true,
-      discount: 0,
-      originalPrice: 96000
-    },
-    {
-      id: 14,
-      name: 'Sweet Combo 69oz',
-      price: 88000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&auto=format',
-      category: 'combo',
-      description: 'TIẾT KIỆM 46K!!! Gồm: 1 Bắp (69oz) + 2 Nước có gaz (22oz)',
-      rating: 4.9,
-      popular: true,
-      discount: 0,
-      originalPrice: 134000
-    },
-    {
-      id: 15,
-      name: 'Family Combo 69oz',
-      price: 213000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&auto=format',
-      category: 'combo',
-      description: 'TIẾT KIỆM 95K!!! Gồm: 2 Bắp (69oz) + 4 Nước có gaz (22oz) + 2 Snack Oishi (80g)',
-      rating: 4.7,
-      popular: true,
-      discount: 0,
-      originalPrice: 308000
-    }
-  ];
+  const allItems = foodsState.items;
 
-  const allItems = [...comboItems];
+  const groupedByType = useMemo(() => {
+    return allItems.reduce((acc, item) => {
+      const key = item.type;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(item);
+      return acc;
+    }, {});
+  }, [allItems]);
+
+// Prefill cart from Redux selections when available
+  useEffect(() => {
+    const selections = foodsState.selections || {};
+    const prefilled = Object.values(selections);
+    setCart(prefilled);
+  }, [foodsState.selections]);
+
+// Reset food selections on fresh entry unless returning with preserve flag
+useEffect(() => {
+  if (!location.state?.preserveSelections) {
+    setCart([]);
+    dispatch(clearSelections());
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   useEffect(() => {
-    console.log('FoodBeverage - location.state:', location.state);
-    console.log('FoodBeverage - movie:', movie);
-    console.log('FoodBeverage - showtime:', showtime);
-    console.log('FoodBeverage - selectedSeats:', selectedSeats);
-    
-    if (!movie || !showtime || !selectedSeats) {
-      console.log('FoodBeverage - Missing required data, redirecting to home');
-      navigate('/');
+    if (!token) {
+      // Không có token: bỏ qua fetch, vẫn cho người dùng tiếp tục
+      return;
     }
-  }, [movie, showtime, selectedSeats, navigate, location.state]);
+    dispatch(fetchFoods({ page: 1, size: 20, token }))
+      .unwrap()
+      .catch((err) => {
+        message.error(err || 'Không thể tải danh sách bắp nước');
+      });
+  }, [dispatch, token]);
 
   const addToCart = (item) => {
     const existingItem = cart.find(cartItem => cartItem.id === item.id);
-    
+    const newQty = existingItem ? existingItem.quantity + 1 : 1;
+    dispatch(setSelection({ food: item, quantity: newQty }));
     if (existingItem) {
       setCart(prevCart => 
         prevCart.map(cartItem => 
           cartItem.id === item.id 
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            ? { ...cartItem, quantity: newQty }
             : cartItem
         )
       );
@@ -117,6 +112,10 @@ const FoodBeverage = () => {
         )
       );
     }
+    const foodObj = allItems.find(f => f.id === itemId)
+    if (foodObj) {
+      dispatch(setSelection({ food: foodObj, quantity }));
+    }
   };
 
 
@@ -131,9 +130,9 @@ const FoodBeverage = () => {
   const handleContinue = () => {
     navigate('/thanh-toan', {
       state: {
-        movie,
-        showtime,
-        selectedSeats,
+        movie: selectedShowtime?.movie || movie,
+        showtime: selectedShowtime || showtime,
+        selectedSeats: reduxSelectedSeats && reduxSelectedSeats.length > 0 ? reduxSelectedSeats : selectedSeats,
         totalPrice,
         cart,
         foodTotal: getCartTotal(),
@@ -187,20 +186,19 @@ const FoodBeverage = () => {
 
       <div className="container">
         <Row gutter={24}>
-          {/* Left Side - Combo Selection */}
+          {/* Left Side - Foods grouped by type */}
           <Col xs={24} lg={14}>
-            <div className="combo-section">
-              <Title level={4} className="combo-title">COMBO</Title>
-              <div className="combo-list">
-                {comboItems.map((item) => {
+            {Object.entries(groupedByType).map(([type, items]) => (
+              <div key={type} className="combo-section">
+                <Title level={4} className="combo-title">{type}</Title>
+                <div className="combo-list">
+                  {items.map((item) => {
                     const cartItem = cart.find(cartItem => cartItem.id === item.id);
                     const quantity = cartItem ? cartItem.quantity : 0;
-                    
                     return (
                       <div key={item.id} className="combo-item">
                         <div className="combo-info">
                           <div className="combo-name">{item.name}</div>
-                          <div className="combo-description">{item.description}</div>
                           <div className="combo-price">{item.price.toLocaleString('vi-VN')} ₫</div>
                         </div>
                         <div className="quantity-selector">
@@ -222,8 +220,9 @@ const FoodBeverage = () => {
                       </div>
                     );
                   })}
+                </div>
               </div>
-            </div>
+            ))}
           </Col>
 
           {/* Right Side - Order Summary Only */}
@@ -237,6 +236,16 @@ const FoodBeverage = () => {
                 <div className="total-price">
                   <Text className="total-amount">{getGrandTotal().toLocaleString('vi-VN')} ₫</Text>
                 </div>
+                {cart.length > 0 && (
+                  <div className="price-breakdown">
+                    {cart.map((item) => (
+                      <div key={item.id} className="price-item">
+                        <Text>x{item.quantity} {item.name} </Text>
+                        <Text> - {(item.price * item.quantity).toLocaleString('vi-VN')} ₫</Text>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </Card>
             </div>
           </Col>
@@ -247,7 +256,7 @@ const FoodBeverage = () => {
           <Button 
             icon={<LeftOutlined />} 
             size="large"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/seat-selection', { state: { preserveSelections: true } })}
             className="back-btn"
           >
             Quay lại

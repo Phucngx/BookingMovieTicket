@@ -72,5 +72,39 @@ export const showtimeService = {
       console.error('Full error:', error)
       throw error
     }
+  },
+
+  // Lấy lịch chiếu theo rạp + phim + ngày (flow chọn từ trang chi tiết phim)
+  async getShowtimesByTheaterMovieDate(theaterId, movieId, date, token) {
+    try {
+      const url = `${API_BASE_URL}/showtimes/get-showtimes/theaters/${theaterId}/movies/${movieId}?date=${date}`
+      console.log('Showtime API (by theater+movie+date) URL:', url)
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      const data = await response.json()
+      console.log('Showtime API (by theater+movie+date) Response:', data)
+
+      if (!response.ok) {
+        if (response.status === 401) throw new Error('Vui lòng đăng nhập để xem lịch chiếu')
+        if (response.status === 400) throw new Error(`Không có lịch chiếu cho rạp/phim này vào ngày ${date}`)
+        throw new Error(data.message || 'Không thể lấy lịch chiếu theo phim')
+      }
+
+      if (data.code === 1000 && Array.isArray(data.data)) {
+        return data
+      }
+
+      throw new Error('Cấu trúc response không hợp lệ')
+    } catch (error) {
+      console.error('=== Showtime API (by theater+movie+date) Error ===', error)
+      throw error
+    }
   }
 }

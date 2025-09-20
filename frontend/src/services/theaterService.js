@@ -39,5 +39,30 @@ export const theaterService = {
       console.error('Get theaters error:', error)
       throw error
     }
+  },
+
+  // Lấy danh sách bắp nước (cần token)
+  async getFoods({ page = 1, size = 20, token }) {
+    try {
+      const url = `${API_BASE_URL}/foods/get-all?page=${encodeURIComponent(page)}&size=${encodeURIComponent(size)}`
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể lấy danh sách bắp nước')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Get foods error:', error)
+      throw error
+    }
   }
 }

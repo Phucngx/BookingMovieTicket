@@ -17,10 +17,27 @@ export const fetchShowtimesByDate = createAsyncThunk(
   }
 )
 
+// Async thunk: lấy lịch chiếu theo rạp + phim + ngày
+export const fetchShowtimesByTheaterMovieDate = createAsyncThunk(
+  'showtimes/fetchShowtimesByTheaterMovieDate',
+  async ({ theaterId, movieId, date, token }, { rejectWithValue }) => {
+    try {
+      console.log('fetchShowtimesByTheaterMovieDate - Starting API call:', { theaterId, movieId, date })
+      const response = await showtimeService.getShowtimesByTheaterMovieDate(theaterId, movieId, date, token)
+      console.log('fetchShowtimesByTheaterMovieDate - API response:', response)
+      return response
+    } catch (error) {
+      console.error('fetchShowtimesByTheaterMovieDate - API error:', error)
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 const initialState = {
   showtimes: [],
   selectedTheater: null,
   selectedDate: null,
+  selectedShowtime: null,
   loading: false,
   error: null
 }
@@ -41,6 +58,12 @@ const showtimesSlice = createSlice({
       state.selectedDate = action.payload
     },
     
+    // Set selected showtime (includes complete info: showtime, movie, theater, date)
+    setSelectedShowtime: (state, action) => {
+      console.log('showtimesSlice - setSelectedShowtime (complete):', action.payload)
+      state.selectedShowtime = action.payload
+    },
+    
     // Clear error
     clearError: (state) => {
       state.error = null
@@ -51,6 +74,7 @@ const showtimesSlice = createSlice({
       state.showtimes = []
       state.selectedTheater = null
       state.selectedDate = null
+      state.selectedShowtime = null
     }
   },
   extraReducers: (builder) => {
@@ -72,8 +96,26 @@ const showtimesSlice = createSlice({
         state.error = action.payload
         state.showtimes = []
       })
+
+      // Fetch showtimes by theater+movie+date cases
+      .addCase(fetchShowtimesByTheaterMovieDate.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchShowtimesByTheaterMovieDate.fulfilled, (state, action) => {
+        console.log('showtimesSlice - fetchShowtimesByTheaterMovieDate.fulfilled:', action.payload)
+        state.loading = false
+        // API này trả về mảng các suất chiếu phẳng
+        state.showtimes = action.payload.data || []
+        state.error = null
+      })
+      .addCase(fetchShowtimesByTheaterMovieDate.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+        state.showtimes = []
+      })
   }
 })
 
-export const { setSelectedTheater, setSelectedDate, clearError, resetShowtimes } = showtimesSlice.actions
+export const { setSelectedTheater, setSelectedDate, setSelectedShowtime, clearError, resetShowtimes } = showtimesSlice.actions
 export default showtimesSlice.reducer

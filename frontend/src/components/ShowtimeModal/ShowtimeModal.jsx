@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { Modal, Typography, Button, Space, Spin, Empty, message } from 'antd'
 import { ClockCircleOutlined, DollarOutlined, VideoCameraOutlined } from '@ant-design/icons'
-import { fetchShowtimesByDate, clearError } from '../../store/slices/showtimesSlice'
+import { fetchShowtimesByDate, fetchShowtimesByTheaterMovieDate, clearError, setSelectedShowtime } from '../../store/slices/showtimesSlice'
 import './ShowtimeModal.css'
 
 const { Title, Text } = Typography
@@ -16,25 +17,38 @@ const ShowtimeModal = ({
   onSelectShowtime 
 }) => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { showtimes, loading, error } = useSelector((state) => state.showtimes)
   const { token } = useSelector((state) => state.user)
 
   // Fetch showtimes when modal opens
   useEffect(() => {
     if (visible && theater && date && token) {
-      console.log('Fetching showtimes with params:', {
-        theaterId: theater.theaterId,
-        date: date,
-        theater: theater,
-        token: token ? 'present' : 'missing'
-      })
-      dispatch(fetchShowtimesByDate({
-        theaterId: theater.theaterId,
-        date: date,
-        token: token
-      }))
+      if (movie?.id) {
+        console.log('Fetching showtimes by theater+movie+date with params:', {
+          theaterId: theater.theaterId,
+          movieId: movie.id,
+          date: date
+        })
+        dispatch(fetchShowtimesByTheaterMovieDate({
+          theaterId: theater.theaterId,
+          movieId: movie.id,
+          date: date,
+          token: token
+        }))
+      } else {
+        console.log('Fetching showtimes by theater+date with params:', {
+          theaterId: theater.theaterId,
+          date: date
+        })
+        dispatch(fetchShowtimesByDate({
+          theaterId: theater.theaterId,
+          date: date,
+          token: token
+        }))
+      }
     }
-  }, [visible, theater, date, token, dispatch])
+  }, [visible, theater, movie, date, token, dispatch])
 
   // Clear error when modal closes
   useEffect(() => {
@@ -43,7 +57,30 @@ const ShowtimeModal = ({
     }
   }, [visible, dispatch])
 
-  const handleShowtimeSelect = (showtime) => {
+  const handleShowtimeSelect = (showtime, movie) => {
+    // Tạo object chứa đầy đủ thông tin: showtime, movie, theater, date
+    const selectedShowtimeData = {
+      // Thông tin showtime
+      ...showtime,
+      // Thông tin movie
+      movie: movie,
+      // Thông tin theater
+      theater: theater,
+      // Thông tin date
+      date: date
+    }
+    
+    console.log('ShowtimeModal - Selected showtime data (complete):', selectedShowtimeData)
+    console.log('ShowtimeModal - About to dispatch setSelectedShowtime')
+    
+    // Lưu suất chiếu đã chọn (đầy đủ thông tin) vào Redux
+    dispatch(setSelectedShowtime(selectedShowtimeData))
+    
+    console.log('ShowtimeModal - About to navigate to /seat-selection')
+    
+    // Navigate to seat selection
+    navigate('/seat-selection')
+    
     onSelectShowtime(showtime)
     onCancel()
     message.success('Đã chọn suất chiếu!')
@@ -122,7 +159,8 @@ const ShowtimeModal = ({
           />
         )}
 
-        {!loading && !error && showtimes.length > 0 && (
+        {/* Render list when API returns nested by movie (no movie filter) */}
+        {!loading && !error && Array.isArray(showtimes) && showtimes[0]?.movie && (
           <div className="showtimes-container">
             {showtimes.map((movieShowtime) => (
               <div key={movieShowtime.movie.id} className="movie-showtime-section">
@@ -132,38 +170,65 @@ const ShowtimeModal = ({
                     {movieShowtime.movie.genres?.join(', ')} • {movieShowtime.movie.durationMinutes} phút
                   </Text>
                 </div>
-                
                 <div className="showtimes-grid">
                   {movieShowtime.showtimes.map((showtime) => (
                     <div 
                       key={showtime.id} 
                       className="showtime-card"
-                      onClick={() => handleShowtimeSelect(showtime)}
+                      onClick={() => handleShowtimeSelect(showtime, movieShowtime.movie)}
                     >
                       <div className="showtime-time">
                         <ClockCircleOutlined className="time-icon" />
-                        <div className="time-text">
-                          {showtime.time}
-                        </div>
+                        <div className="time-text">{showtime.time}</div>
                       </div>
-                      
                       <div className="showtime-price">
-                        <DollarOutlined className="price-icon" />
-                        <Text className="price-text">
-                          {formatPrice(showtime.price)}
-                        </Text>
+                        {/* <DollarOutlined className="price-icon" /> */}
+                        <Text className="price-text">{showtime.price.toLocaleString('vi-VN')}</Text>
                       </div>
-                      
                       <div className="showtime-room">
-                        <Text type="secondary" className="room-text">
-                          Phòng {showtime.roomId}
-                        </Text>
+                        <Text type="secondary" className="room-text">Phòng {showtime.roomId}</Text>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Render flat list when API returns theater+movie+date shape */}
+        {!loading && !error && Array.isArray(showtimes) && !showtimes[0]?.movie && showtimes.length > 0 && (
+          <div className="showtimes-container">
+            <div className="movie-info">
+              <Title level={5}>{movie?.title}</Title>
+              <Text type="secondary">{new Date(date).toLocaleDateString('vi-VN')}</Text>
+            </div>
+            <div className="showtimes-grid">
+              {showtimes.map((st) => (
+                <div 
+                  key={st.showtimeId}
+                  className="showtime-card"
+                  onClick={() => handleShowtimeSelect({
+                    id: st.showtimeId,
+                    time: new Date(st.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                    price: st.price,
+                    roomId: st.roomId
+                  }, movie)}
+                >
+                  <div className="showtime-time">
+                    <ClockCircleOutlined className="time-icon" />
+                    <div className="time-text">{new Date(st.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</div>
+                  </div>
+                  <div className="showtime-price">
+                    {/* <DollarOutlined className="price-icon" /> */}
+                    <Text className="price-text">{st.price.toLocaleString('vi-VN')}</Text>
+                  </div>
+                  <div className="showtime-room">
+                    <Text type="secondary" className="room-text">Phòng {st.roomId}</Text>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

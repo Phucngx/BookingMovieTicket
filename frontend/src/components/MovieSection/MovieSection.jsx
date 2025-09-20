@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Typography, Spin } from 'antd'
+import { Typography, Spin, Button } from 'antd'
+import { LeftOutlined, RightOutlined, FireOutlined } from '@ant-design/icons'
 import MovieCard from '../MovieCard/MovieCard'
 import { fetchMovies } from '../../store/slices/movieListSlice'
 import './MovieSection.css'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 const MovieSection = () => {
   const dispatch = useDispatch()
@@ -140,7 +141,7 @@ const MovieSection = () => {
         <div className="container">
           <div className="section-header">
             <Title level={2} className="section-title">
-              Mua vé theo phim
+              Phim đang chiếu
             </Title>
             <div className="community-filter">
               <span className="filter-label">Cộng đồng</span>
@@ -161,11 +162,30 @@ const MovieSection = () => {
     <div className="movie-section">
       <div className="container">
         <div className="section-header">
-          <Title level={2} className="section-title">
-            Mua vé theo phim
-          </Title>
-          <div className="community-filter">
-            <span className="filter-label">Cộng đồng</span>
+          <div className="section-title-container">
+            <Title level={2} className="section-title">
+              <FireOutlined className="title-icon" />
+              Phim đang chiếu
+            </Title>
+            <Text type="secondary" className="section-subtitle">
+              Khám phá những bộ phim hay nhất hiện tại
+            </Text>
+          </div>
+          <div className="section-actions">
+            <Button 
+              type="text" 
+              icon={<LeftOutlined />} 
+              className="nav-button prev-button"
+              onClick={() => scrollToSlide(Math.max(0, currentSlide - 1))}
+              disabled={currentSlide === 0}
+            />
+            <Button 
+              type="text" 
+              icon={<RightOutlined />} 
+              className="nav-button next-button"
+              onClick={() => scrollToSlide(Math.min(calculateDots() - 1, currentSlide + 1))}
+              disabled={currentSlide >= calculateDots() - 1}
+            />
           </div>
         </div>
         
@@ -189,15 +209,25 @@ const MovieSection = () => {
             ))}
           </div>
           
-          {/* Pagination dots */}
-          <div className="carousel-dots">
-            {Array.from({ length: calculateDots() }, (_, index) => (
-              <div
-                key={index}
-                className={`dot ${currentSlide === index ? 'active' : ''}`}
-                onClick={() => scrollToSlide(index)}
-              ></div>
-            ))}
+          {/* Enhanced Pagination dots */}
+          <div className="carousel-dots-container">
+            <div className="carousel-dots">
+              {Array.from({ length: calculateDots() }, (_, index) => (
+                <button
+                  key={index}
+                  className={`carousel-dot ${currentSlide === index ? 'active' : ''}`}
+                  onClick={() => scrollToSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                >
+                  <span className="dot-indicator"></span>
+                </button>
+              ))}
+            </div>
+            <div className="carousel-info">
+              <Text type="secondary" className="slide-counter">
+                {currentSlide + 1} / {calculateDots()}
+              </Text>
+            </div>
           </div>
         </div>
       </div>
