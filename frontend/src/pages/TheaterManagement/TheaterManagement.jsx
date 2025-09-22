@@ -50,8 +50,8 @@ const TheaterManagement = () => {
       return
     }
 
-    // Fetch all theaters
-    dispatch(fetchAllTheaters())
+    // Fetch all theaters with pagination
+    dispatch(fetchAllTheaters({ page: 1, size: 10 }))
   }, [isAuthenticated, isAdmin, navigate, dispatch])
 
   // Clear error when component unmounts
@@ -103,7 +103,7 @@ const TheaterManagement = () => {
   }
 
   const handleRefresh = () => {
-    dispatch(fetchAllTheaters())
+    dispatch(fetchAllTheaters({ page: 1, size: 10 }))
   }
 
   const handleAddTheaterSubmit = async (values) => {

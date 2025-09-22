@@ -2,8 +2,7 @@ const API_BASE_URL = 'http://localhost:8080/api/v1/theater-service'
 
 // Helper function to get auth token
 const getAuthToken = () => {
-  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
-  return userInfo.token
+  return localStorage.getItem('accessToken')
 }
 
 export const theaterService = {
@@ -133,7 +132,7 @@ export const theaterService = {
   async updateTheater(theaterId, theaterData) {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/theaters/${theaterId}`
+      const url = `${API_BASE_URL}/theaters/update/${theaterId}`
       
       const response = await fetch(url, {
         method: 'PUT',
@@ -161,7 +160,7 @@ export const theaterService = {
   async deleteTheater(theaterId) {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/theaters/${theaterId}`
+      const url = `${API_BASE_URL}/theaters/delete/${theaterId}`
       
       const response = await fetch(url, {
         method: 'DELETE',

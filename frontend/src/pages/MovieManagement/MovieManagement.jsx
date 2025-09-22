@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import AddMovieModal from '../../components/AddMovieModal/AddMovieModal'
 import { fetchMoviesForAdmin } from '../../store/slices/movieListSlice'
+import { movieService } from '../../services/movieService'
 import './MovieManagement.css'
 
 const { Title, Text } = Typography
@@ -70,10 +71,16 @@ const MovieManagement = () => {
       okText: 'Xóa',
       okType: 'danger',
       cancelText: 'Hủy',
-      onOk() {
-        // TODO: Implement delete movie
-        console.log('Delete movie:', movie)
-        message.success('Xóa phim thành công!')
+      onOk: async () => {
+        try {
+          await movieService.deleteMovie(movie.id)
+          message.success('Xóa phim thành công!')
+          // Refresh movies list
+          dispatch(fetchMoviesForAdmin({ page: 1, size: 10 }))
+        } catch (error) {
+          message.error('Có lỗi xảy ra khi xóa phim')
+          console.error('Delete movie error:', error)
+        }
       },
     })
   }

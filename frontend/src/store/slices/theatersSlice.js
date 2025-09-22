@@ -16,10 +16,15 @@ export const fetchTheaters = createAsyncThunk(
 
 export const fetchAllTheaters = createAsyncThunk(
   'theaters/fetchAllTheaters',
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, size = 10 } = {}, { rejectWithValue }) => {
     try {
-      const response = await theaterService.getAllTheaters()
-      return response.data || []
+      const response = await theaterService.getAllTheaters({ page, size })
+      return {
+        content: response.data?.content || [],
+        totalElements: response.data?.totalElements || 0,
+        totalPages: response.data?.totalPages || 0,
+        currentPage: response.data?.pageable?.pageNumber || 0
+      }
     } catch (error) {
       return rejectWithValue(error.message)
     }
@@ -133,8 +138,9 @@ const theatersSlice = createSlice({
       })
       .addCase(fetchAllTheaters.fulfilled, (state, action) => {
         state.loading = false
-        state.theaters = action.payload
-        state.total = action.payload.length
+        state.theaters = action.payload.content
+        state.total = action.payload.totalElements
+        state.currentPage = action.payload.currentPage + 1 // API trả về 0-based, UI dùng 1-based
         state.error = null
       })
       .addCase(fetchAllTheaters.rejected, (state, action) => {

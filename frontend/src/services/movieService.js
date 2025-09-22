@@ -227,5 +227,33 @@ export const movieService = {
       console.error('Get movie details error:', error)
       throw error
     }
+  },
+
+  // Xóa phim (cần token admin)
+  async deleteMovie(movieId) {
+    try {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        throw new Error('Không có token')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/movies/delete/${movieId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.message || 'Không thể xóa phim')
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Delete movie error:', error)
+      throw error
+    }
   }
 }
