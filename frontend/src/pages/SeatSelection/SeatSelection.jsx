@@ -276,7 +276,7 @@ useEffect(() => {
             <div className="booking-summary">
               {/* Ticket Information */}
               <Card title="Thông tin vé" className="summary-card">
-                <div className="movie-info">
+                <div className="movie-info-seat">
                   {selectedShowtime.movie?.posterUrl && (
                     <img src={selectedShowtime.movie.posterUrl} alt={selectedShowtime.movie.title} className="movie-poster" />
                   )}

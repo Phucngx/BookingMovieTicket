@@ -352,27 +352,27 @@
 }
 
 /* Movie Info */
-.movie-info {
+.movie-info-seat{
   display: flex;
   gap: 16px;
   align-items: flex-start;
 }
 
-.movie-poster {
+.movie-info-seat .movie-poster {
   width: 80px;
   height: 120px;
   object-fit: cover;
   border-radius: 8px;
 }
 
-.movie-details {
+.movie-info-seat .movie-details {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.movie-details .ant-typography {
+.movie-info-seat .movie-details .ant-typography {
   margin: 0;
 }
 
@@ -477,7 +477,7 @@
     font-size: 14px;
   }
   
-  .movie-info {
+  .movie-info-seat {
     flex-direction: column;
     text-align: center;
   }

@@ -228,7 +228,7 @@ const AuthModal = ({ visible, onCancel }) => {
           </TabPane>
         </Tabs>
 
-        <Divider className="auth-divider">Hoặc</Divider>
+        {/* <Divider className="auth-divider">Hoặc</Divider>
 
         <div className="social-login">
           <Button className="social-button facebook" block>
@@ -239,7 +239,7 @@ const AuthModal = ({ visible, onCancel }) => {
             <i className="fab fa-google"></i>
             Tiếp tục với Google
           </Button>
-        </div>
+        </div> */}
       </div>
     </Modal>
   )

@@ -13,8 +13,8 @@ const BookingSelector = () => {
   
   // Danh sách tỉnh thành
   const cities = [
-    'TP. Hồ Chí Minh',
     'Hà Nội',
+    'TP. Hồ Chí Minh',
     'Bình Dương',
     'Đà Nẵng',
     'Cần Thơ',

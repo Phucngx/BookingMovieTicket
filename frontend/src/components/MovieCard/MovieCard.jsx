@@ -56,7 +56,7 @@ const MovieCard = ({ movie }) => {
       </Button>
       
       {/* Tên phim */}
-      <h4 className="movie-title">{title}</h4>
+      <h3 className="movie-title">{title}</h3>
       
       {/* Thông tin phim */}
       <div className="movie-meta">

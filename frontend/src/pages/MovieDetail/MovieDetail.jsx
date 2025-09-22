@@ -42,8 +42,6 @@ const MovieDetail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { selectedMovie, loading, error } = useSelector((state) => state.movies);
-  
-  
   const [selectedShowtime, setSelectedShowtime] = useState(null);
   const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
@@ -51,6 +49,9 @@ const MovieDetail = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [authModalVisible, setAuthModalVisible] = useState(false);
   const bookingSectionRef = useRef(null);
+
+  console.log("selectedMovie", selectedMovie);
+
 
   useEffect(() => {
     if (id) {
@@ -260,27 +261,20 @@ const MovieDetail = () => {
   return (
     <div className="movie-detail">
       {/* Hero Section với Banner */}
-      <div className="movie-hero" style={{ backgroundImage: `url(${selectedMovie.posterUrl})` }}>
+      <div className="movie-hero" style={{ backgroundImage: `url(${selectedMovie.bannerUrl})` }}>
         <div className="hero-overlay">
           <div className="container">
             <Row gutter={24} align="middle">
-              <Col xs={24} md={8}>
-                <div className="movie-poster-container">
+              <Col xs={24} md={10}>
+                <div className="movie-poster-container-detail">
                   <img 
                     src={selectedMovie.posterUrl} 
                     alt={selectedMovie.title} 
                     className="movie-poster-large"
                   />
-                  <div className="movie-badges">
-                    {selectedMovie.genres && selectedMovie.genres.length > 0 && (
-                      <Tag color="green" className="movie-badge">
-                        {selectedMovie.genres[0].genreName}
-                      </Tag>
-                    )}
-                  </div>
                 </div>
               </Col>
-              <Col xs={24} md={16}>
+              <Col xs={24} md={14}>
                 <div className="movie-hero-info">
                   <Title level={1} className="movie-title-hero">
                     {selectedMovie.title}
@@ -316,13 +310,13 @@ const MovieDetail = () => {
                       >
                         Mua vé ngay
                       </Button>
-                      <Button 
+                      {/* <Button 
                         size="large" 
                         icon={<HeartOutlined />}
                         className="favorite-btn"
                       >
                         Yêu thích
-                      </Button>
+                      </Button> */}
                       <Button 
                         size="large" 
                         icon={<ShareAltOutlined />}

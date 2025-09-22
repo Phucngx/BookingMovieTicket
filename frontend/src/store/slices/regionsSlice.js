@@ -2,13 +2,13 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   regions: [
-    { id: 1, name: 'Tp. Hồ Chí Minh', cinemaCount: 69, isSelected: true },
+    { id: 1, name: 'Hà Nội', cinemaCount: 69, isSelected: true },
     { id: 2, name: 'Đồng Nai', cinemaCount: 8, isSelected: false },
     { id: 3, name: 'Đắk Lắk', cinemaCount: 3, isSelected: false },
     { id: 4, name: 'Đà Nẵng', cinemaCount: 9, isSelected: false },
     { id: 5, name: 'Bình Định', cinemaCount: 4, isSelected: false },
     { id: 6, name: 'Thái Nguyên', cinemaCount: 2, isSelected: false },
-    { id: 7, name: 'Hà Nội', cinemaCount: 52, isSelected: false },
+    { id: 7, name: 'Tp. Hồ Chí Minh', cinemaCount: 52, isSelected: false },
     { id: 8, name: 'Lâm Đồng', cinemaCount: 5, isSelected: false },
     { id: 9, name: 'Thanh Hóa', cinemaCount: 2, isSelected: false },
     { id: 10, name: 'Bắc Giang', cinemaCount: 2, isSelected: false }

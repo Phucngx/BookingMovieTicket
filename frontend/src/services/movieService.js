@@ -24,6 +24,36 @@ export const movieService = {
     }
   },
 
+  // Cập nhật phim
+  async updateMovie(movieId, movieData) {
+    try {
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        throw new Error('Không có token')
+      }
+
+      const response = await fetch(`${API_BASE_URL}/movies/update/${movieId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(movieData)
+      })
+
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể cập nhật phim')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Update movie error:', error)
+      throw error
+    }
+  },
+
   // Lấy danh sách phim cho admin (cần đăng nhập)
   async getMoviesForAdmin(page = 1, size = 10) {
     try {

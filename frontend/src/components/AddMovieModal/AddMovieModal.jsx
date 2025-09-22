@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import dayjs from 'dayjs'
 import { Modal, Form, Input, DatePicker, InputNumber, Select, Button, message, Row, Col, Upload } from 'antd'
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons'
 import { movieService } from '../../services/movieService'
@@ -7,7 +8,7 @@ import './AddMovieModal.css'
 const { TextArea } = Input
 const { Option } = Select
 
-const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
+const AddMovieModal = ({ visible, onCancel, onSuccess, initialValues = null, mode = 'create', movieId = null }) => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [genres, setGenres] = useState([])
@@ -17,8 +18,25 @@ const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
   useEffect(() => {
     if (visible) {
       loadData()
+      if (initialValues) {
+        form.setFieldsValue({
+          title: initialValues.title,
+          description: initialValues.description,
+          releaseDate: initialValues.releaseDate ? dayjs(initialValues.releaseDate) : null,
+          language: initialValues.language,
+          country: initialValues.country,
+          posterUrl: initialValues.posterUrl,
+          bannerUrl: initialValues.bannerUrl,
+          durationMinutes: initialValues.durationMinutes,
+          genres: (initialValues.genres || []).map(g => g.genreId),
+          actors: (initialValues.actors || []).map(a => a.actorId),
+          director: initialValues.director?.directorId || initialValues.directorId || null
+        })
+      } else {
+        form.resetFields()
+      }
     }
-  }, [visible])
+  }, [visible, initialValues])
 
   const loadData = async () => {
     try {
@@ -47,21 +65,23 @@ const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
         language: values.language,
         country: values.country,
         posterUrl: values.posterUrl,
+        bannerUrl: values.bannerUrl,
         durationMinutes: values.durationMinutes,
         genreId: values.genres,
         actorId: values.actors,
         directorId: values.director
       }
-
-      const response = await movieService.createMovie(movieData)
+      const response = mode === 'edit' && movieId
+        ? await movieService.updateMovie(movieId, movieData)
+        : await movieService.createMovie(movieData)
       
       if (response.code === 1000) {
-        message.success('Thêm phim thành công!')
+        // message.success('Thêm phim thành công!')
         form.resetFields()
         onSuccess(response.data)
       }
     } catch (error) {
-      message.error(error.message || 'Thêm phim thất bại!')
+      message.error(error.message || (mode === 'edit' ? 'Cập nhật phim thất bại!' : 'Thêm phim thất bại!'))
     } finally {
       setLoading(false)
     }
@@ -74,7 +94,7 @@ const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
 
   return (
     <Modal
-      title="Thêm phim mới"
+      title={mode === 'edit' ? 'Chỉnh sửa phim' : 'Thêm phim mới'}
       open={visible}
       onCancel={handleCancel}
       footer={null}
@@ -166,6 +186,14 @@ const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
           <Input placeholder="Nhập URL hình ảnh poster" />
         </Form.Item>
 
+        <Form.Item
+          name="bannerUrl"
+          label="URL Banner"
+          rules={[{ required: true, message: 'Vui lòng nhập URL banner!' }]}
+        >
+          <Input placeholder="Nhập URL hình ảnh banner" />
+        </Form.Item>
+
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -238,7 +266,7 @@ const AddMovieModal = ({ visible, onCancel, onSuccess }) => {
             size="large"
             icon={<PlusOutlined />}
           >
-            Thêm phim
+            {mode === 'edit' ? 'Lưu thay đổi' : 'Thêm phim'}
           </Button>
         </div>
       </Form>

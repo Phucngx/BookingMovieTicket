@@ -155,7 +155,7 @@
   box-shadow: 0 12px 30px rgba(0,0,0,0.15);
 }
 
-.movie-poster-container {
+/* .movie-poster-container {
   position: relative;
   overflow: hidden;
   height: 300px;
@@ -166,7 +166,7 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
-}
+} */
 
 .movie-overlay {
   position: absolute;
@@ -197,7 +197,7 @@
   font-weight: 600;
 }
 
-.movie-info {
+/* .movie-info {
   padding: 20px;
 }
 
@@ -206,7 +206,7 @@
   color: #333;
   font-size: 1.2rem;
   font-weight: 600;
-}
+} */
 
 .movie-meta {
   margin-bottom: 12px;

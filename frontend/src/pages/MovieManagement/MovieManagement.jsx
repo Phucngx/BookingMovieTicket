@@ -18,6 +18,8 @@ const MovieManagement = () => {
   console.log('MovieManagement render:', { movies: movies.length, loading, error, pagination })
   const navigate = useNavigate()
   const [addMovieModalVisible, setAddMovieModalVisible] = useState(false)
+  const [editMovieModalVisible, setEditMovieModalVisible] = useState(false)
+  const [editingMovie, setEditingMovie] = useState(null)
 
   // Kiểm tra quyền admin
   const isAdmin = userInfo?.roleName === 'ADMIN'
@@ -57,8 +59,8 @@ const MovieManagement = () => {
   }
 
   const handleEditMovie = (movie) => {
-    // TODO: Implement edit movie
-    console.log('Edit movie:', movie)
+    setEditingMovie(movie)
+    setEditMovieModalVisible(true)
   }
 
   const handleDeleteMovie = (movie) => {
@@ -99,7 +101,7 @@ const MovieManagement = () => {
           width={60}
           height={80}
           src={url}
-          fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RnG4W+FgYxN"
+          // fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RnG4W+FgYxN"
           style={{ objectFit: 'cover', borderRadius: '4px' }}
         />
       ),
@@ -240,6 +242,20 @@ const MovieManagement = () => {
         visible={addMovieModalVisible}
         onCancel={() => setAddMovieModalVisible(false)}
         onSuccess={handleAddMovieSuccess}
+      />
+
+      <AddMovieModal
+        visible={editMovieModalVisible}
+        onCancel={() => { setEditMovieModalVisible(false); setEditingMovie(null) }}
+        onSuccess={() => {
+          setEditMovieModalVisible(false)
+          setEditingMovie(null)
+          message.success('Cập nhật phim thành công!')
+          dispatch(fetchMoviesForAdmin({ page: 1, size: 10 }))
+        }}
+        initialValues={editingMovie}
+        mode="edit"
+        movieId={editingMovie?.id}
       />
     </div>
   )

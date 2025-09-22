@@ -320,11 +320,11 @@ const Payment = () => {
               
               {/* Movie Info */}
               <Card className="summary-card movie-summary">
-                <div className="movie-info">
-                  <img src={movie.poster} alt={movie.title} className="movie-poster" />
+                <div className="movie-info-payment">
+                  <img src={movie.posterUrl} alt={movie.title} className="movie-poster" />
                   <div className="movie-details">
                     <Text strong className="movie-title">{movie.title}</Text>
-                    <Text type="secondary">{showtime.cinema}</Text>
+                    <Text type="secondary">Rạp: {showtime.theater.theaterName}</Text>
                     <Text type="secondary"> Suất chiếu: {showtime.time} - {showtime.date} </Text>
                     <Text type="secondary">Ghế: {seatLabels.join(', ')}</Text>
                   </div>

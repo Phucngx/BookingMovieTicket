@@ -14,8 +14,8 @@ const TheaterBooking = () => {
   
   // Danh sách khu vực cố định (sắp xếp theo thứ tự ưu tiên - có dữ liệu test trước)
   const areas = [
-    'Hà Nội',           // Có dữ liệu test
-    'TP. Hồ Chí Minh',  // Có thể có dữ liệu
+    'Hà Nội',           
+    'TP. Hồ Chí Minh',  
     'Đà Nẵng',
     'Hải Phòng',
     'Cần Thơ',

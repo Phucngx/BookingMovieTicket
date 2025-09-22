@@ -77,7 +77,7 @@
   padding: 16px 0;
 }
 
-.info-item {
+.account-info .info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;

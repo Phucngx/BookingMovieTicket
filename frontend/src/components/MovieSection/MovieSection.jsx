@@ -126,7 +126,7 @@ const MovieSection = () => {
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <p style={{ color: 'red' }}>Lỗi: {error}</p>
             <p style={{ color: '#666', fontSize: '14px' }}>
-              Vui lòng đăng nhập để xem danh sách phim
+              Lỗi khi tải danh sách phim
             </p>
           </div>
         </div>

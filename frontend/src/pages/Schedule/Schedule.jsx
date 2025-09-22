@@ -162,7 +162,6 @@ const Schedule = () => {
                     onClick={() => handleAreaSelect(region.name)}
                   >
                     <span className="region-name">{region.name}</span>
-                    <span className="region-count">{region.cinemaCount}</span>
                   </div>
                 ))}
               </div>
