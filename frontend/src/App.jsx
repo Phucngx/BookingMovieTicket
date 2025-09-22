@@ -4,6 +4,7 @@ import { Layout } from 'antd'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import ScrollToTop from './components/ScrollToTop'
+import ChatWidget from './components/ChatWidget'
 import Home from './pages/Home/Home'
 import MovieDetail from './pages/MovieDetail'
 import TheaterBooking from './pages/TheaterBooking'
@@ -43,6 +44,7 @@ function App() {
           </Routes>
         </Content>
         <Footer />
+        <ChatWidget />
       </Layout>
     </Router>
   )

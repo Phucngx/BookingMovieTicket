@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, Space, Typography, Row, Col, Table, Tag, Modal, message, Form, Input, Select } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EnvironmentOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons'
+import { Card, Button, Space, Typography, Row, Col, Table, Tag, Modal, message, Form, Input, Select, InputNumber } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, EnvironmentOutlined, PhoneOutlined, UserOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { fetchTheaters } from '../../store/slices/theatersSlice'
-import { selectRegion } from '../../store/slices/regionsSlice'
+import { fetchAllTheaters, addTheater, updateTheater, deleteTheater, clearError } from '../../store/slices/theatersSlice'
 import './TheaterManagement.css'
 
 const { Title, Text } = Typography
@@ -14,16 +13,30 @@ const TheaterManagement = () => {
   const dispatch = useDispatch()
   const { userInfo, isAuthenticated } = useSelector(state => state.user)
   const { theaters, loading, error } = useSelector(state => state.theaters)
-  const { regions } = useSelector(state => state.regions)
   
   const navigate = useNavigate()
   const [addTheaterModalVisible, setAddTheaterModalVisible] = useState(false)
   const [editTheaterModalVisible, setEditTheaterModalVisible] = useState(false)
   const [selectedTheater, setSelectedTheater] = useState(null)
+  const [searchText, setSearchText] = useState('')
   const [form] = Form.useForm()
 
   // Kiểm tra quyền admin
   const isAdmin = userInfo?.roleName === 'ADMIN'
+
+  // Danh sách thành phố mặc định
+  const cities = [
+    'Hà Nội',
+    'TP. Hồ Chí Minh',
+    'Đà Nẵng',
+    'Hải Phòng',
+    'Cần Thơ',
+    'Nha Trang',
+    'Huế',
+    'Vũng Tàu',
+    'Quy Nhon',
+    'Hạ Long'
+  ]
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -37,11 +50,16 @@ const TheaterManagement = () => {
       return
     }
 
-    // Fetch theaters for all regions
-    regions.forEach(region => {
-      dispatch(fetchTheaters(region.name))
-    })
-  }, [isAuthenticated, isAdmin, navigate, dispatch, regions])
+    // Fetch all theaters
+    dispatch(fetchAllTheaters())
+  }, [isAuthenticated, isAdmin, navigate, dispatch])
+
+  // Clear error when component unmounts
+  useEffect(() => {
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
 
   const handleAddTheater = () => {
     setAddTheaterModalVisible(true)
@@ -69,23 +87,28 @@ const TheaterManagement = () => {
       okText: 'Xóa',
       okType: 'danger',
       cancelText: 'Hủy',
-      onOk() {
-        // TODO: Implement delete theater API
-        console.log('Delete theater:', theater)
-        message.success('Xóa rạp phim thành công!')
+      onOk: async () => {
+        try {
+          await dispatch(deleteTheater(theater.theaterId)).unwrap()
+          message.success('Xóa rạp phim thành công!')
+        } catch (error) {
+          message.error('Có lỗi xảy ra khi xóa rạp phim')
+        }
       },
     })
   }
 
   const handleViewTheater = (theater) => {
-    // TODO: Navigate to theater detail page
-    console.log('View theater:', theater)
+    navigate(`/admin/theaters/${theater.theaterId}`)
+  }
+
+  const handleRefresh = () => {
+    dispatch(fetchAllTheaters())
   }
 
   const handleAddTheaterSubmit = async (values) => {
     try {
-      // TODO: Implement add theater API
-      console.log('Add theater:', values)
+      await dispatch(addTheater(values)).unwrap()
       setAddTheaterModalVisible(false)
       message.success('Thêm rạp phim thành công!')
       form.resetFields()
@@ -96,14 +119,24 @@ const TheaterManagement = () => {
 
   const handleEditTheaterSubmit = async (values) => {
     try {
-      // TODO: Implement edit theater API
-      console.log('Edit theater:', { ...selectedTheater, ...values })
+      await dispatch(updateTheater({ 
+        theaterId: selectedTheater.theaterId, 
+        theaterData: values 
+      })).unwrap()
       setEditTheaterModalVisible(false)
       message.success('Cập nhật rạp phim thành công!')
     } catch (error) {
       message.error('Có lỗi xảy ra khi cập nhật rạp phim')
     }
   }
+
+  // Filter theaters based on search text
+  const filteredTheaters = theaters.filter(theater =>
+    theater.theaterName.toLowerCase().includes(searchText.toLowerCase()) ||
+    theater.city.toLowerCase().includes(searchText.toLowerCase()) ||
+    theater.district.toLowerCase().includes(searchText.toLowerCase()) ||
+    theater.managerName.toLowerCase().includes(searchText.toLowerCase())
+  )
 
   const columns = [
     {
@@ -218,21 +251,42 @@ const TheaterManagement = () => {
           <Title level={2}>Quản lý rạp phim</Title>
           <Text type="secondary">Quản lý danh sách rạp phim trong hệ thống</Text>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAddTheater}
-          size="large"
-          className="add-theater-btn"
-        >
-          Thêm rạp mới
-        </Button>
+        <Space>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={handleRefresh}
+            loading={loading}
+          >
+            Làm mới
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAddTheater}
+            size="large"
+            className="add-theater-btn"
+          >
+            Thêm rạp mới
+          </Button>
+        </Space>
       </div>
+
+      {/* Search Bar */}
+      <Card className="search-card" style={{ marginBottom: '24px' }}>
+        <Input
+          placeholder="Tìm kiếm theo tên rạp, thành phố, quận/huyện, quản lý..."
+          prefix={<SearchOutlined />}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          allowClear
+          size="large"
+        />
+      </Card>
 
       <Card className="theater-table-card">
         <Table
           columns={columns}
-          dataSource={theaters}
+          dataSource={filteredTheaters}
           rowKey="theaterId"
           loading={loading}
           pagination={{
@@ -243,6 +297,9 @@ const TheaterManagement = () => {
               `${range[0]}-${range[1]} của ${total} rạp`,
           }}
           scroll={{ x: 800 }}
+          locale={{
+            emptyText: searchText ? 'Không tìm thấy rạp phim nào' : 'Chưa có rạp phim nào'
+          }}
         />
       </Card>
 
@@ -276,9 +333,9 @@ const TheaterManagement = () => {
                 rules={[{ required: true, message: 'Vui lòng chọn thành phố' }]}
               >
                 <Select placeholder="Chọn thành phố">
-                  {regions.map(region => (
-                    <Option key={region.name} value={region.name}>
-                      {region.name}
+                  {cities.map(city => (
+                    <Option key={city} value={city}>
+                      {city}
                     </Option>
                   ))}
                 </Select>
@@ -331,7 +388,11 @@ const TheaterManagement = () => {
                 label="Số phòng"
                 rules={[{ required: true, message: 'Vui lòng nhập số phòng' }]}
               >
-                <Input type="number" placeholder="Nhập số phòng" min={0} />
+                <InputNumber 
+                  placeholder="Nhập số phòng" 
+                  min={0} 
+                  style={{ width: '100%' }}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -379,9 +440,9 @@ const TheaterManagement = () => {
                 rules={[{ required: true, message: 'Vui lòng chọn thành phố' }]}
               >
                 <Select placeholder="Chọn thành phố">
-                  {regions.map(region => (
-                    <Option key={region.name} value={region.name}>
-                      {region.name}
+                  {cities.map(city => (
+                    <Option key={city} value={city}>
+                      {city}
                     </Option>
                   ))}
                 </Select>
@@ -434,7 +495,11 @@ const TheaterManagement = () => {
                 label="Số phòng"
                 rules={[{ required: true, message: 'Vui lòng nhập số phòng' }]}
               >
-                <Input type="number" placeholder="Nhập số phòng" min={0} />
+                <InputNumber 
+                  placeholder="Nhập số phòng" 
+                  min={0} 
+                  style={{ width: '100%' }}
+                />
               </Form.Item>
             </Col>
           </Row>

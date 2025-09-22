@@ -9,6 +9,7 @@ import cinemasReducer from './slices/cinemasSlice'
 import seatReducer from './slices/seatSlice'
 import foodsReducer from './slices/foodsSlice'
 import bookingsReducer from './slices/bookingsSlice'
+import chatReducer from './slices/chatSlice'
 
 export const store = configureStore({
   reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
     seats: seatReducer,
     foods: foodsReducer,
     bookings: bookingsReducer,
+    chat: chatReducer,
   },
 })
