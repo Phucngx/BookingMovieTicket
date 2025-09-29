@@ -4,19 +4,24 @@ import com.ngp.BookingService.Constrains.StatusType;
 import com.ngp.BookingService.DTO.Request.*;
 import com.ngp.BookingService.DTO.Response.*;
 import com.ngp.BookingService.Entity.BookingEntity;
+import com.ngp.BookingService.Entity.BookingFoodEntity;
 import com.ngp.BookingService.Entity.BookingSeatEntity;
 import com.ngp.BookingService.Entity.TicketEntity;
 import com.ngp.BookingService.Exception.AppException;
 import com.ngp.BookingService.Exception.ErrorCode;
+import com.ngp.BookingService.Repository.BookingFoodRepository;
 import com.ngp.BookingService.Repository.BookingRepository;
 import com.ngp.BookingService.Repository.BookingSeatRepository;
 import com.ngp.BookingService.Repository.HttpClient.PaymentClient;
 import com.ngp.BookingService.Repository.HttpClient.ShowtimeClient;
+import com.ngp.BookingService.Repository.HttpClient.TheaterClient;
 import com.ngp.BookingService.Repository.TicketRepository;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,15 +33,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class BookingService implements IBookingService{
     BookingRepository bookingRepository;
     BookingSeatRepository bookingSeatRepository;
+    BookingFoodRepository bookingFoodRepository;
     TicketRepository ticketRepository;
     ShowtimeClient showtimeClient;
     PaymentClient paymentClient;
+    TheaterClient theaterClient;
 
     @Override
     @Transactional
@@ -46,7 +54,18 @@ public class BookingService implements IBookingService{
                 .getShowtimeDetail(request.getShowtimeId())
                 .getData();
         int unit = showtime.getPrice().intValue();
-        int amount = unit * request.getSeatIds().size();
+        int foodTotal = 0;
+
+        List<FoodBriefResponse> foods = new ArrayList<>();
+        for (Long foodId : request.getFoodIds()) {
+            FoodBriefResponse food = theaterClient.getFoodDetail(foodId).getData();
+            foods.add(food);
+        }
+        for (FoodBriefResponse food : foods) {
+            foodTotal += food.getPrice();
+        }
+
+        int amount = (unit * request.getSeatIds().size()) + foodTotal;
 
         // 2) Gọi HOLD
         int ttlSeconds = 60 * 15; // 15 phút
@@ -67,6 +86,16 @@ public class BookingService implements IBookingService{
                 .holdExpiresAt(holdRes.getExpiresAt())
                 .build();
         booking = bookingRepository.save(booking);
+
+        for (Long foodId : request.getFoodIds()) {
+            bookingFoodRepository.save(
+                    BookingFoodEntity.builder()
+                            .booking(booking)
+                            .foodId(foodId)
+                            .status(StatusType.PENDING)
+                            .build()
+            );
+        }
 
         Map<String, Object> paymentReq = Map.of(
                 "bookingId", booking.getBookingId(),
@@ -99,19 +128,18 @@ public class BookingService implements IBookingService{
             throw new AppException(ErrorCode.BOOKING_INVALID_STATE);
         }
 
-        // 1) Reserve ghế ở Showtime (atomic)
+        // 1) Reserve ghế ở Showtime
         ReserveRequest reserveReq = ReserveRequest.builder()
                 .holdId(booking.getHoldId())
                 .bookingId(booking.getBookingId())
                 .build();
         ReserveResult reserveRes = showtimeClient.reserveSeat(reserveReq).getData();
 
-        // 2) (Giả lập) thanh toán OK -> cập nhật trạng thái
+        // 2)Thanh toán OK -> cập nhật trạng thái
         booking.setStatus(StatusType.CONFIRMED);
         bookingRepository.save(booking);
 
         // 3) LƯU BOOKING_SEAT tại đây
-
         for (Long seatId : reserveRes.getReservedSeatIds()) {
             bookingSeatRepository.save(
                     BookingSeatEntity.builder()
@@ -170,7 +198,7 @@ public class BookingService implements IBookingService{
 
     @Override
     @Transactional
-    public void handlePaymentCallback(PaymentCallbackRequest req) {
+    public BookingDetailResponse handlePaymentCallback(PaymentCallbackRequest req) {
         BookingEntity booking = bookingRepository.findByPaymentId(req.getPaymentId());
         if (booking == null) {
             throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
@@ -192,7 +220,7 @@ public class BookingService implements IBookingService{
             booking.setStatus(StatusType.CONFIRMED);
             bookingRepository.save(booking);
 
-            // 3. Lưu seat mapping
+            // 3. Lưu seat, food mapping
             for (Long seatId : reserveRes.getReservedSeatIds()) {
                 bookingSeatRepository.save(
                         BookingSeatEntity.builder()
@@ -202,18 +230,76 @@ public class BookingService implements IBookingService{
                 );
             }
 
-            // 4. Sinh ticket
+            for (BookingFoodEntity bf : bookingFoodRepository.findByBooking(booking)) {
+                bf.setStatus(StatusType.CONFIRMED);
+                bookingFoodRepository.save(bf);
+            }
+
+            // 4. ticket
             TicketEntity ticket = ticketRepository.save(
                     TicketEntity.builder()
                             .booking(booking)
                             .status("Released")
-                            .qrCode("QR" + booking.getBookingId())
+                            .qrCode("/dist/assets/frame.png")
                             .build()
             );
         } else {
+            log.info("Payment for booking {} failed, cancelling booking", booking.getBookingId());
             cancelBooking(booking.getBookingId());
             bookingRepository.save(booking);
         }
+        return BookingDetailResponse.builder()
+                .bookingId(booking.getBookingId())
+                .accountId(booking.getAccountId())
+                .showtimeId(booking.getShowtimeId())
+                .status(booking.getStatus().name())
+                .totalPrice(booking.getTotalPrice())
+                .paymentId(booking.getPaymentId())
+                .build();
+    }
+
+    @Override
+    public TicketResponse getTicketByBookingId(Long bookingId) {
+        TicketEntity ticket = ticketRepository.findByBooking_BookingId(bookingId);
+        if (ticket == null){
+            throw new AppException(ErrorCode.TICKET_NOT_FOUND);
+        }
+        BookingEntity booking = ticket.getBooking();
+
+        List<BookingSeatEntity> bookingSeats = bookingSeatRepository.findByBooking_BookingId(booking.getBookingId());
+        List<String> seatNames = bookingSeats.stream()
+                .map(seat -> {
+                    SeatBriefResponse seatRes = theaterClient.getSeatDetail(seat.getSeatId()).getData();
+                    return seatRes.getSeatRow() + String.format("%02d", seatRes.getSeatNumber());
+                })
+                .toList();
+
+        List<BookingFoodEntity> bookingFoods = bookingFoodRepository.findByBooking_BookingId(booking.getBookingId());
+        List<String> foodNames = bookingFoods.stream()
+                .map(food -> theaterClient.getFoodDetail(food.getFoodId()).getData().getFoodName())
+                .toList();
+
+        MovieBriefResponse movie = showtimeClient.getMovieDetailByShowtimeId(booking.getShowtimeId()).getData();
+        log.info("Movie: {}", movie);
+        ShowtimeResponse showtime = showtimeClient.getShowtimeDetail(booking.getShowtimeId()).getData();
+        log.info("showtime: {}", showtime);
+        TheaterResponse theater = showtimeClient.getTheaterDetailByShowtimeId(booking.getShowtimeId()).getData();
+        log.info("theater: {}", theater);
+        RoomBriefResponse room = showtimeClient.getRoomDetailByShowtimeId(booking.getShowtimeId()).getData();
+        log.info("room: {}", room);
+
+        return TicketResponse.builder()
+                .bookingId(booking.getBookingId())
+                .seatNames(seatNames)
+                .foodNames(foodNames)
+                .createdAt(ticket.getCreatedAt())
+                .qrCode(ticket.getQrCode())
+                .movieName(movie.getTitle())
+                .startTime(showtime.getStartTime())
+                .endTime(showtime.getEndTime())
+                .theaterName(theater.getTheaterName())
+                .roomName(room.getRoomName())
+                .build();
     }
 
 }

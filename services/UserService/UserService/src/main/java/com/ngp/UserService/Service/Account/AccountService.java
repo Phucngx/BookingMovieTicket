@@ -2,8 +2,10 @@ package com.ngp.UserService.Service.Account;
 
 import com.ngp.UserService.DTO.Request.AccountRequest;
 import com.ngp.UserService.DTO.Request.AccountUpdateRequest;
+import com.ngp.UserService.DTO.Response.AccountDetailResponse;
 import com.ngp.UserService.DTO.Response.AccountResponse;
 import com.ngp.UserService.DTO.Response.MeResponse;
+import com.ngp.UserService.DTO.Response.UserResponse;
 import com.ngp.UserService.Entity.AccountEntity;
 import com.ngp.UserService.Entity.RoleEntity;
 import com.ngp.UserService.Entity.UserEntity;
@@ -109,10 +111,28 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public AccountResponse getDetailAccount(Long id) {
+    public AccountDetailResponse getDetailAccount(Long id) {
         AccountEntity account = accountRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-        return accountMapper.toAccountResponse(account);
+
+        UserEntity user = account.getUser();
+
+        UserResponse userResponse = UserResponse.builder()
+                .userId(String.valueOf(user.getUserId()))
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .address(user.getAddress())
+                .avatarUrl(user.getAvatarUrl())
+                .build();
+
+        return AccountDetailResponse.builder()
+                .accountId(account.getAccountId())
+                .username(account.getUsername())
+                .status(account.getStatus())
+                .roleName(account.getRole().getRoleName())
+                .user(userResponse)
+                .build();
     }
 
     @Override

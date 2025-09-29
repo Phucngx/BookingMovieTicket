@@ -1,6 +1,5 @@
 package com.ngp.BookingService.DTO.Response;
 
-import com.ngp.BookingService.Constrains.StatusType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,12 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class BookingResponse {
+public class BookingDetailResponse {
     Long bookingId;
+    Long accountId;
+    Long showtimeId;
+    Long paymentId;
     String status;
-    Integer amount;
-    String holdId;
-    LocalDateTime holdExpiresAt;
-    String qrUrl;
+    Double totalPrice;
 }
 

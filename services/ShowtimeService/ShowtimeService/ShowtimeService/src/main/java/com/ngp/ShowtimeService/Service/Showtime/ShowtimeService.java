@@ -14,6 +14,7 @@ import com.ngp.ShowtimeService.Mapper.ShowtimeMapper;
 import com.ngp.ShowtimeService.Repository.HttpClient.MovieClient;
 import com.ngp.ShowtimeService.Repository.HttpClient.RoomClient;
 import com.ngp.ShowtimeService.Repository.HttpClient.SeatClient;
+import com.ngp.ShowtimeService.Repository.HttpClient.TheaterClient;
 import com.ngp.ShowtimeService.Repository.LockSeatRepository.LockSeatRepository;
 import com.ngp.ShowtimeService.Repository.ShowtimeRepository.ShowtimeRepository;
 import lombok.AccessLevel;
@@ -42,6 +43,7 @@ public class ShowtimeService implements IShowtimeService{
     MovieClient movieClient;
     RoomClient roomClient;
     SeatClient seatClient;
+    TheaterClient theaterClient;
     RedissonClient redisson;
     LockSeatRepository lockSeatRepository;
 
@@ -122,7 +124,10 @@ public class ShowtimeService implements IShowtimeService{
         if(showtimes.isEmpty()){
             throw new AppException(ErrorCode.SHOWTIME_NOT_FOUND);
         }
-        return showtimes.stream().map(showtimeMapper::toShowtimeResponse).toList();
+        return showtimes.stream()
+                .sorted(Comparator.comparing(ShowtimeEntity::getStartTime))
+                .map(showtimeMapper::toShowtimeResponse)
+                .toList();
     }
 
     @Override
@@ -287,6 +292,39 @@ public class ShowtimeService implements IShowtimeService{
         response.setLayout(layout);
         response.setSeats(views);
         return response;
+    }
+
+    @Override
+    public MovieBriefResponse getMovieBriefShowtime(Long showtimeId) {
+        ShowtimeEntity showtime = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new AppException(ErrorCode.SHOWTIME_NOT_FOUND));
+        MovieBriefResponse movieBriefResponse = movieClient.getMovie(showtime.getMovieId()).getData();
+        if(movieBriefResponse == null){
+            throw new AppException(ErrorCode.MOVIE_NOT_FOUND);
+        }
+        return movieBriefResponse;
+    }
+
+    @Override
+    public TheaterResponse getTheaterByShowtime(Long showtimeId) {
+        ShowtimeEntity showtime = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new AppException(ErrorCode.SHOWTIME_NOT_FOUND));
+        TheaterResponse theater = theaterClient.getTheaterByRoom(showtime.getRoomId()).getData();
+        if(theater == null){
+            throw new AppException(ErrorCode.THEATER_NOT_FOUND);
+        }
+        return theater;
+    }
+
+    @Override
+    public RoomBriefResponse getRoomByShowtime(Long showtimeId) {
+        ShowtimeEntity showtime = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new AppException(ErrorCode.SHOWTIME_NOT_FOUND));
+        RoomBriefResponse room = roomClient.getRoom(showtime.getRoomId()).getData();
+        if(room == null){
+            throw new AppException(ErrorCode.ROOM_NOT_FOUND);
+        }
+        return room;
     }
 
     private Set<Long> findSeatIdsByPattern(String pattern) {

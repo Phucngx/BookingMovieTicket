@@ -2,10 +2,7 @@ package com.ngp.BookingService.Repository.HttpClient;
 
 import com.ngp.BookingService.DTO.Request.HoldRequest;
 import com.ngp.BookingService.DTO.Request.ReserveRequest;
-import com.ngp.BookingService.DTO.Response.ApiResponse;
-import com.ngp.BookingService.DTO.Response.HoldResult;
-import com.ngp.BookingService.DTO.Response.ReserveResult;
-import com.ngp.BookingService.DTO.Response.ShowtimeResponse;
+import com.ngp.BookingService.DTO.Response.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -27,4 +24,14 @@ public interface ShowtimeClient {
 
     @DeleteMapping(value = "/internal/seat-holds/cancel/{holdId}", produces = MediaType.APPLICATION_JSON_VALUE)
     void cancelSeatHold(@PathVariable("holdId") String holdId);
+
+    @GetMapping(value = "/internal/get-movie-by-showtime/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ApiResponse<MovieBriefResponse> getMovieDetailByShowtimeId(@PathVariable Long id);
+
+    @GetMapping(value = "/internal/get-theater-by-showtime/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ApiResponse<TheaterResponse> getTheaterDetailByShowtimeId(@PathVariable Long id);
+
+    @GetMapping(value = "/internal/get-room-by-showtime/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ApiResponse<RoomBriefResponse> getRoomDetailByShowtimeId(@PathVariable Long id);
+
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "theater-service", url = "http://localhost:8083/theater-service/rooms"
+@FeignClient(name = "room-service", url = "http://localhost:8083/theater-service/rooms"
 //        , configuration = {
 //                AuthenticationRequestInterceptor.class
 //        }

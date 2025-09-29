@@ -15,7 +15,7 @@ public enum ErrorCode {
     NOT_FOUND(1002, "Not found", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1002, "User not found", HttpStatus.BAD_REQUEST),
     ROLE_NOT_FOUND(1002, "Role not found", HttpStatus.BAD_REQUEST),
-    ACCOUNT_NOT_FOUND(1002, "Account book not found", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NOT_FOUND(1002, "Account not found", HttpStatus.BAD_REQUEST),
     NOT_EMPTY(1003, "This field is not empty", HttpStatus.BAD_REQUEST),
     NOT_NULL(1004, "This field is not null", HttpStatus.BAD_REQUEST),
     USERNAME_EXISTS(1005, "Username is already exist", HttpStatus.BAD_REQUEST),

@@ -1,6 +1,8 @@
 package com.ngp.TheaterService.Controller;
 
 import com.ngp.TheaterService.DTO.Response.ApiResponse;
+import com.ngp.TheaterService.DTO.Response.FoodBriefResponse;
+import com.ngp.TheaterService.DTO.Response.SeatBriefResponse;
 import com.ngp.TheaterService.DTO.Response.SeatResponse;
 import com.ngp.TheaterService.DTO.RoomSeatDTO;
 import com.ngp.TheaterService.Entity.SeatEntity;
@@ -41,6 +43,14 @@ public class SeatController {
         return ApiResponse.<List<RoomSeatDTO>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(seatService.getSeats(roomId))
+                .build();
+    }
+
+    @GetMapping("/internal/get-details/{id}")
+    public ApiResponse<SeatBriefResponse> getDetailBriefSeat(@PathVariable Long id) {
+        return ApiResponse.<SeatBriefResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(seatService.getDetailBriefSeat(id))
                 .build();
     }
 

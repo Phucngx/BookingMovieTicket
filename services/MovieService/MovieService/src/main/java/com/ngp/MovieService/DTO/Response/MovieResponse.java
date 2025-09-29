@@ -24,6 +24,7 @@ public class MovieResponse {
     String country;
     String posterUrl;
     String trailerUrl;
+    String bannerUrl;
     Set<GenreResponse> genres;
     DirectorResponse director;
     Set<ActorResponse> actors;

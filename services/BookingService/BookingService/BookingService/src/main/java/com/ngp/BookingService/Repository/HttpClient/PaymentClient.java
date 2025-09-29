@@ -12,5 +12,5 @@ import java.util.Map;
 public interface PaymentClient {
 
     @PostMapping("/create-order")
-    ApiResponse<PaymentOrderResponse> createOrder(@RequestBody Map<String, Object> request);
+    PaymentOrderResponse createOrder(@RequestBody Map<String, Object> request);
 }

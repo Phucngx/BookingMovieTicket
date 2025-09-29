@@ -23,6 +23,7 @@ public class MovieRequest {
     String country;
     String posterUrl;
     String trailerUrl;
+    String bannerUrl;
     Integer durationMinutes;
     Set<Long> genreId;
     Set<Long> actorId;

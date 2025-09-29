@@ -2,10 +2,12 @@ package com.ngp.TheaterService.Service.Theater;
 
 import com.ngp.TheaterService.DTO.Request.TheaterRequest;
 import com.ngp.TheaterService.DTO.Response.TheaterResponse;
+import com.ngp.TheaterService.Entity.RoomEntity;
 import com.ngp.TheaterService.Entity.TheaterEntity;
 import com.ngp.TheaterService.Exception.AppException;
 import com.ngp.TheaterService.Exception.ErrorCode;
 import com.ngp.TheaterService.Mapper.TheaterMapper;
+import com.ngp.TheaterService.Repository.RoomRepository;
 import com.ngp.TheaterService.Repository.TheaterRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.List;
 public class TheaterService implements ITheaterService{
     TheaterRepository theaterRepository;
     TheaterMapper theaterMapper;
+    RoomRepository roomRepository;
 
     @Override
     public TheaterResponse createTheater(TheaterRequest request) {
@@ -74,5 +77,15 @@ public class TheaterService implements ITheaterService{
             throw new AppException(ErrorCode.THEATER_NOT_FOUND);
         }
         return theaters.stream().map(theaterMapper::toTheaterResponse).toList();
+    }
+
+    @Override
+    public TheaterResponse getTheaterByRoomId(Long id) {
+        RoomEntity room = roomRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
+        TheaterEntity theater = theaterRepository.findById(room.getTheater().getTheaterId()).orElseThrow(() -> new AppException(ErrorCode.THEATER_NOT_FOUND));
+        if (theater == null){
+            throw new AppException(ErrorCode.THEATER_NOT_FOUND);
+        }
+        return theaterMapper.toTheaterResponse(theater);
     }
 }

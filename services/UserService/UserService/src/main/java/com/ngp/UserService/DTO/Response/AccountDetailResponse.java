@@ -1,18 +1,17 @@
-package com.ngp.BookingService.DTO.Request;
+package com.ngp.UserService.DTO.Response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingRequest {
+public class AccountDetailResponse {
     Long accountId;
-    Long showtimeId;
-    List<Long> foodIds;
-    List<Long> seatIds;
+    String username;
+    Integer status;
+    UserResponse user;
+    String roleName;
 }

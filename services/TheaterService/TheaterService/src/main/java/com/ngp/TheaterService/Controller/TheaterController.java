@@ -69,4 +69,13 @@ public class TheaterController {
                 .data(theaterService.getTheatersByCity(city))
                 .build();
     }
+
+    @GetMapping("/internal/get-theater-by-room/{id}")
+    public ApiResponse<TheaterResponse> getTheaterByRoomId(@PathVariable Long id) {
+        return ApiResponse.<TheaterResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(theaterService.getTheaterByRoomId(id))
+                .build();
+    }
+
 }

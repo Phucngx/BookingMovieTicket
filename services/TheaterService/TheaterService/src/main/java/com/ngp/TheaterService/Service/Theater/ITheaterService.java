@@ -14,4 +14,5 @@ public interface ITheaterService {
     Page<TheaterResponse> getAllTheater(int page, int size);
     TheaterResponse getDetailTheater(Long id);
     List<TheaterResponse> getTheatersByCity(String city);
+    TheaterResponse getTheaterByRoomId(Long id);
 }

@@ -3,9 +3,7 @@ package com.ngp.BookingService.Controller;
 import com.ngp.BookingService.DTO.Request.BookingConfirmRequest;
 import com.ngp.BookingService.DTO.Request.BookingRequest;
 import com.ngp.BookingService.DTO.Request.PaymentCallbackRequest;
-import com.ngp.BookingService.DTO.Response.ApiResponse;
-import com.ngp.BookingService.DTO.Response.BookingConfirmResponse;
-import com.ngp.BookingService.DTO.Response.BookingResponse;
+import com.ngp.BookingService.DTO.Response.*;
 import com.ngp.BookingService.Exception.ErrorCode;
 import com.ngp.BookingService.Service.BookingService;
 import lombok.AccessLevel;
@@ -56,11 +54,19 @@ public class BookingController {
     }
 
     @PostMapping("/payment-callback")
-    public ApiResponse<Void> paymentCallback(@RequestBody PaymentCallbackRequest request) {
-        bookingService.handlePaymentCallback(request);
-        return ApiResponse.<Void>builder()
+    public ApiResponse<BookingDetailResponse> paymentCallback(@RequestBody PaymentCallbackRequest request) {
+        return ApiResponse.<BookingDetailResponse>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .message("Payment callback processed")
+                .data(bookingService.handlePaymentCallback(request))
+                .build();
+    }
+
+    @GetMapping("/ticket/{bookingId}")
+    public ApiResponse<TicketResponse> getTicketByBookingId(@PathVariable Long bookingId) {
+        return ApiResponse.<TicketResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(bookingService.getTicketByBookingId(bookingId))
                 .build();
     }
 }

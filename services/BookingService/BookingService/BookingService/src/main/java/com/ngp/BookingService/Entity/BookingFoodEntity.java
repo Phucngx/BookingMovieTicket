@@ -1,31 +1,33 @@
 package com.ngp.BookingService.Entity;
 
+import com.ngp.BookingService.Constrains.StatusType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "tickets")
+@Table(name = "booking_foods")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SuperBuilder
-public class TicketEntity extends BaseEntity{
+public class BookingFoodEntity extends BaseEntity{
     @Id
-    @Column(name = "ticket_id")
+    @Column(name = "booking_food_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long ticketId;
+    Long bookingFoodId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
     BookingEntity booking;
 
-    @Column(name = "status", nullable = false)
-    String status;
+    @Column(name = "food_id", nullable = false)
+    Long foodId;
 
-    @Column(name = "qr_code", nullable = false)
-    String qrCode;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    StatusType status;
 }

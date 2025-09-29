@@ -153,4 +153,28 @@ public class ShowtimeController {
                 .build();
     }
 
+    @GetMapping("/internal/get-movie-by-showtime/{id}")
+    public ApiResponse<MovieBriefResponse> getMovieByShowtimeId(@PathVariable Long id) {
+        return ApiResponse.<MovieBriefResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(showtimeService.getMovieBriefShowtime(id))
+                .build();
+    }
+
+    @GetMapping("/internal/get-theater-by-showtime/{id}")
+    public ApiResponse<TheaterResponse> getTheaterByShowtime(@PathVariable Long id) {
+        return ApiResponse.<TheaterResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(showtimeService.getTheaterByShowtime(id))
+                .build();
+    }
+
+    @GetMapping("/internal/get-room-by-showtime/{id}")
+    public ApiResponse<RoomBriefResponse> getRoomByShowtime(@PathVariable Long id) {
+        return ApiResponse.<RoomBriefResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(showtimeService.getRoomByShowtime(id))
+                .build();
+    }
+
 }

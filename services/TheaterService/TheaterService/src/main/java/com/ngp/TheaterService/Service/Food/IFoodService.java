@@ -2,6 +2,7 @@ package com.ngp.TheaterService.Service.Food;
 
 import com.ngp.TheaterService.Contrains.FoodType;
 import com.ngp.TheaterService.DTO.Request.FoodRequest;
+import com.ngp.TheaterService.DTO.Response.FoodBriefResponse;
 import com.ngp.TheaterService.DTO.Response.FoodResponse;
 import org.springframework.data.domain.Page;
 
@@ -14,4 +15,5 @@ public interface IFoodService {
     Page<FoodResponse> getAllFoods(int page, int size);
     FoodResponse getDetailFood(Long id);
     List<FoodResponse> getFoodsByFoodType(FoodType foodType);
+    FoodBriefResponse getDetailBriefFood(Long id);
 }

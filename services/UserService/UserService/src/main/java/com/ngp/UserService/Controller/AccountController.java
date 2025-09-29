@@ -2,6 +2,7 @@ package com.ngp.UserService.Controller;
 
 import com.ngp.UserService.DTO.Request.AccountRequest;
 import com.ngp.UserService.DTO.Request.AccountUpdateRequest;
+import com.ngp.UserService.DTO.Response.AccountDetailResponse;
 import com.ngp.UserService.DTO.Response.AccountResponse;
 import com.ngp.UserService.DTO.Response.ApiResponse;
 import com.ngp.UserService.Exception.ErrorCode;
@@ -54,8 +55,8 @@ public class AccountController {
     }
 
     @GetMapping("/get-detail/{id}")
-    public ApiResponse<AccountResponse> getAccountDetail(@PathVariable Long id) {
-        return ApiResponse.<AccountResponse>builder()
+    public ApiResponse<AccountDetailResponse> getAccountDetail(@PathVariable Long id) {
+        return ApiResponse.<AccountDetailResponse>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(accountService.getDetailAccount(id))
                 .build();

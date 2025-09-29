@@ -2,6 +2,7 @@ package com.ngp.TheaterService.Service.Food;
 
 import com.ngp.TheaterService.Contrains.FoodType;
 import com.ngp.TheaterService.DTO.Request.FoodRequest;
+import com.ngp.TheaterService.DTO.Response.FoodBriefResponse;
 import com.ngp.TheaterService.DTO.Response.FoodResponse;
 import com.ngp.TheaterService.Entity.FoodEntity;
 import com.ngp.TheaterService.Exception.AppException;
@@ -66,5 +67,16 @@ public class FoodService implements IFoodService{
     public List<FoodResponse> getFoodsByFoodType(FoodType foodType) {
         List<FoodEntity> foods = foodRepository.findByFoodType(foodType);
         return foods.stream().map(foodMapper::toFoodResponse).toList();
+    }
+
+    @Override
+    public FoodBriefResponse getDetailBriefFood(Long id) {
+        FoodEntity food = foodRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.FOOD_NOT_FOUND));
+        return FoodBriefResponse.builder()
+                .foodId(food.getFoodId())
+                .foodName(food.getFoodName())
+                .foodUrl(food.getFoodUrl())
+                .price(food.getPrice())
+                .build();
     }
 }

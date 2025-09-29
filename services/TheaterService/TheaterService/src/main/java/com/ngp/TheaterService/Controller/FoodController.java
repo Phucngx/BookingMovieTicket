@@ -3,6 +3,7 @@ package com.ngp.TheaterService.Controller;
 import com.ngp.TheaterService.Contrains.FoodType;
 import com.ngp.TheaterService.DTO.Request.FoodRequest;
 import com.ngp.TheaterService.DTO.Response.ApiResponse;
+import com.ngp.TheaterService.DTO.Response.FoodBriefResponse;
 import com.ngp.TheaterService.DTO.Response.FoodResponse;
 import com.ngp.TheaterService.Exception.ErrorCode;
 import com.ngp.TheaterService.Service.Food.FoodService;
@@ -68,6 +69,14 @@ public class FoodController {
         return ApiResponse.<List<FoodResponse>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(foodService.getFoodsByFoodType(foodType))
+                .build();
+    }
+
+    @GetMapping("/internal/get-details/{id}")
+    public ApiResponse<FoodBriefResponse> getDetailBriefFood(@PathVariable Long id) {
+        return ApiResponse.<FoodBriefResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(foodService.getDetailBriefFood(id))
                 .build();
     }
 }

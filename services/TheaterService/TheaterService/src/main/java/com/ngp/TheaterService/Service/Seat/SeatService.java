@@ -1,5 +1,6 @@
 package com.ngp.TheaterService.Service.Seat;
 
+import com.ngp.TheaterService.DTO.Response.SeatBriefResponse;
 import com.ngp.TheaterService.DTO.Response.SeatResponse;
 import com.ngp.TheaterService.DTO.Response.TheaterResponse;
 import com.ngp.TheaterService.DTO.RoomSeatDTO;
@@ -58,5 +59,16 @@ public class SeatService implements ISeatService{
             result.add(dto);
         }
         return result;
+    }
+
+    @Override
+    public SeatBriefResponse getDetailBriefSeat(Long id) {
+        SeatEntity seat = seatRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SEAT_NOT_FOUND));
+        return SeatBriefResponse.builder()
+                .seatId(seat.getSeatId())
+                .seatNumber(seat.getSeatNumber())
+                .seatRow(seat.getSeatRow())
+                .build();
     }
 }

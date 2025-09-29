@@ -51,6 +51,9 @@ public class MovieEntity extends BaseEntity{
     @Column(name = "trailer_url")
     String trailerUrl;
 
+    @Column(name = "banner_url")
+    String bannerUrl;
+
     @ManyToMany
     @JoinTable(
             name = "movie_genres",
