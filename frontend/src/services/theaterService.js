@@ -77,7 +77,7 @@ export const theaterService = {
   async getTheaterById(theaterId) {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/theaters/${theaterId}`
+      const url = `${API_BASE_URL}/theaters/get-detail/${theaterId}`
       
       const response = await fetch(url, {
         method: 'GET',
@@ -186,7 +186,7 @@ export const theaterService = {
   async getTheaterRooms(theaterId) {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/theaters/${theaterId}/rooms`
+      const url = `${API_BASE_URL}/theaters/get-detail/${theaterId}`
       
       const response = await fetch(url, {
         method: 'GET',

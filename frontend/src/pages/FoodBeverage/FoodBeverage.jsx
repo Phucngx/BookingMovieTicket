@@ -248,28 +248,30 @@ useEffect(() => {
                 )}
               </Card>
             </div>
+
+            {/* Action Buttons */}
+            <div className="action-buttons">
+              <Button 
+                icon={<LeftOutlined />} 
+                size="large"
+                onClick={() => navigate('/seat-selection', { state: { preserveSelections: true } })}
+                className="back-btn"
+              >
+                Quay lại
+              </Button>
+              <Button 
+                type="primary" 
+                size="large"
+                onClick={handleContinue}
+                className="continue-btn"
+              >
+                {cart.length > 0 ? 'Tiếp tục' : 'Bỏ qua'}
+              </Button>
+            </div>
           </Col>
         </Row>
 
-        {/* Action Buttons */}
-        <div className="action-buttons">
-          <Button 
-            icon={<LeftOutlined />} 
-            size="large"
-            onClick={() => navigate('/seat-selection', { state: { preserveSelections: true } })}
-            className="back-btn"
-          >
-            Quay lại
-          </Button>
-          <Button 
-            type="primary" 
-            size="large"
-            onClick={handleContinue}
-            className="continue-btn"
-          >
-            {cart.length > 0 ? 'Tiếp tục' : 'Bỏ qua'}
-          </Button>
-        </div>
+        
       </div>
     </div>
   );

@@ -97,7 +97,7 @@ const AdminLayout = ({ children }) => {
           ) : (
             <div className="logo-full">
               <Title level={4} style={{ color: 'white', margin: 0 }}>
-                Admin Panel
+                Trang quản trị viên
               </Title>
             </div>
           )}
@@ -127,7 +127,7 @@ const AdminLayout = ({ children }) => {
             </Title>
           </div>
           
-          <div className="admin-header-right">
+          {/* <div className="admin-header-right">
             <Space>
               <Dropdown
                 menu={{ items: userMenuItems }}
@@ -143,7 +143,7 @@ const AdminLayout = ({ children }) => {
                 </Avatar>
               </Dropdown>
             </Space>
-          </div>
+          </div> */}
         </Header>
         
         <Content className="admin-content">

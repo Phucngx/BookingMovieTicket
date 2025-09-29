@@ -126,8 +126,8 @@
 }
 
 .ant-btn-dangerous {
-  background-color: #ff4d4f;
-  border-color: #ff4d4f;
+  /* background-color: #ff4d4f;
+  border-color: #ff4d4f; */
 }
 
 .ant-btn-dangerous:hover {
