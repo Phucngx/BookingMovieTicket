@@ -13,7 +13,7 @@ public interface IAccountService {
     AccountResponse createAccount(AccountRequest request);
     AccountResponse updateAccount(Long id, AccountUpdateRequest request);
     void deleteAccount(Long id);
-    Page<AccountResponse> getAllAccount(int page, int size);
+    Page<AccountDetailResponse> getAllAccount(int page, int size);
     AccountDetailResponse getDetailAccount(Long id);
     MeResponse getMe(Long AccountId);
 

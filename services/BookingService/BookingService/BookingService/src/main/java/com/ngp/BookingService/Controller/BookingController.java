@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -37,8 +39,8 @@ public class BookingController {
     }
 
     @GetMapping("/get-all")
-    public ApiResponse<Page<BookingResponse>> getAllBookings(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size) {
-        return ApiResponse.<Page<BookingResponse>>builder()
+    public ApiResponse<Page<BookingFullResponse>> getAllBookings(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size) {
+        return ApiResponse.<Page<BookingFullResponse>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(bookingService.getAllBookings(page, size))
                 .build();
@@ -67,6 +69,14 @@ public class BookingController {
         return ApiResponse.<TicketResponse>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(bookingService.getTicketByBookingId(bookingId))
+                .build();
+    }
+
+    @GetMapping("/get-my-ticket/{accountId}")
+    public ApiResponse<List<TicketResponse>> getTicketsByAccountId(@PathVariable Long accountId) {
+        return ApiResponse.<List<TicketResponse>>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(bookingService.getTicketsByAccountId(accountId))
                 .build();
     }
 }

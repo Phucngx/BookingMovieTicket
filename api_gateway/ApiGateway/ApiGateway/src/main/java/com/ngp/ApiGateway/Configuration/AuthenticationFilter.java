@@ -55,7 +55,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "showtime-service/showtimes/get-details/.*",
             "showtime-service/showtimes/get-details/.*",
             "showtime-service/showtimes/get-showtimes/.*",
-            "showtime-service/showtimes//get-showtimes-by-date/.*",
+            "showtime-service/showtimes/get-showtimes-by-date/.*",
     };
 
     @Override

@@ -43,7 +43,7 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/getDetail/{id}")
+    @GetMapping("/get-details/{id}")
     public ApiResponse<UserResponse> getDetail(@PathVariable Long id){
         return ApiResponse.<UserResponse>builder()
                 .code(ErrorCode.SUCCESS.getCode())

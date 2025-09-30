@@ -47,8 +47,8 @@ public class AccountController {
     }
 
     @GetMapping("/get-all")
-    public ApiResponse<Page<AccountResponse>> getAccountById(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size) {
-        return ApiResponse.<Page<AccountResponse>>builder()
+    public ApiResponse<Page<AccountDetailResponse>> getAccountById(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size) {
+        return ApiResponse.<Page<AccountDetailResponse>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(accountService.getAllAccount(page, size))
                 .build();

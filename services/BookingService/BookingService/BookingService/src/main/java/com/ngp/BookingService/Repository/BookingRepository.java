@@ -12,5 +12,5 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<BookingEntity, Long> {
     BookingEntity findByPaymentId(Long paymentId);
     List<BookingEntity> findByStatusAndHoldExpiresAtBefore(StatusType status, LocalDateTime now);
-
+    List<BookingEntity> findByAccountId(Long accountId);
 }

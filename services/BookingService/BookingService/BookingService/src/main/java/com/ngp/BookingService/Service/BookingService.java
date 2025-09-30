@@ -180,19 +180,11 @@ public class BookingService implements IBookingService{
 
 
     @Override
-    public Page<BookingResponse> getAllBookings(int page, int size) {
+    public Page<BookingFullResponse> getAllBookings(int page, int size) {
 //        Sort sort = Sort.by("createdAt").descending();
 //        Pageable pageable = PageRequest.of(page - 1, size, sort);
-//        Page<BookingEntity> bookingPage = bookingRepository.findAll(pageable);
-//        if (bookingPage.isEmpty()) {
-//            throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
-//        }
-//        return bookingPage.map(booking -> BookingResponse.builder()
-//                .bookingId(booking.getBookingId())
-//                .ho(booking.getShowtimeId())
-//                .status(booking.getStatus())
-//                .totalPrice(booking.getTotalPrice())
-//                .build());
+//        Page<BookingEntity> bookings = bookingRepository.findAll(pageable);
+//        TicketEntity ticket = ticketRepository.findByBooking_BookingId()
         return null;
     }
 
@@ -302,4 +294,48 @@ public class BookingService implements IBookingService{
                 .build();
     }
 
+    @Override
+    public List<TicketResponse> getTicketsByAccountId(Long accountId) {
+        List<BookingEntity> bookings = bookingRepository.findByAccountId(accountId);
+        if (bookings.isEmpty()){
+            throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
+        }
+        List<TicketResponse> tickets = new ArrayList<>();
+        for (BookingEntity booking : bookings) {
+            TicketEntity ticket = ticketRepository.findByBooking_BookingId(booking.getBookingId());
+            if (ticket == null) continue;
+
+            List<BookingSeatEntity> bookingSeats = bookingSeatRepository.findByBooking_BookingId(booking.getBookingId());
+            List<String> seatNames = bookingSeats.stream()
+                    .map(seat -> {
+                        SeatBriefResponse seatRes = theaterClient.getSeatDetail(seat.getSeatId()).getData();
+                        return seatRes.getSeatRow() + String.format("%02d", seatRes.getSeatNumber());
+                    })
+                    .toList();
+
+            List<BookingFoodEntity> bookingFoods = bookingFoodRepository.findByBooking_BookingId(booking.getBookingId());
+            List<String> foodNames = bookingFoods.stream()
+                    .map(food -> theaterClient.getFoodDetail(food.getFoodId()).getData().getFoodName())
+                    .toList();
+
+            MovieBriefResponse movie = showtimeClient.getMovieDetailByShowtimeId(booking.getShowtimeId()).getData();
+            ShowtimeResponse showtime = showtimeClient.getShowtimeDetail(booking.getShowtimeId()).getData();
+            TheaterResponse theater = showtimeClient.getTheaterDetailByShowtimeId(booking.getShowtimeId()).getData();
+            RoomBriefResponse room = showtimeClient.getRoomDetailByShowtimeId(booking.getShowtimeId()).getData();
+
+            tickets.add(TicketResponse.builder()
+                    .bookingId(booking.getBookingId())
+                    .seatNames(seatNames)
+                    .foodNames(foodNames)
+                    .createdAt(ticket.getCreatedAt())
+                    .qrCode(ticket.getQrCode())
+                    .movieName(movie.getTitle())
+                    .startTime(showtime.getStartTime())
+                    .endTime(showtime.getEndTime())
+                    .theaterName(theater.getTheaterName())
+                    .roomName(room.getRoomName())
+                    .build());
+        }
+        return tickets;
+    }
 }

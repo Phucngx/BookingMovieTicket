@@ -98,16 +98,29 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public Page<AccountResponse> getAllAccount(int page, int size) {
+    public Page<AccountDetailResponse> getAllAccount(int page, int size) {
         Sort sort = Sort.by("createdAt").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         Page<AccountEntity> listAccounts = accountRepository.findAll(pageable);
-
-//        List<Object> movies = profileClient.getAllMovies(page, size);
-//        for (Object movie : movies) {
-//            System.out.println("Movie: " + movie);
-//        }
-        return listAccounts.map(accountMapper::toAccountResponse);
+        UserResponse user = new UserResponse();
+        return listAccounts.map(a -> {
+            UserEntity u = a.getUser();
+            if (u != null) {
+                user.setUserId(String.valueOf(u.getUserId()));
+                user.setFullName(u.getFullName());
+                user.setEmail(u.getEmail());
+                user.setPhone(u.getPhone());
+                user.setAddress(u.getAddress());
+                user.setAvatarUrl(u.getAvatarUrl());
+            }
+            return AccountDetailResponse.builder()
+                    .accountId(a.getAccountId())
+                    .username(a.getUsername())
+                    .status(a.getStatus())
+                    .roleName(a.getRole().getRoleName())
+                    .user(user)
+                    .build();
+        });
     }
 
     @Override
