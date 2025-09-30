@@ -1,0 +1,213 @@
+.theater-detail-container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.theater-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theater-detail-title h2 {
+  margin: 0 0 8px 0 !important;
+  color: #262626;
+  font-weight: 600;
+}
+
+.theater-detail-title .ant-typography {
+  margin: 0 !important;
+}
+
+.theater-info-card,
+.theater-rooms-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theater-info-card .ant-card-head,
+.theater-rooms-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.theater-info-card .ant-card-head-title,
+.theater-rooms-card .ant-card-head-title {
+  font-weight: 600;
+  color: #262626;
+  font-size: 16px;
+}
+
+.theater-info-card .ant-card-body,
+.theater-rooms-card .ant-card-body {
+  padding: 24px;
+}
+
+/* Descriptions styling */
+.ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  font-weight: 500;
+  color: #262626;
+  width: 200px;
+}
+
+.ant-descriptions-bordered .ant-descriptions-item-content {
+  background-color: white;
+}
+
+/* Table styling */
+.theater-rooms-card .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 600;
+  color: #262626;
+}
+
+.theater-rooms-card .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px;
+}
+
+.theater-rooms-card .ant-table-tbody > tr:hover > td {
+  background-color: #f5f5f5;
+}
+
+/* Tags */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+}
+
+.ant-tag-blue {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border: 1px solid #91d5ff;
+}
+
+.ant-tag-green {
+  background-color: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.ant-tag-red {
+  background-color: #fff2f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
+.ant-tag-gold {
+  background-color: #fffbe6;
+  color: #faad14;
+  border: 1px solid #ffe58f;
+}
+
+/* Buttons */
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+.ant-btn-dangerous {
+  /* background-color: #ff4d4f;
+  border-color: #ff4d4f; */
+}
+
+.ant-btn-dangerous:hover {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+.ant-btn-text {
+  color: #1890ff;
+}
+
+.ant-btn-text:hover {
+  color: #40a9ff;
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+/* Modal */
+.ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.ant-modal-title {
+  font-weight: 600;
+  color: #262626;
+}
+
+.ant-modal-body {
+  padding: 24px;
+}
+
+/* Alert */
+.ant-alert {
+  border-radius: 8px;
+}
+
+.ant-alert-error {
+  border-color: #ffccc7;
+}
+
+.ant-alert-warning {
+  border-color: #ffe58f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .theater-detail-container {
+    padding: 16px;
+  }
+  
+  .theater-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .theater-info-card .ant-card-body,
+  .theater-rooms-card .ant-card-body {
+    padding: 16px;
+  }
+  
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    width: 150px;
+  }
+  
+  .theater-rooms-card {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .theater-detail-container {
+    padding: 12px;
+  }
+  
+  .theater-detail-header {
+    padding: 16px;
+  }
+  
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    width: 120px;
+  }
+}

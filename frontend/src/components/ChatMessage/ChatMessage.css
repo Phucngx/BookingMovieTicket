@@ -1,0 +1,263 @@
+.chat-message {
+  display: flex;
+  margin-bottom: 8px;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.chat-message.user {
+  justify-content: flex-end;
+}
+
+.chat-message.bot {
+  justify-content: flex-start;
+}
+
+.chat-message.system {
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.message-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 80%;
+}
+
+.chat-message.user .message-container {
+  flex-direction: row-reverse;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Message Bubble */
+.message-bubble {
+  padding: 12px 16px;
+  border-radius: 18px;
+  position: relative;
+  word-wrap: break-word;
+  max-width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.bot-message {
+  background: white;
+  color: #262626;
+  border: 1px solid #f0f0f0;
+  border-bottom-left-radius: 4px;
+}
+
+.message-text {
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.user-message .message-text {
+  color: white;
+}
+
+.bot-message .message-text {
+  color: #262626;
+}
+
+/* Message Meta */
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.user-message .message-meta {
+  flex-direction: row-reverse;
+}
+
+.message-meta .ant-typography {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.user-message .message-meta .ant-typography {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.bot-message .message-meta .ant-typography {
+  color: #8c8c8c;
+}
+
+/* Message Status */
+.message-status {
+  display: flex;
+  align-items: center;
+}
+
+.sent-icon {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.read-icon {
+  color: #52c41a;
+  font-size: 12px;
+}
+
+/* Avatar */
+.user-avatar,
+.bot-avatar {
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.bot-avatar {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%) !important;
+}
+
+/* System Message */
+.system-message {
+  text-align: center;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.message-bubble {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Hover effects */
+.message-bubble:hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+.user-message:hover {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.bot-message:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .message-container {
+    max-width: 90%;
+  }
+  
+  .message-bubble {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  
+  .user-avatar,
+  .bot-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .message-meta {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message-container {
+    max-width: 95%;
+  }
+  
+  .message-bubble {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .user-avatar,
+  .bot-avatar {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+  
+  .message-meta {
+    font-size: 9px;
+  }
+  
+  .system-message {
+    max-width: 250px;
+    padding: 6px 12px;
+  }
+}
+
+/* Message types */
+.message-bubble.image-message {
+  padding: 8px;
+}
+
+.message-bubble.file-message {
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border: 1px dashed #d9d9d9;
+}
+
+.user-message.file-message {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Link styling */
+.message-text a {
+  color: inherit;
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.message-text a:hover {
+  opacity: 1;
+}
+
+.user-message .message-text a {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.bot-message .message-text a {
+  color: #1890ff;
+}

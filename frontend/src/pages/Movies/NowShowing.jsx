@@ -292,65 +292,8 @@ const NowShowing = () => {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Footer Section */}
-      <footer className="footer-section">
-        <div className="footer-content">
-          <div className="footer-columns">
-            {/* Company Information */}
-            <div className="footer-column company-info">
-              <div className="company-logo">
-                <div className="logo-square">Mv</div>
-                <h3>CÔNG TY TNHH MONET</h3>
-              </div>
-              <p>SỐ ĐKKD: 0315367026</p>
-              <p>Nơi cấp: Sở kế hoạch và đầu tư Tp. Hồ Chí Minh</p>
-              <p>Đăng ký lần đầu ngày 01/11/2018</p>
-              <p>Địa chỉ: 33 Nguyễn Trung Trực, P.5, Q. Bình Thạnh, Tp. Hồ Chí Minh</p>
-              <div className="footer-links">
-                <a href="#">Về chúng tôi</a>
-                <a href="#">Chính sách bảo mật</a>
-                <a href="#">Hỗ trợ</a>
-                <a href="#">Liên hệ</a>
-              </div>
-              <p className="version">v8.1</p>
-            </div>
-
-            {/* Partners */}
-            <div className="footer-column partners">
-              <h3>ĐỐI TÁC</h3>
-              <div className="partner-logos">
-                <div className="partner-row">
-                  <div className="partner-logo">beta cinemas</div>
-                  <div className="partner-logo">Mega GS</div>
-                  <div className="partner-logo">CNESAR</div>
-                  <div className="partner-logo">Dcine</div>
-                  <div className="partner-logo">CINEMAX</div>
-                  <div className="partner-logo">STARLIGHT</div>
-                </div>
-                <div className="partner-row">
-                  <div className="partner-logo">TOUCH CINEMA</div>
-                  <div className="partner-logo">Payoo</div>
-                  <div className="partner-logo">MoMo</div>
-                  <div className="partner-logo">ZaloPay</div>
-                  <div className="partner-logo">DDC</div>
-                  <div className="partner-logo">RONGJA CINEW</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Certification */}
-            <div className="footer-column certification">
-              <div className="cert-badge">
-                <CheckOutlined className="check-icon" />
-                <span>ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG</span>
-              </div>
-            </div>
-          </div>
         </div>
-      </footer>
-    </div>
+      </div>
   );
 };
 

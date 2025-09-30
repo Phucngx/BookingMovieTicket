@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Typography, 
   Row, 
@@ -32,51 +33,30 @@ import {
   QrcodeOutlined
 } from '@ant-design/icons';
 import './TicketInfo.css';
+import { fetchTicketByBookingId, clearBookingsState } from '../../store/slices/bookingsSlice';
+import { tokenUtils } from '../../services/authService';
 
 const { Title, Text } = Typography;
 
 const TicketInfo = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { 
-    movie, 
-    showtime, 
-    selectedSeats, 
-    totalPrice, 
-    cart, 
-    foodTotal, 
-    grandTotal, 
-    customerInfo, 
-    paymentMethod, 
-    transactionId 
-  } = location.state || {};
+  const dispatch = useDispatch();
+  const { lastBooking, ticket, loading, error } = useSelector((state) => state.bookings);
+  const { token } = useSelector((state) => state.user);
+  const params = new URLSearchParams(location.search);
+  const bookingIdFromUrl = params.get('bookingId');
+  const bookingId = bookingIdFromUrl || lastBooking?.bookingId;
 
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
-    if (!movie || !showtime || !selectedSeats) {
-      navigate('/');
-    }
-  }, [movie, showtime, selectedSeats, navigate]);
-
-  const getPaymentMethodText = (method) => {
-    const methods = {
-      credit_card: 'Thẻ tín dụng/ghi nợ',
-      bank_transfer: 'Chuyển khoản ngân hàng',
-      e_wallet: 'Ví điện tử'
-    };
-    return methods[method] || method;
-  };
-
-  const getPaymentMethodIcon = (method) => {
-    const icons = {
-      credit_card: <CreditCardOutlined />,
-      bank_transfer: <CreditCardOutlined />,
-      e_wallet: <CreditCardOutlined />
-    };
-    return icons[method] || <CreditCardOutlined />;
-  };
+    if (!bookingId) return;
+    const bearer = token || tokenUtils.getToken();
+    if (!bearer) return;
+    dispatch(fetchTicketByBookingId({ bookingId, token: bearer }))
+  }, [bookingId, dispatch, token]);
 
   const handleShareTicket = () => {
     message.success('Đã chia sẻ vé thành công!');
@@ -99,8 +79,21 @@ const TicketInfo = () => {
     }, 1500);
   };
 
-  if (!movie || !showtime || !selectedSeats) {
-    return null;
+  // Clear booking state when leaving TicketInfo
+  useEffect(() => {
+    return () => {
+      dispatch(clearBookingsState())
+    }
+  }, [dispatch])
+
+  if (!ticket) {
+    return (
+      <div className="ticket-info">
+        <div className="container">
+          <Result status={loading ? 'info' : 'warning'} title={loading ? 'Đang tải thông tin vé...' : (error || 'Không tìm thấy thông tin vé')} />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -113,14 +106,6 @@ const TicketInfo = () => {
           </Title>
           <Text type="secondary">Vé đã được đặt thành công</Text>
         </div>
-        <Progress
-          percent={100}
-          showInfo={false}
-          strokeColor="#52c41a"
-          trailColor="#f0f0f0"
-          size="small"
-          className="progress-bar"
-        />
         <div className="progress-steps">
           <div className="step completed">
             <div className="step-icon">✓</div>
@@ -147,7 +132,7 @@ const TicketInfo = () => {
           status="success"
           icon={<CheckCircleOutlined className="success-icon" />}
           title="Đặt vé thành công!"
-          subTitle="Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Vé đã được gửi đến email của bạn."
+          subTitle={`Mã đặt vé: BK${ticket.bookingId}. Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.`}
           className="success-result"
           extra={[
             <Button 
@@ -214,30 +199,17 @@ const TicketInfo = () => {
             >
               <div className="ticket-header">
                 <div className="movie-poster-container">
-                  <img src={movie.poster} alt={movie.title} className="movie-poster" />
+                  <img alt={ticket.movieName} className="movie-poster" />
                   <div className="movie-badge">
-                    <Tag color="blue" className="movie-type">{showtime.type}</Tag>
-                    <Tag color="green" className="cinema-name">{showtime.cinema}</Tag>
-                  </div>
-                  <div className="movie-rating">
-                    <StarOutlined className="star-icon" />
-                    <span className="rating-text">9.2</span>
+                    <Tag color="green" className="cinema-name">{ticket.theaterName}</Tag>
                   </div>
                 </div>
                 <div className="movie-info">
-                  <Title level={3} className="movie-title">{movie.title}</Title>
+                  <Title level={3} className="movie-title">{ticket.movieName}</Title>
                   <div className="movie-meta">
                     <Text type="secondary" className="movie-duration">
-                      <ClockCircleOutlined /> {movie.duration} phút
+                      <ClockCircleOutlined /> {new Date(ticket.startTime).toLocaleTimeString('vi-VN', { hour12: false })} - {new Date(ticket.endTime).toLocaleTimeString('vi-VN', { hour12: false })}
                     </Text>
-                    <Text type="secondary" className="movie-language">
-                      {movie.language === 'vietnamese' ? 'Tiếng Việt' : movie.language}
-                    </Text>
-                  </div>
-                  <div className="movie-genre">
-                    <Tag color="purple">Action</Tag>
-                    <Tag color="blue">Adventure</Tag>
-                    <Tag color="green">Fantasy</Tag>
                   </div>
                 </div>
               </div>
@@ -251,7 +223,7 @@ const TicketInfo = () => {
                     <div className="detail-content">
                       <Text strong>Suất chiếu</Text>
                       <Text className="detail-value">
-                        {showtime.time} {showtime.date}/{showtime.day}
+                        {new Date(ticket.startTime).toLocaleString('vi-VN')}
                       </Text>
                     </div>
                   </div>
@@ -261,7 +233,7 @@ const TicketInfo = () => {
                     <UserOutlined className="detail-icon" />
                     <div className="detail-content">
                       <Text strong>Phòng chiếu</Text>
-                      <Text className="detail-value">P6 - 2D</Text>
+                      <Text className="detail-value">{ticket.roomName}</Text>
                     </div>
                   </div>
                 </Col>
@@ -271,22 +243,24 @@ const TicketInfo = () => {
                     <div className="detail-content">
                       <Text strong>Ghế đã chọn</Text>
                       <Text className="detail-value seats-value">
-                        {selectedSeats.join(', ')}
+                        {(ticket.seatNames || []).join(', ')}
                       </Text>
                     </div>
                   </div>
                 </Col>
-                <Col xs={24} sm={12}>
-                  <div className="detail-item">
-                    <CreditCardOutlined className="detail-icon" />
-                    <div className="detail-content">
-                      <Text strong>Giá vé</Text>
-                      <Text className="detail-value price-value">
-                        {totalPrice.toLocaleString('vi-VN')} ₫
-                      </Text>
+                {typeof ticket.amount !== 'undefined' && (
+                  <Col xs={24} sm={12}>
+                    <div className="detail-item">
+                      <CreditCardOutlined className="detail-icon" />
+                      <div className="detail-content">
+                        <Text strong>Giá vé</Text>
+                        <Text className="detail-value price-value">
+                          {(ticket.amount || 0).toLocaleString('vi-VN')} ₫
+                        </Text>
+                      </div>
                     </div>
-                  </div>
-                </Col>
+                  </Col>
+                )}
               </Row>
 
               {/* QR Code Section */}
@@ -294,101 +268,50 @@ const TicketInfo = () => {
                 <Divider className="qr-divider" />
                 <div className="qr-content">
                   <div className="qr-placeholder">
+                    {ticket.qrcode ? (
+                      <img src={ticket.qrcode} alt="QR Code" style={{ width: 160, height: 160 }} />
+                    ) : (
+                      <>
                     <QrcodeOutlined className="qr-icon" />
                     <Text className="qr-text">QR Code vé</Text>
+                      </>
+                    )}
                   </div>
                   <div className="qr-info">
                     <Text strong>Mã vé:</Text>
                     <Text className="ticket-code">
-                      {transactionId || 'TKT' + Date.now().toString().slice(-8)}
+                      {'BK' + String(ticket.bookingId)}
                     </Text>
                   </div>
                 </div>
               </div>
             </Card>
 
-            {/* Enhanced Food & Beverage Order */}
-            {cart && cart.length > 0 && (
+            {/* Food & Beverage Order from ticket */}
+            {Array.isArray(ticket.foodNames) && ticket.foodNames.length > 0 && (
               <Card 
                 title={
                   <Space>
                     <span className="food-icon">🍿</span>
                     <span>Đồ ăn & thức uống đã đặt</span>
-                    <Badge count={cart.length} size="small" className="food-badge" />
+                    <Badge count={ticket.foodNames.length} size="small" className="food-badge" />
                   </Space>
                 } 
                 className="food-card main-card"
                 bordered={false}
               >
                 <div className="food-items">
-                  {cart.map((item) => (
-                    <div key={item.id} className="food-item">
+                  {ticket.foodNames.map((name, idx) => (
+                    <div key={idx} className="food-item">
                       <div className="food-item-info">
-                        <Avatar 
-                          src={item.image} 
-                          size={40} 
-                          className="food-avatar"
-                        />
+                        <Avatar size={40} className="food-avatar">🍽️</Avatar>
                         <div className="food-details">
-                          <Text strong className="food-name">{item.name}</Text>
-                          <Text type="secondary" className="food-description">
-                            {item.description || 'Món ăn ngon'}
-                          </Text>
+                          <Text strong className="food-name">{name}</Text>
                         </div>
-                      </div>
-                      <div className="food-quantity-price">
-                        <Text type="secondary" className="food-quantity">x{item.quantity}</Text>
-                        <Text strong className="food-price">
-                          {(item.price * item.quantity).toLocaleString('vi-VN')} ₫
-                        </Text>
                       </div>
                     </div>
                   ))}
                 </div>
-                <Divider className="food-divider" />
-                <div className="food-total">
-                  <Text strong>Tổng cộng:</Text>
-                  <Text strong className="food-total-amount">
-                    {foodTotal.toLocaleString('vi-VN')} ₫
-                  </Text>
-                </div>
-              </Card>
-            )}
-
-            {/* Enhanced Customer Information */}
-            {customerInfo && (
-              <Card 
-                title={
-                  <Space>
-                    <UserOutlined className="card-title-icon" />
-                    <span>Thông tin khách hàng</span>
-                  </Space>
-                } 
-                className="customer-card main-card"
-                bordered={false}
-              >
-                <Row gutter={[24, 16]}>
-                  <Col xs={24} sm={12}>
-                    <div className="customer-detail">
-                      <Text strong>Họ và tên:</Text>
-                      <Text className="customer-value">{customerInfo.fullName}</Text>
-                    </div>
-                    <div className="customer-detail">
-                      <Text strong>Số điện thoại:</Text>
-                      <Text className="customer-value">{customerInfo.phone}</Text>
-                    </div>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <div className="customer-detail">
-                      <Text strong>Email:</Text>
-                      <Text className="customer-value">{customerInfo.email}</Text>
-                    </div>
-                    <div className="customer-detail">
-                      <Text strong>Địa chỉ:</Text>
-                      <Text className="customer-value">{customerInfo.address}</Text>
-                    </div>
-                  </Col>
-                </Row>
               </Card>
             )}
           </Col>
@@ -396,7 +319,7 @@ const TicketInfo = () => {
           {/* Right Side - Summary & Actions */}
           <Col xs={24} lg={8}>
             <div className="summary-sidebar">
-              {/* Enhanced Transaction Summary */}
+              {/* Transaction Summary */}
               <Card 
                 title={
                   <Space>
@@ -409,62 +332,23 @@ const TicketInfo = () => {
               >
                 <div className="transaction-details">
                   <div className="transaction-row">
-                    <Text>Mã giao dịch:</Text>
-                    <Text strong className="transaction-id">
-                      {transactionId || 'TKT' + Date.now().toString().slice(-6)}
-                    </Text>
-                  </div>
-                  <div className="transaction-row">
-                    <Text>Phương thức thanh toán:</Text>
-                    <div className="payment-method">
-                      {getPaymentMethodIcon(paymentMethod)}
-                      <Text>{getPaymentMethodText(paymentMethod)}</Text>
-                    </div>
+                    <Text>Mã đặt vé:</Text>
+                    <Text strong className="transaction-id">{'BK' + String(ticket.bookingId)}</Text>
                   </div>
                   <div className="transaction-row">
                     <Text>Thời gian đặt:</Text>
-                    <Text>{new Date().toLocaleString('vi-VN')}</Text>
+                    <Text>{new Date(ticket.createdAt).toLocaleString('vi-VN')}</Text>
                   </div>
-                  <div className="transaction-row">
-                    <Text>Trạng thái:</Text>
-                    <Tag color="success" className="status-tag">Đã thanh toán</Tag>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Enhanced Total Summary */}
-              <Card 
-                title={
-                  <Space>
-                    <span className="money-icon">💰</span>
-                    <span>Tổng đơn hàng</span>
-                  </Space>
-                } 
-                className="summary-card total-card"
-                bordered={false}
-              >
-                <div className="total-breakdown">
-                  <div className="total-row">
-                    <Text>Vé xem phim:</Text>
-                    <Text>{totalPrice.toLocaleString('vi-VN')} ₫</Text>
-                  </div>
-                  {cart && cart.length > 0 && (
-                    <div className="total-row">
-                      <Text>Đồ ăn & thức uống:</Text>
-                      <Text>{foodTotal.toLocaleString('vi-VN')} ₫</Text>
+                  {typeof ticket.amount !== 'undefined' && (
+                    <div className="transaction-row">
+                      <Text>Tổng tiền:</Text>
+                      <Text strong>{(ticket.amount || 0).toLocaleString('vi-VN')} ₫</Text>
                     </div>
                   )}
-                  <Divider className="total-divider" />
-                  <div className="total-row grand-total">
-                    <Text strong>Tổng cộng:</Text>
-                    <Text strong className="final-total">
-                      {grandTotal.toLocaleString('vi-VN')} ₫
-                    </Text>
-                  </div>
                 </div>
               </Card>
 
-              {/* Enhanced Important Notice */}
+              {/* Important Notice */}
               <Card 
                 title={
                   <Space>
@@ -477,24 +361,18 @@ const TicketInfo = () => {
               >
                 <div className="notice-list">
                   <div className="notice-item">
-                    <Text type="secondary">• Vé đã được gửi đến email của bạn</Text>
+                    <Text type="secondary">• Vé đã mua không thể hoàn trả</Text>
+                  </div>
+                  <div className="notice-item">
+                    <Text type="secondary">• Vé có thể dùng QR Code để vào rạp</Text>
                   </div>
                   <div className="notice-item">
                     <Text type="secondary">• Vui lòng đến rạp trước giờ chiếu 15 phút</Text>
                   </div>
-                  <div className="notice-item">
-                    <Text type="secondary">• Mang theo CMND/CCCD để xác nhận</Text>
-                  </div>
-                  <div className="notice-item">
-                    <Text type="secondary">• Không thể hoàn vé sau khi đặt</Text>
-                  </div>
-                  <div className="notice-item">
-                    <Text type="secondary">• Có thể sử dụng QR Code để vào rạp</Text>
-                  </div>
                 </div>
               </Card>
 
-              {/* Enhanced Action Buttons */}
+              {/* Action Buttons */}
               <div className="action-buttons">
                 <Button 
                   icon={<ShareAltOutlined />}

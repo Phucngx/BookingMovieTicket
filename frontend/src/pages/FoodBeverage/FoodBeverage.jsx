@@ -1,158 +1,93 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   Typography, 
-  Row, 
-  Col, 
+  Row,
+  Col,
   Button, 
-  Card, 
-  Progress,
-  InputNumber,
-  Space,
+  Card,
   Divider,
-  Badge,
-  Empty,
-  Tag,
-  Tooltip,
   message
 } from 'antd';
 import { 
   LeftOutlined,
   PlusOutlined,
-  MinusOutlined,
-  ShoppingCartOutlined,
-  CoffeeOutlined,
-  FireOutlined,
-  StarOutlined,
-  HeartOutlined,
-  HeartFilled
+  MinusOutlined
 } from '@ant-design/icons';
 import './FoodBeverage.css';
+import { fetchFoods, setSelection, clearSelections } from '../../store/slices/foodsSlice';
 
 const { Title, Text } = Typography;
 
 const FoodBeverage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { movie, showtime, selectedSeats, totalPrice } = location.state || {};
+  const { selectedShowtime } = useSelector((state) => state.showtimes);
+  const reduxSelectedSeats = useSelector((state) => state.seats.selectedSeats);
+  const { token } = useSelector((state) => state.user);
+  const foodsState = useSelector((state) => state.foods);
+  const dispatch = useDispatch();
+
+  const { movie, showtime, selectedSeats, totalPrice } = location.state || {
+    movie: selectedShowtime?.movie,
+    showtime: selectedShowtime,
+    selectedSeats: [],
+    totalPrice: 0
+  };
   
   const [cart, setCart] = useState([]);
   const [currentStep, setCurrentStep] = useState(2);
-  const [favorites, setFavorites] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Dữ liệu đồ ăn và thức uống - cải thiện với thông tin chi tiết hơn
-  const foodItems = [
-    {
-      id: 1,
-      name: 'Bắp rang bơ',
-      price: 45000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'food',
-      description: 'Bắp rang bơ thơm ngon, giòn tan',
-      rating: 4.8,
-      popular: true,
-      discount: 10
-    },
-    {
-      id: 2,
-      name: 'Bắp rang phô mai',
-      price: 55000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'food',
-      description: 'Bắp rang phô mai béo ngậy',
-      rating: 4.9,
-      popular: true,
-      discount: 0
-    },
-    {
-      id: 3,
-      name: 'Khoai tây chiên',
-      price: 35000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'food',
-      description: 'Khoai tây chiên giòn rụm',
-      rating: 4.6,
-      popular: false,
-      discount: 15
-    },
-    {
-      id: 4,
-      name: 'Hot dog',
-      price: 65000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'food',
-      description: 'Hot dog với xúc xích và rau củ',
-      rating: 4.7,
-      popular: true,
-      discount: 0
-    }
-  ];
+  // Combo items
+  const allItems = foodsState.items;
 
-  const beverageItems = [
-    {
-      id: 5,
-      name: 'Coca Cola',
-      price: 25000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'beverage',
-      description: 'Nước ngọt Coca Cola mát lạnh',
-      rating: 4.5,
-      popular: true,
-      discount: 0
-    },
-    {
-      id: 6,
-      name: 'Nước cam',
-      price: 30000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'beverage',
-      description: 'Nước cam tươi nguyên chất',
-      rating: 4.8,
-      popular: false,
-      discount: 20
-    },
-    {
-      id: 7,
-      name: 'Cà phê sữa',
-      price: 35000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'beverage',
-      description: 'Cà phê sữa đậm đà',
-      rating: 4.9,
-      popular: true,
-      discount: 0
-    },
-    {
-      id: 8,
-      name: 'Trà sữa trân châu',
-      price: 45000,
-      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=120&fit=crop',
-      category: 'beverage',
-      description: 'Trà sữa trân châu ngọt ngào',
-      rating: 4.7,
-      popular: true,
-      discount: 0
-    }
-  ];
+  const groupedByType = useMemo(() => {
+    return allItems.reduce((acc, item) => {
+      const key = item.type;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(item);
+      return acc;
+    }, {});
+  }, [allItems]);
 
-  const allItems = [...foodItems, ...beverageItems];
+// Prefill cart from Redux selections when available
+  useEffect(() => {
+    const selections = foodsState.selections || {};
+    const prefilled = Object.values(selections);
+    setCart(prefilled);
+  }, [foodsState.selections]);
+
+// Reset food selections on fresh entry unless returning with preserve flag
+useEffect(() => {
+  if (!location.state?.preserveSelections) {
+    setCart([]);
+    dispatch(clearSelections());
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   useEffect(() => {
-    if (!movie || !showtime || !selectedSeats) {
-      navigate('/');
+    if (!token) {
+      // Không có token: bỏ qua fetch, vẫn cho người dùng tiếp tục
+      return;
     }
-  }, [movie, showtime, selectedSeats, navigate]);
+    dispatch(fetchFoods({ page: 1, size: 20, token }))
+      .unwrap()
+      .catch((err) => {
+        message.error(err || 'Không thể tải danh sách bắp nước');
+      });
+  }, [dispatch, token]);
 
   const addToCart = (item) => {
     const existingItem = cart.find(cartItem => cartItem.id === item.id);
-    
+    const newQty = existingItem ? existingItem.quantity + 1 : 1;
+    dispatch(setSelection({ food: item, quantity: newQty }));
     if (existingItem) {
       setCart(prevCart => 
         prevCart.map(cartItem => 
           cartItem.id === item.id 
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            ? { ...cartItem, quantity: newQty }
             : cartItem
         )
       );
@@ -177,15 +112,12 @@ const FoodBeverage = () => {
         )
       );
     }
+    const foodObj = allItems.find(f => f.id === itemId)
+    if (foodObj) {
+      dispatch(setSelection({ food: foodObj, quantity }));
+    }
   };
 
-  const toggleFavorite = (itemId) => {
-    setFavorites(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
-    );
-  };
 
   const getCartTotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -198,9 +130,9 @@ const FoodBeverage = () => {
   const handleContinue = () => {
     navigate('/thanh-toan', {
       state: {
-        movie,
-        showtime,
-        selectedSeats,
+        movie: selectedShowtime?.movie || movie,
+        showtime: selectedShowtime || showtime,
+        selectedSeats: reduxSelectedSeats && reduxSelectedSeats.length > 0 ? reduxSelectedSeats : selectedSeats,
         totalPrice,
         cart,
         foodTotal: getCartTotal(),
@@ -209,16 +141,18 @@ const FoodBeverage = () => {
     });
   };
 
-  const filteredItems = allItems.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
 
-  if (!movie || !showtime || !selectedSeats) {
-    return null;
-  }
+  // Temporary: Always show the page for debugging
+  // if (!movie || !showtime || !selectedSeats) {
+  //   return (
+  //     <div className="food-beverage">
+  //       <div style={{ padding: '50px', textAlign: 'center' }}>
+  //         <Title level={2}>Đang tải...</Title>
+  //         <Text>Vui lòng chờ trong giây lát</Text>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="food-beverage">
@@ -228,16 +162,8 @@ const FoodBeverage = () => {
           <Title level={4} className="progress-title">
             Đặt vé xem phim - Bước 2/4
           </Title>
-          <Text type="secondary">Chọn đồ ăn và thức uống</Text>
+          <Text type="secondary">Chọn đồ ăn và thức uống (tùy chọn)</Text>
         </div>
-        <Progress
-          percent={50}
-          showInfo={false}
-          strokeColor="#1890ff"
-          trailColor="#f0f0f0"
-          size="small"
-          className="progress-bar"
-        />
         <div className="progress-steps">
           <div className="step completed">
             <div className="step-icon">✓</div>
@@ -260,312 +186,92 @@ const FoodBeverage = () => {
 
       <div className="container">
         <Row gutter={24}>
-          {/* Left Side - Food & Beverage Items */}
-          <Col xs={24} lg={16}>
-            {/* Search and Filter Section */}
-            <div className="search-filter-section">
-              <div className="search-box">
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm đồ ăn, thức uống..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="search-input"
-                />
-              </div>
-              <div className="filter-buttons">
-                <Button
-                  type={selectedCategory === 'all' ? 'primary' : 'default'}
-                  size="small"
-                  onClick={() => setSelectedCategory('all')}
-                >
-                  Tất cả
-                </Button>
-                <Button
-                  type={selectedCategory === 'food' ? 'primary' : 'default'}
-                  size="small"
-                  onClick={() => setSelectedCategory('food')}
-                >
-                  Đồ ăn
-                </Button>
-                <Button
-                  type={selectedCategory === 'beverage' ? 'primary' : 'default'}
-                  size="small"
-                  onClick={() => setSelectedCategory('beverage')}
-                >
-                  Thức uống
-                </Button>
-              </div>
-            </div>
-
-            <div className="items-container">
-              {/* Food Section */}
-              <div className="section">
-                <Title level={4} className="section-title">
-                  <FireOutlined className="section-icon" /> 
-                  Đồ ăn
-                  <span className="section-count">({foodItems.length})</span>
-                </Title>
-                <Row gutter={[16, 16]}>
-                  {filteredItems.filter(item => item.category === 'food').map((item) => (
-                    <Col xs={24} sm={12} md={8} key={item.id}>
-                      <Card 
-                        className={`item-card ${item.popular ? 'popular' : ''}`}
-                        hoverable
-                        bodyStyle={{ padding: '16px' }}
-                        cover={
-                          <div className="item-image-container">
-                            <img 
-                              alt={item.name} 
-                              src={item.image}
-                              className="item-image"
-                            />
-                            {item.discount > 0 && (
-                              <div className="discount-badge">
-                                -{item.discount}%
-                              </div>
-                            )}
-                            {item.popular && (
-                              <div className="popular-badge">
-                                <StarOutlined /> Phổ biến
-                              </div>
-                            )}
-                            <Button
-                              type="text"
-                              icon={favorites.includes(item.id) ? <HeartFilled /> : <HeartOutlined />}
-                              className={`favorite-btn ${favorites.includes(item.id) ? 'favorited' : ''}`}
-                              onClick={() => toggleFavorite(item.id)}
-                            />
-                          </div>
-                        }
-                      >
-                        <div className="item-content">
-                          <div className="item-info">
-                            <Title level={5} className="item-name">{item.name}</Title>
-                            <Text className="item-description">{item.description}</Text>
-                            <div className="item-rating">
-                              <StarOutlined className="star-icon" />
-                              <span>{item.rating}</span>
-                            </div>
-                            <div className="item-price-section">
-                              {item.discount > 0 && (
-                                <Text delete className="original-price">
-                                  {item.price.toLocaleString('vi-VN')} ₫
-                                </Text>
-                              )}
-                              <Text strong className="item-price">
-                                {item.discount > 0 
-                                  ? ((item.price * (100 - item.discount)) / 100).toLocaleString('vi-VN')
-                                  : item.price.toLocaleString('vi-VN')
-                                } ₫
-                              </Text>
-                            </div>
-                          </div>
-                          <Button
-                            type="primary"
-                            shape="circle"
-                            size="large"
+          {/* Left Side - Foods grouped by type */}
+          <Col xs={24} lg={14}>
+            {Object.entries(groupedByType).map(([type, items]) => (
+              <div key={type} className="combo-section">
+                <Title level={4} className="combo-title">{type}</Title>
+                <div className="combo-list">
+                  {items.map((item) => {
+                    const cartItem = cart.find(cartItem => cartItem.id === item.id);
+                    const quantity = cartItem ? cartItem.quantity : 0;
+                    return (
+                      <div key={item.id} className="combo-item">
+                        <div className="combo-info">
+                          <div className="combo-name">{item.name}</div>
+                          <div className="combo-price">{item.price.toLocaleString('vi-VN')} ₫</div>
+                        </div>
+                        <div className="quantity-selector">
+                          <Button 
+                            size="small" 
+                            icon={<MinusOutlined />}
+                            onClick={() => updateQuantity(item.id, quantity - 1)}
+                            disabled={quantity <= 0}
+                            className="quantity-btn"
+                          />
+                          <span className="quantity-display">{quantity}</span>
+                          <Button 
+                            size="small" 
                             icon={<PlusOutlined />}
-                            className="add-btn"
                             onClick={() => addToCart(item)}
+                            className="quantity-btn"
                           />
                         </div>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-
-              {/* Beverage Section */}
-              <div className="section">
-                <Title level={4} className="section-title">
-                  <CoffeeOutlined className="section-icon" /> 
-                  Thức uống
-                  <span className="section-count">({beverageItems.length})</span>
-                </Title>
-                <Row gutter={[16, 16]}>
-                  {filteredItems.filter(item => item.category === 'beverage').map((item) => (
-                    <Col xs={24} sm={12} md={8} key={item.id}>
-                      <Card 
-                        className={`item-card ${item.popular ? 'popular' : ''}`}
-                        hoverable
-                        bodyStyle={{ padding: '16px' }}
-                        cover={
-                          <div className="item-image-container">
-                            <img 
-                              alt={item.name} 
-                              src={item.image}
-                              className="item-image"
-                            />
-                            {item.discount > 0 && (
-                              <div className="discount-badge">
-                                -{item.discount}%
-                              </div>
-                            )}
-                            {item.popular && (
-                              <div className="popular-badge">
-                                <StarOutlined /> Phổ biến
-                              </div>
-                            )}
-                            <Button
-                              type="text"
-                              icon={favorites.includes(item.id) ? <HeartFilled /> : <HeartOutlined />}
-                              className={`favorite-btn ${favorites.includes(item.id) ? 'favorited' : ''}`}
-                              onClick={() => toggleFavorite(item.id)}
-                            />
-                          </div>
-                        }
-                      >
-                        <div className="item-content">
-                          <div className="item-info">
-                            <Title level={5} className="item-name">{item.name}</Title>
-                            <Text className="item-description">{item.description}</Text>
-                            <div className="item-rating">
-                              <StarOutlined className="star-icon" />
-                              <span>{item.rating}</span>
-                            </div>
-                            <div className="item-price-section">
-                              {item.discount > 0 && (
-                                <Text delete className="original-price">
-                                  {item.price.toLocaleString('vi-VN')} ₫
-                                </Text>
-                              )}
-                              <Text strong className="item-price">
-                                {item.discount > 0 
-                                  ? ((item.price * (100 - item.discount)) / 100).toLocaleString('vi-VN')
-                                  : item.price.toLocaleString('vi-VN')
-                                } ₫
-                              </Text>
-                            </div>
-                          </div>
-                          <Button
-                            type="primary"
-                            shape="circle"
-                            size="large"
-                            icon={<PlusOutlined />}
-                            className="add-btn"
-                            onClick={() => addToCart(item)}
-                          />
-                        </div>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-            </div>
+            ))}
           </Col>
 
-          {/* Right Side - Cart & Summary */}
-          <Col xs={24} lg={8}>
-            <div className="cart-summary">
-              {/* Cart */}
-              <Card 
-                title={
-                  <Space>
-                    <ShoppingCartOutlined className="cart-icon" />
-                    <span>Giỏ hàng</span>
-                    {cart.length > 0 && (
-                      <Badge count={cart.length} size="small" className="cart-badge" />
-                    )}
-                  </Space>
-                }
-                className="cart-card"
-                bodyStyle={{ padding: '16px' }}
-              >
-                {cart.length === 0 ? (
-                  <Empty 
-                    description="Giỏ hàng trống"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    className="empty-cart"
-                  />
-                ) : (
-                  <div className="cart-items">
+          {/* Right Side - Order Summary Only */}
+          <Col xs={24} lg={10}>
+            <div className="right-sidebar">
+              {/* Order Summary Card */}
+              <Card className="order-summary-card">
+                <div className="order-summary-header">
+                  <Text className="summary-title">TỔNG ĐƠN HÀNG</Text>
+                </div>
+                <div className="total-price">
+                  <Text className="total-amount">{getGrandTotal().toLocaleString('vi-VN')} ₫</Text>
+                </div>
+                {cart.length > 0 && (
+                  <div className="price-breakdown">
                     {cart.map((item) => (
-                      <div key={item.id} className="cart-item">
-                        <div className="cart-item-info">
-                          <img src={item.image} alt={item.name} className="cart-item-image" />
-                          <div className="cart-item-details">
-                            <Text strong className="cart-item-name">{item.name}</Text>
-                            <Text type="secondary" className="cart-item-price">
-                              {item.discount > 0 
-                                ? ((item.price * (100 - item.discount)) / 100).toLocaleString('vi-VN')
-                                : item.price.toLocaleString('vi-VN')
-                              } ₫
-                            </Text>
-                          </div>
-                        </div>
-                        <div className="cart-item-actions">
-                          <Space size="small">
-                            <Button
-                              size="small"
-                              icon={<MinusOutlined />}
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="quantity-btn"
-                            />
-                            <InputNumber
-                              size="small"
-                              min={1}
-                              value={item.quantity}
-                              onChange={(value) => updateQuantity(item.id, value)}
-                              style={{ width: 50 }}
-                              className="quantity-input"
-                            />
-                            <Button
-                              size="small"
-                              icon={<PlusOutlined />}
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="quantity-btn"
-                            />
-                          </Space>
-                        </div>
+                      <div key={item.id} className="price-item">
+                        <Text>x{item.quantity} {item.name} </Text>
+                        <Text> - {(item.price * item.quantity).toLocaleString('vi-VN')} ₫</Text>
                       </div>
                     ))}
                   </div>
                 )}
               </Card>
+            </div>
 
-              {/* Order Summary */}
-              <Card title="Tổng đơn hàng" className="summary-card">
-                <div className="summary-row">
-                  <Text>Vé xem phim:</Text>
-                  <Text>{totalPrice.toLocaleString('vi-VN')} ₫</Text>
-                </div>
-                <div className="summary-row">
-                  <Text>Đồ ăn & thức uống:</Text>
-                  <Text>{getCartTotal().toLocaleString('vi-VN')} ₫</Text>
-                </div>
-                <Divider style={{ margin: '12px 0' }} />
-                <div className="summary-row total">
-                  <Text strong>Tổng cộng:</Text>
-                  <Text strong className="grand-total">
-                    {getGrandTotal().toLocaleString('vi-VN')} ₫
-                  </Text>
-                </div>
-              </Card>
-
-              {/* Action Buttons */}
-              <div className="action-buttons">
-                <Button 
-                  icon={<LeftOutlined />} 
-                  size="large"
-                  onClick={() => navigate(-1)}
-                  className="back-btn"
-                >
-                  Quay lại
-                </Button>
-                <Button 
-                  type="primary" 
-                  size="large"
-                  onClick={handleContinue}
-                  className="continue-btn"
-                  disabled={cart.length === 0}
-                >
-                  Tiếp tục
-                </Button>
-              </div>
+            {/* Action Buttons */}
+            <div className="action-buttons">
+              <Button 
+                icon={<LeftOutlined />} 
+                size="large"
+                onClick={() => navigate('/seat-selection', { state: { preserveSelections: true } })}
+                className="back-btn"
+              >
+                Quay lại
+              </Button>
+              <Button 
+                type="primary" 
+                size="large"
+                onClick={handleContinue}
+                className="continue-btn"
+              >
+                {cart.length > 0 ? 'Tiếp tục' : 'Bỏ qua'}
+              </Button>
             </div>
           </Col>
         </Row>
+
+        
       </div>
     </div>
   );

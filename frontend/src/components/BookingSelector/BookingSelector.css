@@ -1,0 +1,216 @@
+.booking-selector {
+  margin-bottom: 24px;
+}
+
+.selector-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.selector-section {
+  margin-bottom: 24px;
+}
+
+.selector-section:last-child {
+  margin-bottom: 0;
+}
+
+.selector-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.selector-icon {
+  font-size: 18px;
+  color: #1890ff;
+  margin-right: 8px;
+}
+
+.selector-title {
+  margin: 0 !important;
+  color: #262626;
+  font-weight: 600;
+}
+
+/* City Select */
+.city-select {
+  width: 100%;
+  max-width: 400px;
+}
+
+.city-select .ant-select-selector {
+  border-radius: 8px !important;
+  border: 2px solid #d9d9d9 !important;
+  height: 48px !important;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.city-select .ant-select-selector:hover {
+  border-color: #1890ff !important;
+}
+
+.city-select.ant-select-focused .ant-select-selector {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+}
+
+.city-select .ant-select-selection-item {
+  line-height: 44px !important;
+  font-weight: 500;
+}
+
+.city-select .ant-select-selection-placeholder {
+  line-height: 44px !important;
+  color: #bfbfbf;
+}
+
+/* Dates Grid */
+.dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 12px;
+}
+
+.date-button {
+  height: 80px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 2px solid #d9d9d9;
+  padding: 8px;
+}
+
+.date-button:hover {
+  border-color: #1890ff;
+  color: #1890ff;
+}
+
+.date-button.selected {
+  background: #1890ff;
+  border-color: #1890ff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(24, 144, 255, 0.3);
+}
+
+.date-button.today {
+  border-color: #52c41a;
+}
+
+.date-button.today:hover {
+  border-color: #52c41a;
+  color: #52c41a;
+}
+
+.date-button.today.selected {
+  background: #52c41a;
+  border-color: #52c41a;
+  color: white;
+  box-shadow: 0 2px 4px rgba(82, 196, 26, 0.3);
+}
+
+.date-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+
+.date-day {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.date-month {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.date-name {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.today-label {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #52c41a;
+  color: white;
+  font-size: 8px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.date-button.today.selected .today-label {
+  background: white;
+  color: #52c41a;
+}
+
+/* Loading Section */
+.loading-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .city-select {
+    max-width: 100%;
+  }
+  
+  .city-select .ant-select-selector {
+    height: 44px !important;
+    font-size: 15px;
+  }
+  
+  .city-select .ant-select-selection-item {
+    line-height: 40px !important;
+  }
+  
+  .city-select .ant-select-selection-placeholder {
+    line-height: 40px !important;
+  }
+  
+  .dates-grid {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 8px;
+  }
+  
+  .date-button {
+    height: 70px;
+  }
+  
+  .date-day {
+    font-size: 16px;
+  }
+  
+  .date-month {
+    font-size: 11px;
+  }
+  
+  .date-name {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dates-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

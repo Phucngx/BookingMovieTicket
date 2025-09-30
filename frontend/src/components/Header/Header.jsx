@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout, Menu, Input, Button, Space, Avatar, Dropdown } from 'antd'
-import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined } from '@ant-design/icons'
+import { Layout, Menu, Input, Button, Space, Avatar, Dropdown, message } from 'antd'
+import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import AuthModal from '../AuthModal/AuthModal'
+import { logout, restoreAuth } from '../../store/slices/userSlice'
 import './Header.css'
 
 const { Header: AntHeader } = Layout
@@ -10,10 +13,34 @@ const { Search } = Input
 const Header = () => {
   const [moviesDropdownOpen, setMoviesDropdownOpen] = useState(false)
   const [newsDropdownOpen, setNewsDropdownOpen] = useState(false)
+  const [authModalVisible, setAuthModalVisible] = useState(false)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  
+  // Lấy state từ Redux
+  const { isAuthenticated, userInfo, loading } = useSelector(state => state.user)
+
+  // Khôi phục trạng thái đăng nhập khi component mount
+  useEffect(() => {
+    dispatch(restoreAuth())
+  }, [dispatch])
 
   const onSearch = (value) => {
     console.log('Search:', value)
+  }
+
+  const handleAvatarClick = () => {
+    setAuthModalVisible(true)
+  }
+
+  const handleAuthModalCancel = () => {
+    setAuthModalVisible(false)
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    message.success('Đăng xuất thành công!')
+    navigate('/')
   }
 
   const onMenuClick = (e) => {
@@ -22,7 +49,7 @@ const Header = () => {
       navigate('/lich-chieu')
     } else if (e.key === 'booking') {
       navigate('/')
-    } else if (e.key === 'community') {
+    }  else if (e.key === 'community') {
       navigate('/community')
     }
   }
@@ -132,7 +159,6 @@ const Header = () => {
         </Dropdown>
       )
     },
-    { key: 'cinemas', label: 'Rạp' },
     { 
       key: 'news', 
       label: (
@@ -160,7 +186,18 @@ const Header = () => {
   return (
     <AntHeader className="header">
       <div className="header-content">
-        <div className="header-left">
+        {/* Logo Section */}
+        <div className="header-logo">
+          <div className="logo-container" onClick={() => navigate('/')}>
+            <div className="logo-placeholder">
+              {/* Placeholder for logo image - replace with actual logo */}
+              <div className="logo-text">CinemaGo</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <div className="header-nav">
           <Menu
             mode="horizontal"
             items={menuItems}
@@ -169,32 +206,87 @@ const Header = () => {
           />
         </div>
         
-        <div className="header-right">
+        {/* Search and User Actions */}
+        <div className="header-actions">
           <Search
-            placeholder="Từ khóa tìm kiếm..."
+            placeholder="Tìm kiếm phim, rạp..."
             onSearch={onSearch}
-            style={{ width: 300 }}
+            className="header-search"
             enterButton={<SearchOutlined />}
           />
           
-          <Space size="middle">
+          <Space size="middle" className="header-user-actions">
             <Button 
               type="text" 
               icon={<EnvironmentOutlined />} 
               className="header-icon-btn"
+              title="Vị trí"
             />
             <Button 
               type="text" 
               icon={<QuestionCircleOutlined />} 
               className="header-icon-btn"
+              title="Hỗ trợ"
             />
-            <Avatar 
-              icon={<UserOutlined />} 
-              className="header-avatar"
-            />
+            {isAuthenticated ? (
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: 'profile',
+                      label: `Xin chào, ${userInfo?.fullName || userInfo?.username || 'User'}`,
+                      disabled: true,
+                      style: { color: '#666', fontWeight: 'bold' }
+                    },
+                    {
+                      type: 'divider'
+                    },
+                    {
+                      key: 'account',
+                      label: 'Tài khoản của tôi',
+                      icon: <UserOutlined />,
+                      onClick: () => navigate('/tai-khoan')
+                    },
+                    ...(userInfo?.roleName === 'ADMIN' ? [{
+                      key: 'admin-dashboard',
+                      label: 'Admin Dashboard',
+                      icon: <UserOutlined />,
+                      onClick: () => navigate('/admin/dashboard')
+                    }] : []),
+                    {
+                      key: 'logout',
+                      label: 'Đăng xuất',
+                      icon: <LogoutOutlined />,
+                      onClick: handleLogout
+                    }
+                  ]
+                }}
+                placement="bottomRight"
+                trigger={['click']}
+              >
+                <Avatar 
+                  className="header-avatar"
+                  style={{ backgroundColor: '#52c41a' }}
+                  src={userInfo?.avatarUrl}
+                >
+                  {(userInfo?.fullName || userInfo?.username || 'U').charAt(0).toUpperCase()}
+                </Avatar>
+              </Dropdown>
+            ) : (
+              <Avatar 
+                icon={<UserOutlined />} 
+                className="header-avatar"
+                onClick={handleAvatarClick}
+              />
+            )}
           </Space>
         </div>
       </div>
+      
+      <AuthModal 
+        visible={authModalVisible}
+        onCancel={handleAuthModalCancel}
+      />
     </AntHeader>
   )
 }

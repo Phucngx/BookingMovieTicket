@@ -1,0 +1,106 @@
+.add-movie-modal .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.add-movie-modal .ant-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
+  padding: 20px 24px;
+}
+
+.add-movie-modal .ant-modal-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.add-movie-modal .ant-modal-close {
+  color: white;
+}
+
+.add-movie-modal .ant-modal-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.add-movie-form {
+  padding: 24px;
+}
+
+.add-movie-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #333;
+}
+
+.add-movie-form .ant-input,
+.add-movie-form .ant-input-number,
+.add-movie-form .ant-picker,
+.add-movie-form .ant-select-selector {
+  border-radius: 8px;
+  border: 2px solid #e8e8e8;
+  transition: all 0.3s ease;
+}
+
+.add-movie-form .ant-input:focus,
+.add-movie-form .ant-input-number:focus,
+.add-movie-form .ant-picker:focus,
+.add-movie-form .ant-select-focused .ant-select-selector {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.add-movie-form .ant-select-multiple .ant-select-selection-item {
+  background: #667eea;
+  border-color: #667eea;
+  color: white;
+  border-radius: 6px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.form-actions .ant-btn {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.form-actions .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.form-actions .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .add-movie-modal {
+    width: 95% !important;
+    max-width: 600px;
+  }
+  
+  .add-movie-form {
+    padding: 16px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .ant-btn {
+    width: 100%;
+  }
+}
+
