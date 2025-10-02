@@ -84,6 +84,12 @@
   overflow: hidden;
 }
 
+.showtime-card.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  filter: grayscale(20%);
+}
+
 .showtime-card:hover {
   border-color: #1890ff;
   box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);

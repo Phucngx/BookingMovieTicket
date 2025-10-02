@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Row, Col, Card, Typography, Button, Space, Statistic, Carousel, Tag } from 'antd'
 import { 
   PlayCircleOutlined, 
@@ -16,6 +17,7 @@ import './Home.css'
 const { Title, Text, Paragraph } = Typography
 
 const Home = () => {
+  const navigate = useNavigate()
   // Mock data for featured content
   const featuredMovies = [
     {
@@ -76,7 +78,14 @@ const Home = () => {
     <div className="home-page">
       {/* Hero Section */}
       <section className="hero-section">
-        <Carousel autoplay className="hero-carousel">
+        <Carousel 
+          autoplay
+          dots={{ className: 'custom-carousel-dots' }}
+          arrows={true}
+          autoplaySpeed={4000}
+          speed={800}
+          className="hero-carousel"
+        >
           {carouselItems.map((item, index) => (
             <div key={index} className="hero-slide">
               <div 
@@ -94,14 +103,29 @@ const Home = () => {
                           <Paragraph className="hero-subtitle">
                             {item.subtitle}
                           </Paragraph>
-                          <Button 
-                            type="primary" 
-                            size="large" 
-                            icon={<PlayCircleOutlined />}
-                            className="hero-button"
-                          >
-                            {item.buttonText}
-                          </Button>
+                          <div className="section-actions">
+                            <Button 
+                              type="primary" 
+                              size="large" 
+                              icon={<PlayCircleOutlined />}
+                              className="hero-button"
+                              onClick={() => {
+                                // Handle button click based on button text
+                                if (item.buttonText === "Khám phá ngay") {
+                                  // Navigate to movies or scroll to movie section
+                                  document.querySelector('.movie-section')?.scrollIntoView({ behavior: 'smooth' });
+                                } else if (item.buttonText === "Đặt vé ngay") {
+                                  // Navigate to booking
+                                  document.querySelector('.quick-booking-section')?.scrollIntoView({ behavior: 'smooth' });
+                                } else if (item.buttonText === "Xem lịch chiếu") {
+                                  // Navigate to schedule
+                                  navigate('/lich-chieu');
+                                }
+                              }}
+                            >
+                              {item.buttonText}
+                            </Button>
+                          </div>
                         </div>
                       </Col>
                     </Row>
@@ -158,9 +182,27 @@ const Home = () => {
                   <Paragraph className="promo-description">
                     Tích điểm mỗi lần mua vé, đổi quà hấp dẫn và hưởng ưu đãi đặc biệt
                   </Paragraph>
-                  <Button type="primary" size="large">
-                    Đăng ký ngay
-                  </Button>
+                  <div className="section-actions">
+                    <Button 
+                      type="primary" 
+                      size="large"
+                      onClick={() => {
+                        // Navigate to profile or membership page
+                        navigate('/tai-khoan');
+                      }}
+                    >
+                      Đăng ký ngay
+                    </Button>
+                    <Button 
+                      size="large"
+                      onClick={() => {
+                        // Show more info about VIP membership
+                        alert('Thông tin chi tiết về chương trình thành viên VIP sẽ được cập nhật sớm!');
+                      }}
+                    >
+                      Tìm hiểu thêm
+                    </Button>
+                  </div>
                 </div>
               </Col>
               <Col xs={24} md={8}>

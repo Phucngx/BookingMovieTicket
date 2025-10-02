@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, Space, Typography, Row, Col, Table, Tag, Image, Modal, message } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { Card, Button, Space, Typography, Row, Col, Table, Tag, Image, Modal, message, Input } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import AddMovieModal from '../../components/AddMovieModal/AddMovieModal'
@@ -21,6 +21,8 @@ const MovieManagement = () => {
   const [addMovieModalVisible, setAddMovieModalVisible] = useState(false)
   const [editMovieModalVisible, setEditMovieModalVisible] = useState(false)
   const [editingMovie, setEditingMovie] = useState(null)
+  const [searchText, setSearchText] = useState('')
+  const [filteredMovies, setFilteredMovies] = useState([])
 
   // Kiểm tra quyền admin
   const isAdmin = userInfo?.roleName === 'ADMIN'
@@ -47,6 +49,22 @@ const MovieManagement = () => {
       dispatch(fetchMoviesForAdmin({ page: 1, size: 10 }))
     }
   }, [isAuthenticated, isAdmin, navigate, dispatch, movies.length])
+
+  // Filter movies based on search text
+  useEffect(() => {
+    if (searchText.trim()) {
+      const filtered = movies.filter(movie =>
+        movie.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        movie.director?.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        movie.genres?.some(genre => 
+          genre.genreName.toLowerCase().includes(searchText.toLowerCase())
+        )
+      )
+      setFilteredMovies(filtered)
+    } else {
+      setFilteredMovies(movies)
+    }
+  }, [movies, searchText])
 
   const handleAddMovie = () => {
     setAddMovieModalVisible(true)
@@ -95,6 +113,17 @@ const MovieManagement = () => {
       page: pagination.current, 
       size: pagination.pageSize 
     }))
+  }
+
+  // Handle search
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value)
+  }
+
+  // Handle refresh
+  const handleRefresh = () => {
+    setSearchText('')
+    dispatch(fetchMoviesForAdmin({ page: 1, size: 10 }))
   }
 
   const columns = [
@@ -214,34 +243,55 @@ const MovieManagement = () => {
           <Title level={2}>Quản lý phim</Title>
           <Text type="secondary">Quản lý danh sách phim trong hệ thống</Text>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAddMovie}
-          size="large"
-          className="add-movie-btn"
-        >
-          Thêm phim mới
-        </Button>
+        <Space>
+          <Button
+            icon={<ReloadOutlined />}
+            onClick={handleRefresh}
+            loading={loading}
+          >
+            Làm mới
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAddMovie}
+            size="large"
+            className="add-movie-btn"
+          >
+            Thêm phim mới
+          </Button>
+        </Space>
       </div>
+
+      {/* Search Bar */}
+      <Card className="search-card" style={{ marginBottom: '24px' }}>
+        <Input
+          placeholder="Tìm kiếm theo tên phim, đạo diễn hoặc thể loại..."
+          prefix={<SearchOutlined />}
+          value={searchText}
+          onChange={handleSearchChange}
+          allowClear
+          size="large"
+        />
+      </Card>
 
       <Card className="movie-table-card">
         <Table
           columns={columns}
-          dataSource={movies}
+          dataSource={filteredMovies}
           rowKey="id"
           loading={loading}
           pagination={{
-            current: pagination.current,
-            pageSize: pagination.pageSize,
-            total: pagination.total,
+            pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, range) => 
               `${range[0]}-${range[1]} của ${total} phim`,
           }}
-          onChange={handleTableChange}
           scroll={{ x: 800 }}
+          locale={{
+            emptyText: searchText ? 'Không tìm thấy phim nào' : 'Chưa có phim nào'
+          }}
         />
       </Card>
 

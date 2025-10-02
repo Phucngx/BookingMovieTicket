@@ -57,15 +57,20 @@ export const authService = {
     }
   },
 
-  // Đăng ký (nếu có API)
+  // Đăng ký
   async register(userData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/accounts/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify({
+          username: userData.username,
+          password: userData.password,
+          email: userData.email,
+          phone: userData.phone
+        })
       })
 
       const data = await response.json()

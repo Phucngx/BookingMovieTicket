@@ -8,8 +8,10 @@ import './AuthModal.css'
 const { TabPane } = Tabs
 
 const AuthModal = ({ visible, onCancel }) => {
-  const [form] = Form.useForm()
+  const [loginForm] = Form.useForm()
+  const [registerForm] = Form.useForm()
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('login')
   const dispatch = useDispatch()
 
   const handleLogin = async (values) => {
@@ -27,7 +29,7 @@ const AuthModal = ({ visible, onCancel }) => {
       
       message.success('Đăng nhập thành công!')
       onCancel()
-      form.resetFields()
+      loginForm.resetFields()
       
     } catch (error) {
       console.error('Lỗi đăng nhập:', error)
@@ -40,20 +42,37 @@ const AuthModal = ({ visible, onCancel }) => {
   const handleRegister = async (values) => {
     setLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const { authService } = await import('../../services/authService')
+      
+      await authService.register({
+        username: values.username,
+        password: values.password,
+        email: values.email,
+        phone: values.phone
+      })
+      
       message.success('Đăng ký thành công!')
       onCancel()
-      form.resetFields()
+      registerForm.resetFields()
     } catch (error) {
-      message.error('Đăng ký thất bại!')
+      console.error('Lỗi đăng ký:', error)
+      message.error(error.message || 'Đăng ký thất bại!')
     } finally {
       setLoading(false)
     }
   }
 
+  const handleTabChange = (key) => {
+    setActiveTab(key)
+    // Reset form khi chuyển tab để tránh conflict
+    loginForm.resetFields()
+    registerForm.resetFields()
+  }
+
   const handleCancel = () => {
-    form.resetFields()
+    loginForm.resetFields()
+    registerForm.resetFields()
+    setActiveTab('login')
     onCancel()
   }
 
@@ -69,14 +88,18 @@ const AuthModal = ({ visible, onCancel }) => {
     >
       <div className="auth-container">
         <div className="auth-header">
-          <h2>Chào mừng đến với CGV</h2>
+          <h2>Chào mừng đến với CinemaGo</h2>
           <p>Đăng nhập hoặc tạo tài khoản để trải nghiệm tốt nhất</p>
         </div>
 
-        <Tabs defaultActiveKey="login" className="auth-tabs">
+        <Tabs 
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          className="auth-tabs"
+        >
           <TabPane tab="Đăng nhập" key="login">
             <Form
-              form={form}
+              form={loginForm}
               name="login"
               onFinish={handleLogin}
               layout="vertical"
@@ -129,22 +152,23 @@ const AuthModal = ({ visible, onCancel }) => {
 
           <TabPane tab="Đăng ký" key="register">
             <Form
-              form={form}
+              form={registerForm}
               name="register"
               onFinish={handleRegister}
               layout="vertical"
               size="large"
             >
               <Form.Item
-                name="fullName"
+                name="username"
                 rules={[
-                  { required: true, message: 'Vui lòng nhập họ tên!' },
-                  { min: 2, message: 'Họ tên phải có ít nhất 2 ký tự!' }
+                  { required: true, message: 'Vui lòng nhập username!' },
+                  { min: 3, message: 'Username phải có ít nhất 3 ký tự!' },
+                  { pattern: /^[a-zA-Z0-9_]+$/, message: 'Username chỉ được chứa chữ cái, số và dấu gạch dưới!' }
                 ]}
               >
                 <Input
                   prefix={<UserOutlined />}
-                  placeholder="Họ và tên"
+                  placeholder="Tên đăng nhập"
                   className="auth-input"
                 />
               </Form.Item>
@@ -167,7 +191,7 @@ const AuthModal = ({ visible, onCancel }) => {
                 name="phone"
                 rules={[
                   { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                  { pattern: /^[0-9]{10,11}$/, message: 'Số điện thoại không hợp lệ!' }
+                  { pattern: /^(0[3|5|7|8|9])+([0-9]{8})$/, message: 'Số điện thoại không hợp lệ! (VD: 0901234567)' }
                 ]}
               >
                 <Input

@@ -10,6 +10,11 @@ import seatReducer from './slices/seatSlice'
 import foodsReducer from './slices/foodsSlice'
 import bookingsReducer from './slices/bookingsSlice'
 import chatReducer from './slices/chatSlice'
+import accountManagementReducer from './slices/userManagementSlice'
+import roleReducer from './slices/roleSlice'
+import showtimeManagementReducer from './slices/showtimeManagementSlice'
+import showtimeWizardReducer from './slices/showtimeWizardSlice'
+import bookingManagementReducer from './slices/bookingManagementSlice'
 
 export const store = configureStore({
   reducer: {
@@ -24,5 +29,10 @@ export const store = configureStore({
     foods: foodsReducer,
     bookings: bookingsReducer,
     chat: chatReducer,
+    accountManagement: accountManagementReducer,
+    roles: roleReducer,
+    showtimeManagement: showtimeManagementReducer,
+    showtimeWizard: showtimeWizardReducer,
+    bookingManagement: bookingManagementReducer,
   },
 })

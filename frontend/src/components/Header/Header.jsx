@@ -107,8 +107,8 @@ const Header = () => {
     { key: 'now-showing', label: 'Đang chiếu' },
     { key: 'coming-soon', label: 'Sắp chiếu' },
     { key: 'early-show', label: 'Chiếu sớm' },
-    { key: 'august-2025', label: 'Phim tháng 08/2025' },
-    { key: 'vietnamese', label: 'Phim Việt Nam' }
+    // { key: 'august-2025', label: 'Phim tháng 08/2025' },
+    // { key: 'vietnamese', label: 'Phim Việt Nam' }
   ]
 
   const newsMenuItems = [
@@ -246,6 +246,12 @@ const Header = () => {
                       label: 'Tài khoản của tôi',
                       icon: <UserOutlined />,
                       onClick: () => navigate('/tai-khoan')
+                    },
+                    {
+                      key: 'my-tickets',
+                      label: 'Vé đã mua',
+                      icon: <UserOutlined />,
+                      onClick: () => navigate('/ve-da-mua')
                     },
                     ...(userInfo?.roleName === 'ADMIN' ? [{
                       key: 'admin-dashboard',

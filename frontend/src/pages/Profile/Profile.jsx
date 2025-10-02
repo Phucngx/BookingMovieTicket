@@ -1,15 +1,85 @@
-import React from 'react'
-import { Card, Descriptions, Avatar, Tag, Button, Space, Typography, Row, Col, Divider } from 'antd'
+import React, { useState } from 'react'
+import { Card, Descriptions, Avatar, Tag, Button, Space, Typography, Row, Col, Divider, Modal, Form, Input, message } from 'antd'
 import { UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, EditOutlined, LockOutlined } from '@ant-design/icons'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { userService } from '../../services/userService'
+import { fetchUserInfo } from '../../store/slices/userSlice'
 import './Profile.css'
 
 const { Title, Text } = Typography
 
 const Profile = () => {
   const { userInfo, isAuthenticated } = useSelector(state => state.user)
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [form] = Form.useForm()
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false)
+  const [passwordForm] = Form.useForm()
+
+  const openEdit = () => {
+    form.setFieldsValue({
+      fullName: userInfo?.fullName,
+      email: userInfo?.email,
+      phone: userInfo?.phone,
+      address: userInfo?.address,
+      avatarUrl: userInfo?.avatarUrl,
+    })
+    setIsEditOpen(true)
+  }
+
+  const handleEditCancel = () => {
+    setIsEditOpen(false)
+  }
+
+  const handleEditSubmit = async () => {
+    try {
+      const values = await form.validateFields()
+      const payload = {
+        fullName: values.fullName,
+        email: values.email,
+        phone: values.phone,
+        address: values.address,
+        avatarUrl: values.avatarUrl,
+      }
+      await userService.updateUser(userInfo.userId, payload)
+      message.success('Cập nhật thông tin thành công')
+      setIsEditOpen(false)
+      await dispatch(fetchUserInfo())
+    } catch (error) {
+      if (error?.errorFields) return
+      message.error(error?.message || 'Cập nhật thất bại')
+    }
+  }
+
+  const openChangePassword = () => {
+    passwordForm.resetFields()
+    setIsPasswordOpen(true)
+  }
+
+  const handlePasswordCancel = () => {
+    setIsPasswordOpen(false)
+  }
+
+  const handlePasswordSubmit = async () => {
+    try {
+      const values = await passwordForm.validateFields()
+      if (values.oldPassword === values.newPassword) {
+        message.error('Mật khẩu mới không được trùng với mật khẩu cũ')
+        return
+      }
+      await userService.updatePassword(userInfo.accountId, {
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
+      })
+      message.success('Đổi mật khẩu thành công')
+      setIsPasswordOpen(false)
+    } catch (error) {
+      if (error?.errorFields) return
+      message.error(error?.message || 'Đổi mật khẩu thất bại')
+    }
+  }
 
   if (!isAuthenticated || !userInfo) {
     return (
@@ -44,7 +114,7 @@ const Profile = () => {
               </Space>
             }
             extra={
-              <Button type="primary" icon={<EditOutlined />}>
+              <Button type="primary" icon={<EditOutlined />} onClick={openEdit}>
                 Chỉnh sửa
               </Button>
             }
@@ -118,18 +188,19 @@ const Profile = () => {
 
             <div className="action-buttons">
               <Space direction="vertical" style={{ width: '100%' }}>
-                <Button 
+                {/* <Button 
                   type="primary" 
                   icon={<EditOutlined />} 
                   block
                   className="action-btn"
                 >
                   Chỉnh sửa thông tin
-                </Button>
+                </Button> */}
                 <Button 
                   icon={<LockOutlined />} 
                   block
                   className="action-btn"
+                  onClick={openChangePassword}
                 >
                   Đổi mật khẩu
                 </Button>
@@ -157,7 +228,7 @@ const Profile = () => {
                   <Title level={5}>Mật khẩu</Title>
                   <Text type="secondary">Đã được thiết lập</Text>
                   <br />
-                  <Button type="link" size="small">
+                  <Button type="link" size="small" onClick={openChangePassword}>
                     Đổi mật khẩu
                   </Button>
                 </div>
@@ -165,7 +236,7 @@ const Profile = () => {
               <Col xs={24} md={8}>
                 <div className="security-item">
                   <Title level={5}>Xác thực 2 bước</Title>
-                  <Text type="secondary">Chưa bật</Text>
+                  <Text type="secondary">Tính năng sắp ra mắt</Text>
                   <br />
                   <Button type="link" size="small">
                     Bật xác thực 2 bước
@@ -186,6 +257,82 @@ const Profile = () => {
           </Card>
         </Col>
       </Row>
+
+      <Modal
+        title="Chỉnh sửa thông tin"
+        open={isEditOpen}
+        onOk={handleEditSubmit}
+        onCancel={handleEditCancel}
+        okText="Lưu"
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}>
+            <Input placeholder="Nhập họ và tên" />
+          </Form.Item>
+          <Form.Item name="email" label="Email" rules={[{ type: 'email', message: 'Email không hợp lệ' }]}> 
+            <Input placeholder="Nhập email" />
+          </Form.Item>
+          <Form.Item name="phone" label="Số điện thoại">
+            <Input placeholder="Nhập số điện thoại" />
+          </Form.Item>
+          <Form.Item name="address" label="Địa chỉ">
+            <Input placeholder="Nhập địa chỉ" />
+          </Form.Item>
+          <Form.Item name="avatarUrl" label="Avatar URL">
+            <Input placeholder="Dán link ảnh avatar" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        title="Đổi mật khẩu"
+        open={isPasswordOpen}
+        onOk={handlePasswordSubmit}
+        onCancel={handlePasswordCancel}
+        okText="Cập nhật"
+        cancelText="Hủy"
+        destroyOnClose
+      >
+        <Form layout="vertical" form={passwordForm}>
+          <Form.Item
+            name="oldPassword"
+            label="Mật khẩu hiện tại"
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu hiện tại' }]}
+          >
+            <Input.Password placeholder="Nhập mật khẩu hiện tại" />
+          </Form.Item>
+          <Form.Item
+            name="newPassword"
+            label="Mật khẩu mới"
+            rules={[
+              { required: true, message: 'Vui lòng nhập mật khẩu mới' },
+              { min: 6, message: 'Mật khẩu tối thiểu 6 ký tự' },
+            ]}
+          >
+            <Input.Password placeholder="Nhập mật khẩu mới" />
+          </Form.Item>
+          <Form.Item
+            name="confirmPassword"
+            label="Xác nhận mật khẩu mới"
+            dependencies={["newPassword"]}
+            rules={[
+              { required: true, message: 'Vui lòng xác nhận mật khẩu mới' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('newPassword') === value) {
+                    return Promise.resolve()
+                  }
+                  return Promise.reject(new Error('Mật khẩu xác nhận không khớp'))
+                },
+              }),
+            ]}
+          >
+            <Input.Password placeholder="Nhập lại mật khẩu mới" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   )
 }

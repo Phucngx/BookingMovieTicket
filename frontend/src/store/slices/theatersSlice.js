@@ -71,9 +71,19 @@ export const fetchTheaterById = createAsyncThunk(
   'theaters/fetchTheaterById',
   async (theaterId, { rejectWithValue }) => {
     try {
+      console.log('Fetching theater by ID:', theaterId)
       const response = await theaterService.getTheaterById(theaterId)
-      return response.data
+      console.log('Theater service response:', response)
+      
+      // Kiểm tra response format
+      if (response.code === 1000 && response.data) {
+        console.log('Returning theater data:', response.data)
+        return response.data
+      } else {
+        throw new Error('Response format không đúng')
+      }
     } catch (error) {
+      console.error('Fetch theater by ID error:', error)
       return rejectWithValue(error.message)
     }
   }

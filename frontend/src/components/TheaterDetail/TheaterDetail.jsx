@@ -50,7 +50,6 @@ const TheaterDetail = () => {
   useEffect(() => {
     if (theaterId) {
       dispatch(fetchTheaterById(theaterId))
-      fetchTheaterRooms()
     }
   }, [theaterId, dispatch])
 
@@ -214,7 +213,7 @@ const TheaterDetail = () => {
           <Text type="secondary">Thông tin chi tiết rạp phim</Text>
         </div>
         
-        {isAdmin && (
+        {/* {isAdmin && (
           <Space>
             <Button
               type="primary"
@@ -231,7 +230,7 @@ const TheaterDetail = () => {
               Xóa rạp
             </Button>
           </Space>
-        )}
+        )} */}
       </div>
 
       <Row gutter={[24, 24]}>
@@ -309,9 +308,9 @@ const TheaterDetail = () => {
           >
             <Table
               columns={roomColumns}
-              dataSource={rooms}
+              dataSource={[]} // Sẽ hiển thị khi có API rooms riêng
               rowKey="roomId"
-              loading={roomsLoading}
+              loading={false}
               pagination={{
                 pageSize: 5,
                 showSizeChanger: false,
