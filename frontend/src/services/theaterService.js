@@ -196,7 +196,7 @@ export const theaterService = {
   async getTheaterRooms(theaterId) {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/theaters/get-detail/${theaterId}`
+      const url = `${API_BASE_URL}/rooms/get-rooms/${theaterId}`
       
       const response = await fetch(url, {
         method: 'GET',
@@ -215,6 +215,88 @@ export const theaterService = {
       return data
     } catch (error) {
       console.error('Get theater rooms error:', error)
+      throw error
+    }
+  },
+
+  // Tạo phòng chiếu mới (cần token admin)
+  async createRoom({ roomName, screenType, soundSystem, theaterId }) {
+    try {
+      const token = getAuthToken()
+      const url = `${API_BASE_URL}/rooms/create`
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ roomName, screenType, soundSystem, theaterId })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể tạo phòng chiếu mới')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Create room error:', error)
+      throw error
+    }
+  },
+
+  // Cập nhật phòng chiếu (cần token admin)
+  async updateRoom(roomId, { roomName, screenType, soundSystem, theaterId }) {
+    try {
+      const token = getAuthToken()
+      const url = `${API_BASE_URL}/rooms/update/${roomId}`
+
+      const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ roomName, screenType, soundSystem, theaterId })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể cập nhật phòng chiếu')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Update room error:', error)
+      throw error
+    }
+  },
+
+  // Xóa phòng chiếu (cần token admin)
+  async deleteRoom(roomId) {
+    try {
+      const token = getAuthToken()
+      const url = `${API_BASE_URL}/rooms/delete/${roomId}`
+
+      const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.message || 'Không thể xóa phòng chiếu')
+      }
+
+      return { success: true }
+    } catch (error) {
+      console.error('Delete room error:', error)
       throw error
     }
   },

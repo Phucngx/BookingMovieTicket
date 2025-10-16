@@ -316,10 +316,200 @@
 
 /* Enhanced Ticket Card */
 .ticket-header {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.ticket-header .movie-info {
+  width: 100%;
+}
+
+.movie-title-section {
+  margin-bottom: 20px;
+}
+
+.ticket-header .movie-title {
+  margin-bottom: 16px;
+  color: #262626;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.movie-badges {
   display: flex;
-  gap: 24px;
-  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.movie-badge {
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theater-section {
+  margin-top: 16px;
+}
+
+.theater-details {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.theater-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theater-icon {
+  font-size: 20px;
+  color: #1890ff;
+}
+
+.theater-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.theater-name {
+  font-size: 16px;
+  color: #262626;
+}
+
+.room-name {
+  font-size: 14px;
+  color: #8c8c8c;
+}
+
+/* QR Code Section */
+.qr-section {
+  margin-top: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 16px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.qr-header {
+  text-align: center;
   margin-bottom: 24px;
+}
+
+.qr-title {
+  color: #262626;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.qr-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.qr-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.qr-image-wrapper {
+  position: relative;
+}
+
+.qr-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  border: 3px solid #1890ff;
+  box-shadow: 0 8px 24px rgba(24, 144, 255, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.qr-image:hover {
+  transform: scale(1.05);
+}
+
+.qr-fallback {
+  background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+  border: 2px dashed #d9d9d9;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  transition: all 0.3s ease;
+}
+
+.qr-fallback:hover {
+  border-color: #1890ff;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+}
+
+.qr-icon {
+  font-size: 48px;
+  color: #d9d9d9;
+  margin-bottom: 8px;
+}
+
+.qr-text {
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.qr-info {
+  text-align: center;
+  width: 100%;
+}
+
+.ticket-id-section {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ticket-label {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-right: 8px;
+}
+
+.ticket-code {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1890ff;
+  letter-spacing: 1px;
+}
+
+.qr-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qr-instruction {
+  font-size: 13px;
+  color: #8c8c8c;
+  text-align: left;
 }
 
 .ticket-header .movie-poster-container {
@@ -433,6 +623,11 @@
 /* Enhanced Ticket Details Grid */
 .ticket-details-grid {
   margin-top: 24px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .detail-item {

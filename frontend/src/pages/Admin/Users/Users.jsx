@@ -163,7 +163,7 @@ const AccountManagement = () => {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
             <UserOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-            <Text strong>{record.user?.fullName || 'N/A'}</Text>
+            <Text strong>{record.user?.fullName || 'Chưa có thông tin'}</Text>
           </div>
           <Text type="secondary" style={{ fontSize: '12px' }}>
             @{record.username}
@@ -179,21 +179,21 @@ const AccountManagement = () => {
       title: 'Email',
       dataIndex: ['user', 'email'],
       key: 'email',
-      render: (email) => email || 'N/A',
+      render: (email) => email || 'Chưa có thông tin',
     },
     {
       title: 'Số điện thoại',
       dataIndex: ['user', 'phone'],
       key: 'phone',
-      render: (phone) => phone || 'N/A',
+      render: (phone) => phone || 'Chưa có thông tin',
     },
     {
       title: 'Vai trò',
       dataIndex: 'roleName',
       key: 'roleName',
       render: (roleName) => (
-        <Tag color={roleName === 'ADMIN' ? 'red' : 'blue'}>
-          {roleName === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
+        <Tag color={roleName === 'USER' ? 'blue' : 'orange'}>
+          {roleName === 'USER' ? 'Người dùng' : 'Nhân viên'}
         </Tag>
       ),
     },
@@ -206,8 +206,8 @@ const AccountManagement = () => {
           <Switch
             checked={status === 1}
             onChange={(checked) => handleStatusChange(record, checked)}
-            checkedChildren="Hoạt động"
-            unCheckedChildren="Không hoạt động"
+            checkedChildren="Đang hoạt động"
+            unCheckedChildren="Đã bị khóa"
           />
         </div>
       ),
@@ -264,7 +264,6 @@ const AccountManagement = () => {
       <div className="account-management-header">
     <div>
           <Title level={2}>Quản lý tài khoản</Title>
-          <Text type="secondary">Quản lý danh sách tài khoản trong hệ thống</Text>
         </div>
         <Space>
           <Button
@@ -422,11 +421,11 @@ const AccountManagement = () => {
             </div>
             <div style={{ marginBottom: '4px' }}>
               <Text>Họ tên: </Text>
-              <Text strong>{selectedAccount.user?.fullName || 'N/A'}</Text>
+              <Text strong>{selectedAccount.user?.fullName || 'Chưa có thông tin'}</Text>
             </div>
             <div style={{ marginBottom: '4px' }}>
               <Text>Email: </Text>
-              <Text strong>{selectedAccount.user?.email || 'N/A'}</Text>
+              <Text strong>{selectedAccount.user?.email || 'Chưa có thông tin'}</Text>
             </div>
             <div>
               <Text>Vai trò hiện tại: </Text>

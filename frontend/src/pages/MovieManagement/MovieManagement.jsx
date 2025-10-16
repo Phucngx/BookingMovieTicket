@@ -241,7 +241,6 @@ const MovieManagement = () => {
       <div className="movie-management-header">
         <div>
           <Title level={2}>Quản lý phim</Title>
-          <Text type="secondary">Quản lý danh sách phim trong hệ thống</Text>
         </div>
         <Space>
           <Button

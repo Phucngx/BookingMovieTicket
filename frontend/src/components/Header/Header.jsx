@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Menu, Input, Button, Space, Avatar, Dropdown, message } from 'antd'
-import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons'
+import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined, ShakeOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import AuthModal from '../AuthModal/AuthModal'
 import { logout, restoreAuth } from '../../store/slices/userSlice'
@@ -26,7 +26,9 @@ const Header = () => {
   }, [dispatch])
 
   const onSearch = (value) => {
-    console.log('Search:', value)
+    if (value.trim()) {
+      navigate(`/tim-kiem?q=${encodeURIComponent(value.trim())}`)
+    }
   }
 
   const handleAvatarClick = () => {
@@ -209,7 +211,7 @@ const Header = () => {
         {/* Search and User Actions */}
         <div className="header-actions">
           <Search
-            placeholder="Tìm kiếm phim, rạp..."
+            placeholder="Tìm kiếm phim..."
             onSearch={onSearch}
             className="header-search"
             enterButton={<SearchOutlined />}
@@ -250,7 +252,7 @@ const Header = () => {
                     {
                       key: 'my-tickets',
                       label: 'Vé đã mua',
-                      icon: <UserOutlined />,
+                      icon: <ShakeOutlined />,
                       onClick: () => navigate('/ve-da-mua')
                     },
                     ...(userInfo?.roleName === 'ADMIN' ? [{

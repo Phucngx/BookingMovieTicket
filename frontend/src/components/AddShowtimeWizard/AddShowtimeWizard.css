@@ -33,11 +33,11 @@
 }
 
 .wizard-container {
-  padding: 24px;
+  padding: 12px;
 }
 
 .wizard-content {
-  min-height: 400px;
+  min-height: 280px;
 }
 
 .wizard-step-content {
@@ -82,7 +82,7 @@
 }
 
 .selection-card .ant-card-body {
-  padding: 20px;
+  padding: 12px;
 }
 
 /* Custom Select Styles */
@@ -183,10 +183,11 @@
 }
 
 .wizard-navigation .ant-btn {
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 500;
-  height: 40px;
-  padding: 0 24px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 13px;
 }
 
 .wizard-navigation .ant-btn-primary {
@@ -238,15 +239,15 @@
   }
   
   .wizard-container {
-    padding: 16px;
+    padding: 12px;
   }
   
   .wizard-content {
-    min-height: 300px;
+    min-height: 250px;
   }
   
   .selection-card .ant-card-body {
-    padding: 16px;
+    padding: 12px;
   }
   
   .wizard-navigation {
@@ -261,13 +262,13 @@
 
 @media (max-width: 576px) {
   .wizard-navigation .ant-btn {
-    height: 36px;
-    padding: 0 16px;
-    font-size: 14px;
+    height: 30px;
+    padding: 0 12px;
+    font-size: 12px;
   }
   
   .selection-card .ant-card-head-title {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 
@@ -318,29 +319,29 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.legend-item {
-  width: 20px;
-  height: 20px;
+.timeline-legend .legend-item {
+  width: 14px;
+  height: 14px;
   border-radius: 4px;
   margin-right: 8px;
 }
 
-.legend-item.available {
+.timeline-legend .legend-item.available {
   background-color: #ffffff;
   border: 2px solid #d9d9d9;
 }
 
-.legend-item.past {
+.timeline-legend .legend-item.past {
   background-color: #d9d9d9;
   border: 2px solid #bfbfbf;
 }
 
-.legend-item.occupied {
+.timeline-legend .legend-item.occupied {
   background-color: #ff4d4f;
   border: 2px solid #cf1322;
 }
 
-.legend-item.selected {
+.timeline-legend .legend-item.selected {
   background-color: #1890ff;
   border: 2px solid #096dd9;
 }
@@ -356,9 +357,9 @@
 }
 
 .timeline-header .room-label {
-  width: 120px;
-  min-width: 120px;
-  padding: 12px 16px;
+  width: 100px;
+  min-width: 100px;
+  padding: 8px 12px;
   font-weight: 600;
   background-color: #fafafa;
   border-right: 1px solid #f0f0f0;
@@ -366,9 +367,9 @@
 }
 
 .timeline-header .time-label {
-  width: 60px;
-  min-width: 60px;
-  padding: 8px 4px;
+  width: 50px;
+  min-width: 50px;
+  padding: 6px 2px;
   text-align: center;
   font-size: 12px;
   font-weight: 500;
@@ -386,9 +387,9 @@
 }
 
 .room-timeline .room-label {
-  width: 120px;
-  min-width: 120px;
-  padding: 16px;
+  width: 100px;
+  min-width: 100px;
+  padding: 12px;
   background-color: #f8f9fa;
   border-right: 1px solid #f0f0f0;
   text-align: center;
@@ -398,9 +399,9 @@
 }
 
 .time-slot {
-  width: 60px;
-  min-width: 60px;
-  height: 40px;
+  width: 50px;
+  min-width: 50px;
+  height: 34px;
   border-right: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
   display: flex;

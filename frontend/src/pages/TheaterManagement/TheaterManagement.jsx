@@ -249,7 +249,6 @@ const TheaterManagement = () => {
       <div className="theater-management-header">
         <div>
           <Title level={2}>Quản lý rạp phim</Title>
-          <Text type="secondary">Quản lý danh sách rạp phim trong hệ thống</Text>
         </div>
         <Space>
           <Button

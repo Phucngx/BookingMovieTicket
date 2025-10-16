@@ -13,7 +13,10 @@ import {
   Modal,
   message,
   Spin,
-  Alert
+  Alert,
+  Form,
+  Input,
+  Select
 } from 'antd'
 import { 
   EnvironmentOutlined, 
@@ -23,7 +26,8 @@ import {
   DeleteOutlined,
   PlusOutlined,
   HomeOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  ArrowLeftOutlined
 } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -32,6 +36,7 @@ import { theaterService } from '../../services/theaterService'
 import './TheaterDetail.css'
 
 const { Title, Text, Paragraph } = Typography
+const { Option } = Select
 
 const TheaterDetail = () => {
   const { theaterId } = useParams()
@@ -44,12 +49,17 @@ const TheaterDetail = () => {
   const [rooms, setRooms] = useState([])
   const [roomsLoading, setRoomsLoading] = useState(false)
   const [deleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [addRoomModalVisible, setAddRoomModalVisible] = useState(false)
+  const [editRoomModalVisible, setEditRoomModalVisible] = useState(false)
+  const [selectedRoom, setSelectedRoom] = useState(null)
+  const [form] = Form.useForm()
 
   const isAdmin = userInfo?.roleName === 'ADMIN'
 
   useEffect(() => {
     if (theaterId) {
       dispatch(fetchTheaterById(theaterId))
+      fetchTheaterRooms()
     }
   }, [theaterId, dispatch])
 
@@ -87,11 +97,41 @@ const TheaterDetail = () => {
   }
 
   const handleAddRoom = () => {
-    navigate(`/admin/theaters/${theaterId}/rooms/add`)
+    setAddRoomModalVisible(true)
+    form.resetFields()
+  }
+
+  const handleAddRoomSubmit = async (values) => {
+    try {
+      const payload = {
+        roomName: values.roomName,
+        screenType: values.screenType,
+        soundSystem: values.soundSystem,
+        theaterId: Number(theaterId)
+      }
+      const res = await theaterService.createRoom(payload)
+      if (res?.code === 1000) {
+        message.success('Thêm phòng chiếu thành công!')
+        setAddRoomModalVisible(false)
+        form.resetFields()
+        fetchTheaterRooms()
+      } else {
+        message.error(res?.message || 'Không thể thêm phòng chiếu')
+      }
+    } catch (error) {
+      message.error(error.message || 'Có lỗi xảy ra khi thêm phòng chiếu')
+    }
   }
 
   const handleEditRoom = (roomId) => {
-    navigate(`/admin/theaters/${theaterId}/rooms/${roomId}/edit`)
+    const room = rooms.find(r => r.roomId === roomId)
+    setSelectedRoom(room)
+    setEditRoomModalVisible(true)
+    form.setFieldsValue({
+      roomName: room?.roomName,
+      screenType: room?.screenType,
+      soundSystem: room?.soundSystem,
+    })
   }
 
   const roomColumns = [
@@ -110,13 +150,19 @@ const TheaterDetail = () => {
       ),
     },
     {
-      title: 'Loại phòng',
-      dataIndex: 'roomType',
-      key: 'roomType',
+      title: 'Màn hình',
+      dataIndex: 'screenType',
+      key: 'screenType',
       render: (type) => (
-        <Tag color={type === 'VIP' ? 'gold' : type === 'IMAX' ? 'blue' : 'green'}>
-          {type}
-        </Tag>
+        <Tag color="blue">{type}</Tag>
+      ),
+    },
+    {
+      title: 'Âm thanh',
+      dataIndex: 'soundSystem',
+      key: 'soundSystem',
+      render: (sound) => (
+        <Tag color="purple">{sound}</Tag>
       ),
     },
     {
@@ -124,17 +170,7 @@ const TheaterDetail = () => {
       dataIndex: 'totalSeats',
       key: 'totalSeats',
       render: (seats) => (
-        <Tag color="blue">{seats} ghế</Tag>
-      ),
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => (
-        <Tag color={status === 'ACTIVE' ? 'green' : 'red'}>
-          {status === 'ACTIVE' ? 'Hoạt động' : 'Bảo trì'}
-        </Tag>
+        <Tag color="geekblue">{seats} ghế</Tag>
       ),
     },
     {
@@ -149,10 +185,59 @@ const TheaterDetail = () => {
             onClick={() => handleEditRoom(record.roomId)}
             title="Chỉnh sửa phòng"
           />
+          <Button
+            type="text"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDeleteRoom(record)}
+            title="Xóa phòng"
+          />
         </Space>
       ),
     },
   ]
+
+  const handleDeleteRoom = (room) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa phòng chiếu',
+      content: `Bạn có chắc chắn muốn xóa phòng "${room.roomName}"?`,
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          await theaterService.deleteRoom(room.roomId)
+          message.success('Xóa phòng chiếu thành công!')
+          fetchTheaterRooms()
+        } catch (error) {
+          message.error(error.message || 'Có lỗi xảy ra khi xóa phòng chiếu')
+        }
+      },
+    })
+  }
+
+  const handleEditRoomSubmit = async (values) => {
+    try {
+      const payload = {
+        roomName: values.roomName,
+        screenType: values.screenType,
+        soundSystem: values.soundSystem,
+        theaterId: Number(theaterId)
+      }
+      const res = await theaterService.updateRoom(selectedRoom.roomId, payload)
+      if (res?.code === 1000) {
+        message.success('Cập nhật phòng chiếu thành công!')
+        setEditRoomModalVisible(false)
+        setSelectedRoom(null)
+        form.resetFields()
+        fetchTheaterRooms()
+      } else {
+        message.error(res?.message || 'Không thể cập nhật phòng chiếu')
+      }
+    } catch (error) {
+      message.error(error.message || 'Có lỗi xảy ra khi cập nhật phòng chiếu')
+    }
+  }
 
   if (loading) {
     return (
@@ -206,11 +291,21 @@ const TheaterDetail = () => {
   return (
     <div className="theater-detail-container">
       <div className="theater-detail-header">
-        <div className="theater-detail-title">
-          <Title level={2} style={{ margin: 0 }}>
-            {currentTheater.theaterName}
-          </Title>
-          <Text type="secondary">Thông tin chi tiết rạp phim</Text>
+        <div className="theater-detail-title" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Button 
+            type="link" 
+            icon={<ArrowLeftOutlined />} 
+            onClick={() => navigate('/admin/theaters')}
+            style={{ padding: 0 }}
+          >
+            Quay lại
+          </Button>
+          <div>
+            <Title level={2} style={{ margin: 0 }}>
+              {currentTheater.theaterName}
+            </Title>
+            <Text type="secondary">Thông tin chi tiết rạp phim</Text>
+          </div>
         </div>
         
         {/* {isAdmin && (
@@ -308,9 +403,9 @@ const TheaterDetail = () => {
           >
             <Table
               columns={roomColumns}
-              dataSource={[]} // Sẽ hiển thị khi có API rooms riêng
+              dataSource={rooms}
               rowKey="roomId"
-              loading={false}
+              loading={roomsLoading}
               pagination={{
                 pageSize: 5,
                 showSizeChanger: false,
@@ -341,6 +436,126 @@ const TheaterDetail = () => {
         <p style={{ color: '#ff4d4f' }}>
           <strong>Cảnh báo:</strong> Hành động này không thể hoàn tác và sẽ xóa tất cả dữ liệu liên quan đến rạp phim này.
         </p>
+      </Modal>
+
+      {/* Add Room Modal */}
+      <Modal
+        title="Thêm phòng chiếu mới"
+        open={addRoomModalVisible}
+        onCancel={() => setAddRoomModalVisible(false)}
+        footer={null}
+        width={520}
+      >
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={handleAddRoomSubmit}
+        >
+          <Form.Item
+            name="roomName"
+            label="Tên phòng"
+            rules={[{ required: true, message: 'Vui lòng nhập tên phòng' }]}
+          >
+            <Input placeholder="Ví dụ: Room A" />
+          </Form.Item>
+
+          <Form.Item
+            name="screenType"
+            label="Loại màn hình (screenType)"
+            rules={[{ required: true, message: 'Vui lòng chọn loại màn hình' }]}
+          >
+            <Select placeholder="Chọn loại màn hình">
+              <Option value="TWO_D">TWO_D</Option>
+              <Option value="THREE_D">THREE_D</Option>
+              <Option value="FOUR_D">FOUR_D</Option>
+              <Option value="IMAX">IMAX</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="soundSystem"
+            label="Hệ thống âm thanh (soundSystem)"
+            rules={[{ required: true, message: 'Vui lòng chọn hệ thống âm thanh' }]}
+          >
+            <Select placeholder="Chọn hệ thống âm thanh">
+              <Option value="DOLBY_ATMOS">DOLBY_ATMOS</Option>
+              <Option value="DOLBY_DIGITAL">DOLBY_DIGITAL</Option>
+              <Option value="DTS">DTS</Option>
+              <Option value="THX">THX</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Space>
+              <Button onClick={() => setAddRoomModalVisible(false)}>
+                Hủy
+              </Button>
+              <Button type="primary" htmlType="submit">
+                Thêm phòng
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Edit Room Modal */}
+      <Modal
+        title="Chỉnh sửa phòng chiếu"
+        open={editRoomModalVisible}
+        onCancel={() => { setEditRoomModalVisible(false); setSelectedRoom(null) }}
+        footer={null}
+        width={520}
+      >
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={handleEditRoomSubmit}
+        >
+          <Form.Item
+            name="roomName"
+            label="Tên phòng"
+            rules={[{ required: true, message: 'Vui lòng nhập tên phòng' }]}
+          >
+            <Input placeholder="Ví dụ: Room A" />
+          </Form.Item>
+
+          <Form.Item
+            name="screenType"
+            label="Loại màn hình (screenType)"
+            rules={[{ required: true, message: 'Vui lòng chọn loại màn hình' }]}
+          >
+            <Select placeholder="Chọn loại màn hình">
+              <Option value="TWO_D">TWO_D</Option>
+              <Option value="THREE_D">THREE_D</Option>
+              <Option value="FOUR_D">FOUR_D</Option>
+              <Option value="IMAX">IMAX</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="soundSystem"
+            label="Hệ thống âm thanh (soundSystem)"
+            rules={[{ required: true, message: 'Vui lòng chọn hệ thống âm thanh' }]}
+          >
+            <Select placeholder="Chọn hệ thống âm thanh">
+              <Option value="DOLBY_ATMOS">DOLBY_ATMOS</Option>
+              <Option value="DOLBY_DIGITAL">DOLBY_DIGITAL</Option>
+              <Option value="DTS">DTS</Option>
+              <Option value="THX">THX</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Space>
+              <Button onClick={() => { setEditRoomModalVisible(false); setSelectedRoom(null) }}>
+                Hủy
+              </Button>
+              <Button type="primary" htmlType="submit">
+                Cập nhật
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   )

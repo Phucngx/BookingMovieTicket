@@ -119,9 +119,11 @@ const ShowtimeModal = ({
       open={visible}
       onCancel={onCancel}
       footer={null}
-      width={600}
+      width={720}
       className="showtime-modal"
       centered
+      style={{ maxHeight: '75vh' }}
+      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
     >
       <div className="showtime-modal-content">
         {loading && (
@@ -180,6 +182,11 @@ const ShowtimeModal = ({
                         onClick={isInactive ? undefined : () => handleShowtimeSelect(showtime, movieShowtime.movie)}
                         title={isInactive ? 'Suất chiếu tạm dừng' : undefined}
                         aria-disabled={isInactive}
+                        style={{
+                          pointerEvents: isInactive ? 'none' : 'auto',
+                          opacity: isInactive ? 0.4 : 1,
+                          filter: isInactive ? 'grayscale(100%)' : 'none'
+                        }}
                       >
                         <div className="showtime-time">
                           <ClockCircleOutlined className="time-icon" />
@@ -224,6 +231,11 @@ const ShowtimeModal = ({
                     onClick={isInactive ? undefined : () => handleShowtimeSelect(simplified, movie)}
                     title={isInactive ? 'Suất chiếu tạm dừng' : undefined}
                     aria-disabled={isInactive}
+                    style={{
+                      pointerEvents: isInactive ? 'none' : 'auto',
+                      opacity: isInactive ? 0.4 : 1,
+                      filter: isInactive ? 'grayscale(100%)' : 'none'
+                    }}
                   >
                     <div className="showtime-time">
                       <ClockCircleOutlined className="time-icon" />

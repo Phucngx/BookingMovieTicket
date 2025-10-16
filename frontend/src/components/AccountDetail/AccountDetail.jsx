@@ -152,7 +152,7 @@ const AccountDetail = () => {
           </Button>
           <div>
             <Title level={2} style={{ margin: 0 }}>
-              {currentAccount.user?.fullName || 'N/A'}
+              {currentAccount.user?.fullName || 'Chưa có thông tin'}
             </Title>
             <Text type="secondary">Thông tin chi tiết tài khoản</Text>
           </div>
@@ -193,8 +193,8 @@ const AccountDetail = () => {
               </Descriptions.Item>
               
               <Descriptions.Item label="Vai trò">
-                <Tag color={currentAccount.roleName === 'ADMIN' ? 'red' : 'blue'}>
-                  {currentAccount.roleName === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
+                <Tag color={currentAccount.roleName === 'USER' ? 'blue' : 'orange'}>
+                  {currentAccount.roleName === 'USER' ? 'Người dùng' : 'Nhân viên'}
                 </Tag>
               </Descriptions.Item>
               
@@ -208,7 +208,7 @@ const AccountDetail = () => {
                     disabled={!isAdmin}
                   /> */}
                   <Text type={currentAccount.status === 1 ? 'success' : 'danger'}>
-                    {currentAccount.status === 1 ? 'Hoạt động' : 'Không hoạt động'}
+                    {currentAccount.status === 1 ? 'Đang hoạt động' : 'Đã bị khóa'}
                   </Text>
                 </div>
               </Descriptions.Item>
@@ -223,25 +223,25 @@ const AccountDetail = () => {
               <Descriptions.Item label="Họ và tên" span={2}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <UserOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                  <Text strong>{currentAccount.user?.fullName || 'N/A'}</Text>
+                  <Text strong>{currentAccount.user?.fullName || 'Chưa có thông tin'}</Text>
                 </div>
               </Descriptions.Item>
               
               <Descriptions.Item label="ID người dùng">
-                <Text code>{currentAccount.user?.userId || 'N/A'}</Text>
+                <Text code>{currentAccount.user?.userId || 'Chưa có thông tin'}</Text>
               </Descriptions.Item>
               
               <Descriptions.Item label="Email">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <MailOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                  {currentAccount.user?.email || 'N/A'}
+                  {currentAccount.user?.email || 'Chưa có thông tin'}
                 </div>
               </Descriptions.Item>
               
               <Descriptions.Item label="Số điện thoại">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <PhoneOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                  {currentAccount.user?.phone || 'N/A'}
+                  {currentAccount.user?.phone || 'Chưa có thông tin'}
                 </div>
               </Descriptions.Item>
               
@@ -249,7 +249,7 @@ const AccountDetail = () => {
                 <div style={{ display: 'flex', alignItems: 'flex-start' }}>
                   <EnvironmentOutlined style={{ marginRight: '8px', color: '#8c8c8c', marginTop: '2px' }} />
                   <Paragraph style={{ margin: 0 }}>
-                    {currentAccount.user?.address || 'N/A'}
+                    {currentAccount.user?.address || 'Chưa có thông tin'}
                   </Paragraph>
                 </div>
               </Descriptions.Item>
@@ -257,7 +257,7 @@ const AccountDetail = () => {
               <Descriptions.Item label="Ngày sinh">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <CalendarOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
-                  {currentAccount.user?.dob ? new Date(currentAccount.user.dob).toLocaleDateString('vi-VN') : 'N/A'}
+                  {currentAccount.user?.dob ? new Date(currentAccount.user.dob).toLocaleDateString('vi-VN') : 'Chưa có thông tin'}
                 </div>
               </Descriptions.Item>
               

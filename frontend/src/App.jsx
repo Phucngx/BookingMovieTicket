@@ -19,6 +19,7 @@ import Payment from './pages/Payment'
 import TicketInfo from './pages/TicketInfo'
 import Admin from './pages/Admin'
 import MyTickets from './pages/MyTickets/MyTickets'
+import MovieSearch from './pages/MovieSearch'
 import './App.css'
 
 const { Content } = Layout
@@ -45,6 +46,7 @@ function App() {
             <Route path="/quan-ly-suat-chieu" element={<ShowtimeManagement />} />
             <Route path="/admin/*" element={<Admin />} />
             <Route path="/ve-da-mua" element={<MyTickets />} />
+            <Route path="/tim-kiem" element={<MovieSearch />} />
           </Routes>
         </Content>
         <Footer />

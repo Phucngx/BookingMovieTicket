@@ -82,6 +82,8 @@ const ShowtimeManagement = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [editingShowtime, setEditingShowtime] = useState(null)
   const [form] = Form.useForm()
+  const [filteredShowtimes, setFilteredShowtimes] = useState([])
+  const [debouncedSearchText, setDebouncedSearchText] = useState('')
 
   // Mock data for dropdowns - sẽ thay thế bằng API calls
   const mockTheaters = [
@@ -109,6 +111,73 @@ const ShowtimeManagement = () => {
   useEffect(() => {
     loadShowtimes()
   }, [currentPage, pageSize])
+
+  // Debounce search text
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchText(searchText)
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [searchText])
+
+  // Filter showtimes based on filter criteria
+  useEffect(() => {
+    // If no filters are applied, use original showtimes from server
+    const hasFilters = debouncedSearchText.trim() || selectedTheater || selectedMovie || selectedStatus || (dateRange && dateRange.length === 2)
+    
+    if (!hasFilters) {
+      setFilteredShowtimes(showtimes)
+      return
+    }
+
+    let filtered = [...showtimes]
+
+    // Search filter
+    if (debouncedSearchText.trim()) {
+      const searchLower = debouncedSearchText.toLowerCase()
+      filtered = filtered.filter(showtime => {
+        const movieTitle = getMovieTitle(showtime.movieId).toLowerCase()
+        const theaterName = getTheaterName(showtime.roomId).toLowerCase()
+        const roomName = getRoomName(showtime.roomId).toLowerCase()
+        
+        return movieTitle.includes(searchLower) || 
+               theaterName.includes(searchLower) || 
+               roomName.includes(searchLower) ||
+               showtime.showtimeId.toString().includes(searchLower)
+      })
+    }
+
+    // Theater filter
+    if (selectedTheater) {
+      filtered = filtered.filter(showtime => {
+        const theaterName = getTheaterName(showtime.roomId)
+        return theaterName === selectedTheater
+      })
+    }
+
+    // Movie filter
+    if (selectedMovie) {
+      filtered = filtered.filter(showtime => showtime.movieId === selectedMovie)
+    }
+
+    // Status filter
+    if (selectedStatus) {
+      filtered = filtered.filter(showtime => showtime.status === selectedStatus)
+    }
+
+    // Date range filter
+    if (dateRange && dateRange.length === 2) {
+      const [startDate, endDate] = dateRange
+      filtered = filtered.filter(showtime => {
+        const showtimeDate = dayjs(showtime.startTime)
+        return showtimeDate.isAfter(startDate.startOf('day')) && 
+               showtimeDate.isBefore(endDate.endOf('day'))
+      })
+    }
+
+    setFilteredShowtimes(filtered)
+  }, [showtimes, debouncedSearchText, selectedTheater, selectedMovie, selectedStatus, dateRange])
 
   // Load reference data (movies, theaters) when component mounts
   useEffect(() => {
@@ -393,12 +462,15 @@ const ShowtimeManagement = () => {
     }
   ]
 
-  // Statistics
-  const totalShowtimesCount = totalElements
-  const activeShowtimes = showtimes.filter(s => s.status === 'ACTIVE').length
-  const totalRevenue = showtimes.reduce((sum, s) => sum + (s.price || 0), 0)
-  const averagePrice = showtimes.length > 0 
-    ? (showtimes.reduce((sum, s) => sum + (s.price || 0), 0) / showtimes.length).toFixed(0)
+  // Statistics - use filtered data if filters are applied, otherwise use server data
+  const hasFilters = debouncedSearchText.trim() || selectedTheater || selectedMovie || selectedStatus || (dateRange && dateRange.length === 2)
+  const statsData = hasFilters ? filteredShowtimes : showtimes
+  
+  const totalShowtimesCount = hasFilters ? filteredShowtimes.length : totalElements
+  const activeShowtimes = statsData.filter(s => s.status === 'ACTIVE').length
+  const totalRevenue = statsData.reduce((sum, s) => sum + (s.price || 0), 0)
+  const averagePrice = statsData.length > 0 
+    ? (statsData.reduce((sum, s) => sum + (s.price || 0), 0) / statsData.length).toFixed(0)
     : 0
 
   return (
@@ -406,10 +478,9 @@ const ShowtimeManagement = () => {
       {/* Header */}
       <div className="showtime-header">
         <div>
-          <Title level={2} style={{ margin: 0, color: '#1890ff' }}>
-            <SettingOutlined /> Quản lý suất chiếu
+          <Title level={2} style={{ margin: 0 }}>
+             Quản lý suất chiếu
           </Title>
-          <Text type="secondary">Quản lý lịch chiếu phim tại các rạp</Text>
         </div>
         <Button 
           type="primary" 
@@ -424,7 +495,7 @@ const ShowtimeManagement = () => {
 
       {/* Statistics */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} md={6}>
+        <Col xs={24} sm={12} md={12}>
           <Card className="stat-card">
             <Statistic
               title="Tổng suất chiếu"
@@ -434,7 +505,7 @@ const ShowtimeManagement = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={6}>
+        <Col xs={24} sm={12} md={12}>
           <Card className="stat-card">
             <Statistic
               title="Đang hoạt động"
@@ -444,7 +515,7 @@ const ShowtimeManagement = () => {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={6}>
+        {/* <Col xs={24} sm={12} md={6}>
           <Card className="stat-card">
             <Statistic
               title="Tổng giá trị"
@@ -465,7 +536,7 @@ const ShowtimeManagement = () => {
               valueStyle={{ color: '#faad14' }}
             />
           </Card>
-        </Col>
+        </Col> */}
       </Row>
 
       {/* Filters */}
@@ -487,8 +558,9 @@ const ShowtimeManagement = () => {
               onChange={setSelectedTheater}
               allowClear
               style={{ width: '100%' }}
+              loading={theatersLoading}
             >
-              {mockTheaters.map(theater => (
+              {theaters.map(theater => (
                 <Option key={theater.theaterId} value={theater.theaterName}>
                   {theater.theaterName}
                 </Option>
@@ -502,9 +574,10 @@ const ShowtimeManagement = () => {
               onChange={setSelectedMovie}
               allowClear
               style={{ width: '100%' }}
+              loading={moviesLoading}
             >
-              {mockMovies.map(movie => (
-                <Option key={movie.movieId} value={movie.movieId}>
+              {movies.map(movie => (
+                <Option key={movie.id} value={movie.id}>
                   {movie.title}
                 </Option>
               ))}
@@ -534,7 +607,14 @@ const ShowtimeManagement = () => {
           <Col xs={24} sm={12} md={2}>
             <Button 
               icon={<ReloadOutlined />} 
-              onClick={loadShowtimes}
+              onClick={() => {
+                setSearchText('')
+                setSelectedTheater('')
+                setSelectedMovie('')
+                setSelectedStatus('')
+                setDateRange([])
+                loadShowtimes()
+              }}
               loading={loading}
             >
               Làm mới
@@ -547,27 +627,31 @@ const ShowtimeManagement = () => {
       <Card className="table-card">
         <Table
           columns={columns}
-          dataSource={showtimes}
+          dataSource={filteredShowtimes}
           rowKey="showtimeId"
           loading={loading}
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: totalElements,
-            showSizeChanger: true,
-            showQuickJumper: true,
+            total: hasFilters ? filteredShowtimes.length : totalElements,
+            showSizeChanger: !hasFilters,
+            showQuickJumper: !hasFilters,
             showTotal: (total, range) => 
               `${range[0]}-${range[1]} của ${total} suất chiếu`,
             pageSizeOptions: ['10', '20', '50', '100'],
             onChange: (page, size) => {
-              dispatch(setCurrentPage(page))
-              if (size !== pageSize) {
-                dispatch(setPageSize(size))
+              if (!hasFilters) {
+                dispatch(setCurrentPage(page))
+                if (size !== pageSize) {
+                  dispatch(setPageSize(size))
+                }
               }
             },
             onShowSizeChange: (current, size) => {
-              dispatch(setCurrentPage(1))
-              dispatch(setPageSize(size))
+              if (!hasFilters) {
+                dispatch(setCurrentPage(1))
+                dispatch(setPageSize(size))
+              }
             }
           }}
           scroll={{ x: 1200 }}
@@ -585,8 +669,9 @@ const ShowtimeManagement = () => {
           setEditingShowtime(null)
         }}
         footer={null}
-        width={600}
+        width={520}
         className="showtime-modal"
+        bodyStyle={{ maxHeight: '65vh', overflowY: 'auto' }}
       >
         <Form
           form={form}

@@ -1,18 +1,20 @@
-const API_BASE_URL = 'http://localhost:8080/api/v1/user-service'
+const API_BASE_URL = 'http://localhost:8080/api/v1/booking-service'
 
 // Helper function to get auth token
 const getAuthToken = () => {
   return localStorage.getItem('accessToken')
 }
 
-export const roleService = {
-  // Lấy danh sách tất cả roles
-  async getAllRoles({ page = 1, size = 10 } = {}) {
+export const revenueService = {
+  // Lấy báo cáo doanh thu theo period
+  async getRevenueReport(period = 'month') {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/roles/get-not-admin?page=${page}&size=${size}`
-      
-      console.log('Get all roles URL:', url)
+      if (!token) {
+        throw new Error('Không có token')
+      }
+
+      const url = `${API_BASE_URL}/bookings/report/revenue?period=${period}`
       
       const response = await fetch(url, {
         method: 'GET',
@@ -23,15 +25,14 @@ export const roleService = {
       })
 
       const data = await response.json()
-      console.log('Get all roles response:', data)
 
       if (!response.ok) {
-        throw new Error(data.message || 'Không thể lấy danh sách roles')
+        throw new Error(data.message || 'Không thể lấy báo cáo doanh thu')
       }
 
       return data
     } catch (error) {
-      console.error('Get all roles error:', error)
+      console.error('Get revenue report error:', error)
       throw error
     }
   }

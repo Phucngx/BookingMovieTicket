@@ -86,14 +86,14 @@ const BookingManagement = () => {
 
   const columns = [
     {
-      title: 'Booking ID',
+      title: 'ID',
       dataIndex: 'bookingId',
       key: 'bookingId',
       width: 100,
       render: (id) => <Text code>#{id}</Text>
     },
     {
-      title: 'Thông tin khách hàng',
+      title: 'Khách hàng',
       key: 'customerInfo',
       width: 150,
       render: (_, record) => (
@@ -154,7 +154,7 @@ const BookingManagement = () => {
       ),
     },
     {
-      title: 'Đồ ăn & Nước',
+      title: 'Đồ ăn',
       dataIndex: 'foodNames',
       key: 'foodNames',
       width: 150,
@@ -263,7 +263,6 @@ const BookingManagement = () => {
       <div className="booking-management-header">
         <div>
           <Title level={2}>Quản lý đặt vé</Title>
-          <Text type="secondary">Quản lý danh sách đặt vé trong hệ thống</Text>
         </div>
         <Space>
           <Button

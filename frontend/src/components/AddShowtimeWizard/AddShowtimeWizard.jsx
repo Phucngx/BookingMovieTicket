@@ -840,18 +840,19 @@ const AddShowtimeWizard = () => {
     <Modal
       title={
         <div style={{ textAlign: 'center' }}>
-          <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
+          <Title level={3} style={{ margin: 0, color: 'white' }}>
             <VideoCameraOutlined /> Thêm suất chiếu mới
           </Title>
         </div>
       }
       open={wizardVisible}
       onCancel={handleClose}
-      width={1000}
+      width={680}
       footer={null}
       className="showtime-wizard-modal"
       destroyOnClose
-      style={{ top: 20 }}
+      style={{ top: 16 }}
+      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
     >
       <div className="wizard-container">
         {/* Steps */}
