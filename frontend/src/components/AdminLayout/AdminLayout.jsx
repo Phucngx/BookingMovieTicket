@@ -8,7 +8,9 @@ import {
   SettingOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  CalendarOutlined,
+  ClockCircleOutlined
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -48,9 +50,19 @@ const AdminLayout = ({ children }) => {
       label: 'Quản lý rạp phim',
     },
     {
+      key: '/admin/showtimes',
+      icon: <ClockCircleOutlined />,
+      label: 'Quản lý suất chiếu',
+    },
+    {
+      key: '/admin/bookings',
+      icon: <CalendarOutlined />,
+      label: 'Quản lý đặt vé',
+    },
+    {
       key: '/admin/users',
       icon: <UserOutlined />,
-      label: 'Quản lý người dùng',
+      label: 'Quản lý tài khoản',
     },
     {
       key: '/admin/settings',

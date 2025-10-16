@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Menu, Input, Button, Space, Avatar, Dropdown, message } from 'antd'
-import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined } from '@ant-design/icons'
+import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined, ShakeOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import AuthModal from '../AuthModal/AuthModal'
 import { logout, restoreAuth } from '../../store/slices/userSlice'
@@ -26,7 +26,9 @@ const Header = () => {
   }, [dispatch])
 
   const onSearch = (value) => {
-    console.log('Search:', value)
+    if (value.trim()) {
+      navigate(`/tim-kiem?q=${encodeURIComponent(value.trim())}`)
+    }
   }
 
   const handleAvatarClick = () => {
@@ -107,8 +109,8 @@ const Header = () => {
     { key: 'now-showing', label: 'Đang chiếu' },
     { key: 'coming-soon', label: 'Sắp chiếu' },
     { key: 'early-show', label: 'Chiếu sớm' },
-    { key: 'august-2025', label: 'Phim tháng 08/2025' },
-    { key: 'vietnamese', label: 'Phim Việt Nam' }
+    // { key: 'august-2025', label: 'Phim tháng 08/2025' },
+    // { key: 'vietnamese', label: 'Phim Việt Nam' }
   ]
 
   const newsMenuItems = [
@@ -209,7 +211,7 @@ const Header = () => {
         {/* Search and User Actions */}
         <div className="header-actions">
           <Search
-            placeholder="Tìm kiếm phim, rạp..."
+            placeholder="Tìm kiếm phim..."
             onSearch={onSearch}
             className="header-search"
             enterButton={<SearchOutlined />}
@@ -246,6 +248,12 @@ const Header = () => {
                       label: 'Tài khoản của tôi',
                       icon: <UserOutlined />,
                       onClick: () => navigate('/tai-khoan')
+                    },
+                    {
+                      key: 'my-tickets',
+                      label: 'Vé đã mua',
+                      icon: <ShakeOutlined />,
+                      onClick: () => navigate('/ve-da-mua')
                     },
                     ...(userInfo?.roleName === 'ADMIN' ? [{
                       key: 'admin-dashboard',

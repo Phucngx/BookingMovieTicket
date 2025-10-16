@@ -11,12 +11,15 @@ import TheaterBooking from './pages/TheaterBooking'
 import Profile from './pages/Profile'
 import MovieManagement from './pages/MovieManagement'
 import TheaterManagement from './pages/TheaterManagement'
+import ShowtimeManagement from './pages/ShowtimeManagement'
 import Schedule from './pages/Schedule'
 import SeatSelection from './pages/SeatSelection'
 import FoodBeverage from './pages/FoodBeverage'
 import Payment from './pages/Payment'
 import TicketInfo from './pages/TicketInfo'
 import Admin from './pages/Admin'
+import MyTickets from './pages/MyTickets/MyTickets'
+import MovieSearch from './pages/MovieSearch'
 import './App.css'
 
 const { Content } = Layout
@@ -40,7 +43,10 @@ function App() {
             <Route path="/tai-khoan" element={<Profile />} />
             <Route path="/quan-ly-phim" element={<MovieManagement />} />
             <Route path="/quan-ly-rap-phim" element={<TheaterManagement />} />
+            <Route path="/quan-ly-suat-chieu" element={<ShowtimeManagement />} />
             <Route path="/admin/*" element={<Admin />} />
+            <Route path="/ve-da-mua" element={<MyTickets />} />
+            <Route path="/tim-kiem" element={<MovieSearch />} />
           </Routes>
         </Content>
         <Footer />

@@ -174,6 +174,8 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
                       type="default"
                       className="showtime-button"
                       onClick={() => handleShowtimeClick(showtime, item.movie)}
+                      disabled={showtime.status !== 'ACTIVE'}
+                      title={showtime.status !== 'ACTIVE' ? 'Suất chiếu tạm dừng' : undefined}
                     >
                       <div className="showtime-content">
                         <div className="showtime-time">
@@ -181,12 +183,8 @@ const ShowtimeList = ({ showtimes, loading, error, selectedTheater, selectedDate
                           {showtime.time}
                         </div>
                         <div className="showtime-price">
-                          {/* <DollarOutlined style={{ marginRight: '4px' }} /> */}
                           {showtime.price.toLocaleString('vi-VN')} đ
                         </div>
-                        {/* <div className="showtime-room">
-                          Phòng {showtime.roomId}
-                        </div> */}
                       </div>
                     </Button>
                   ))}

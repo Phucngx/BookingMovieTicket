@@ -198,18 +198,30 @@ const TicketInfo = () => {
               }
             >
               <div className="ticket-header">
-                <div className="movie-poster-container">
-                  <img alt={ticket.movieName} className="movie-poster" />
-                  <div className="movie-badge">
-                    <Tag color="green" className="cinema-name">{ticket.theaterName}</Tag>
-                  </div>
-                </div>
                 <div className="movie-info">
-                  <Title level={3} className="movie-title">{ticket.movieName}</Title>
-                  <div className="movie-meta">
-                    <Text type="secondary" className="movie-duration">
-                      <ClockCircleOutlined /> {new Date(ticket.startTime).toLocaleTimeString('vi-VN', { hour12: false })} - {new Date(ticket.endTime).toLocaleTimeString('vi-VN', { hour12: false })}
-                    </Text>
+                  <div className="movie-title-section">
+                    <Title level={2} className="movie-title">{ticket.movieName}</Title>
+                    {/* <div className="movie-badges">
+                      <Tag color="blue" className="movie-badge">
+                        <CalendarOutlined /> {new Date(ticket.startTime).toLocaleDateString('vi-VN')}
+                      </Tag>
+                      <Tag color="green" className="movie-badge">
+                        <ClockCircleOutlined /> {new Date(ticket.startTime).toLocaleTimeString('vi-VN', { hour12: false })} - {new Date(ticket.endTime).toLocaleTimeString('vi-VN', { hour12: false })}
+                      </Tag>
+                    </div> */}
+                  </div>
+                  <div className="theater-section">
+                    <div className="theater-info">
+                      <div className="theater-details">
+                        <div className="theater-item">
+                          <HomeOutlined className="theater-icon" />
+                          <div className="theater-text">
+                            <Text strong className="theater-name">{ticket.theaterName}</Text>
+                            <Text type="secondary" className="room-name">Phòng {ticket.roomName}</Text>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -265,24 +277,53 @@ const TicketInfo = () => {
 
               {/* QR Code Section */}
               <div className="qr-section">
-                <Divider className="qr-divider" />
+                <div className="qr-header">
+                  <Title level={4} className="qr-title">
+                    <QrcodeOutlined /> Mã QR vé
+                  </Title>
+                  <Text type="secondary">Quét mã QR để vào rạp</Text>
+                </div>
                 <div className="qr-content">
-                  <div className="qr-placeholder">
-                    {ticket.qrcode ? (
-                      <img src={ticket.qrcode} alt="QR Code" style={{ width: 160, height: 160 }} />
+                  <div className="qr-container">
+                    {ticket.qrCode ? (
+                      <div className="qr-image-wrapper">
+                        <img 
+                          src={ticket.qrCode} 
+                          alt="QR Code" 
+                          className="qr-image"
+                          onError={(e) => {
+                            e.target.style.display = 'none'
+                            e.target.nextSibling.style.display = 'flex'
+                          }}
+                        />
+                        {/* <div className="qr-fallback">
+                          <QrcodeOutlined className="qr-icon" />
+                          <Text className="qr-text">QR Code vé</Text>
+                        </div> */}
+                      </div>
                     ) : (
-                      <>
-                    <QrcodeOutlined className="qr-icon" />
-                    <Text className="qr-text">QR Code vé</Text>
-                      </>
+                      <div className="qr-fallback">
+                        <QrcodeOutlined className="qr-icon" />
+                        <Text className="qr-text">QR Code vé</Text>
+                      </div>
                     )}
                   </div>
-                  <div className="qr-info">
-                    <Text strong>Mã vé:</Text>
-                    <Text className="ticket-code">
-                      {'BK' + String(ticket.bookingId)}
-                    </Text>
-                  </div>
+                  {/* <div className="qr-info">
+                    <div className="ticket-id-section">
+                      <Text className="ticket-label">Mã vé:</Text>
+                      <Text className="ticket-code">
+                        {'BK' + String(ticket.bookingId)}
+                      </Text>
+                    </div>
+                    <div className="qr-instructions">
+                      <Text type="secondary" className="qr-instruction">
+                        • Hiển thị mã QR tại quầy soát vé
+                      </Text>
+                      <Text type="secondary" className="qr-instruction">
+                        • Mã QR có hiệu lực đến giờ chiếu
+                      </Text>
+                    </div>
+                  </div> */}
                 </div>
               </div>
             </Card>

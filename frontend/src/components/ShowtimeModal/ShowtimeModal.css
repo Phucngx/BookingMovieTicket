@@ -69,36 +69,46 @@
 
 .showtimes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .showtime-card {
   border: 2px solid #f0f0f0;
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 8px;
+  padding: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   background: white;
   position: relative;
   overflow: hidden;
+  min-height: 80px;
 }
 
-.showtime-card:hover {
+.showtime-card.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.4 !important;
+  filter: grayscale(100%) !important;
+  pointer-events: none !important;
+  background-color: #f5f5f5 !important;
+  border-color: #d9d9d9 !important;
+}
+
+.showtime-card:hover:not(.disabled) {
   border-color: #1890ff;
   box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
   transform: translateY(-2px);
 }
 
-.showtime-card:active {
+.showtime-card:active:not(.disabled) {
   transform: translateY(0);
 }
 
 .showtime-time {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .time-icon {
@@ -111,7 +121,7 @@
 }
 
 .start-time {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #262626;
   line-height: 1.2;
@@ -126,8 +136,8 @@
 .showtime-price {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 6px;
 }
 
 .price-icon {
@@ -136,7 +146,7 @@
 }
 
 .price-text {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #52c41a;
 }
@@ -146,7 +156,7 @@
 }
 
 .room-text {
-  font-size: 12px;
+  font-size: 10px;
   color: #8c8c8c;
 }
 
@@ -158,38 +168,52 @@
   }
   
   .showtimes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
   }
   
   .showtime-card {
-    padding: 12px;
+    padding: 10px;
+    min-height: 70px;
   }
   
   .start-time {
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .price-text {
-    font-size: 14px;
+    font-size: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .showtimes-grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
   
   .showtime-card {
-    padding: 14px;
+    padding: 8px;
+    min-height: 60px;
   }
   
   .showtime-time {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
   
   .showtime-price {
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+  }
+  
+  .start-time {
+    font-size: 13px;
+  }
+  
+  .price-text {
+    font-size: 9px;
+  }
+  
+  .room-text {
+    font-size: 9px;
   }
 }

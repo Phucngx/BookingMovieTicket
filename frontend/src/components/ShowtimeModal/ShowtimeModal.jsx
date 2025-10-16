@@ -119,9 +119,11 @@ const ShowtimeModal = ({
       open={visible}
       onCancel={onCancel}
       footer={null}
-      width={600}
+      width={720}
       className="showtime-modal"
       centered
+      style={{ maxHeight: '75vh' }}
+      bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
     >
       <div className="showtime-modal-content">
         {loading && (
@@ -171,25 +173,34 @@ const ShowtimeModal = ({
                   </Text>
                 </div>
                 <div className="showtimes-grid">
-                  {movieShowtime.showtimes.map((showtime) => (
-                    <div 
-                      key={showtime.id} 
-                      className="showtime-card"
-                      onClick={() => handleShowtimeSelect(showtime, movieShowtime.movie)}
-                    >
-                      <div className="showtime-time">
-                        <ClockCircleOutlined className="time-icon" />
-                        <div className="time-text">{showtime.time}</div>
+                  {movieShowtime.showtimes.map((showtime) => {
+                    const isInactive = showtime.status && showtime.status !== 'ACTIVE'
+                    return (
+                      <div 
+                        key={showtime.id} 
+                        className={`showtime-card${isInactive ? ' disabled' : ''}`}
+                        onClick={isInactive ? undefined : () => handleShowtimeSelect(showtime, movieShowtime.movie)}
+                        title={isInactive ? 'Suất chiếu tạm dừng' : undefined}
+                        aria-disabled={isInactive}
+                        style={{
+                          pointerEvents: isInactive ? 'none' : 'auto',
+                          opacity: isInactive ? 0.4 : 1,
+                          filter: isInactive ? 'grayscale(100%)' : 'none'
+                        }}
+                      >
+                        <div className="showtime-time">
+                          <ClockCircleOutlined className="time-icon" />
+                          <div className="time-text">{showtime.time}</div>
+                        </div>
+                        <div className="showtime-price">
+                          <Text className="price-text">{showtime.price.toLocaleString('vi-VN')}</Text>
+                        </div>
+                        <div className="showtime-room">
+                          <Text type="secondary" className="room-text">Phòng {showtime.roomId}</Text>
+                        </div>
                       </div>
-                      <div className="showtime-price">
-                        {/* <DollarOutlined className="price-icon" /> */}
-                        <Text className="price-text">{showtime.price.toLocaleString('vi-VN')}</Text>
-                      </div>
-                      <div className="showtime-room">
-                        <Text type="secondary" className="room-text">Phòng {showtime.roomId}</Text>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             ))}
@@ -204,30 +215,41 @@ const ShowtimeModal = ({
               <Text type="secondary">{new Date(date).toLocaleDateString('vi-VN')}</Text>
             </div>
             <div className="showtimes-grid">
-              {showtimes.map((st) => (
-                <div 
-                  key={st.showtimeId}
-                  className="showtime-card"
-                  onClick={() => handleShowtimeSelect({
-                    id: st.showtimeId,
-                    time: new Date(st.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-                    price: st.price,
-                    roomId: st.roomId
-                  }, movie)}
-                >
-                  <div className="showtime-time">
-                    <ClockCircleOutlined className="time-icon" />
-                    <div className="time-text">{new Date(st.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</div>
+              {showtimes.map((st) => {
+                const isInactive = st.status && st.status !== 'ACTIVE'
+                const simplified = {
+                  id: st.showtimeId,
+                  time: new Date(st.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+                  price: st.price,
+                  roomId: st.roomId,
+                  status: st.status
+                }
+                return (
+                  <div 
+                    key={st.showtimeId}
+                    className={`showtime-card${isInactive ? ' disabled' : ''}`}
+                    onClick={isInactive ? undefined : () => handleShowtimeSelect(simplified, movie)}
+                    title={isInactive ? 'Suất chiếu tạm dừng' : undefined}
+                    aria-disabled={isInactive}
+                    style={{
+                      pointerEvents: isInactive ? 'none' : 'auto',
+                      opacity: isInactive ? 0.4 : 1,
+                      filter: isInactive ? 'grayscale(100%)' : 'none'
+                    }}
+                  >
+                    <div className="showtime-time">
+                      <ClockCircleOutlined className="time-icon" />
+                      <div className="time-text">{new Date(st.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</div>
+                    </div>
+                    <div className="showtime-price">
+                      <Text className="price-text">{st.price.toLocaleString('vi-VN')}</Text>
+                    </div>
+                    <div className="showtime-room">
+                      <Text type="secondary" className="room-text">Phòng {st.roomId}</Text>
+                    </div>
                   </div>
-                  <div className="showtime-price">
-                    {/* <DollarOutlined className="price-icon" /> */}
-                    <Text className="price-text">{st.price.toLocaleString('vi-VN')}</Text>
-                  </div>
-                  <div className="showtime-room">
-                    <Text type="secondary" className="room-text">Phòng {st.roomId}</Text>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}

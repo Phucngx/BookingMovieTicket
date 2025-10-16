@@ -1,0 +1,200 @@
+.account-detail-container {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.account-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.account-detail-title {
+  display: flex;
+  align-items: center;
+}
+
+.account-detail-title h2 {
+  margin: 0 0 8px 0 !important;
+  color: #262626;
+  font-weight: 600;
+}
+
+.account-detail-title .ant-typography {
+  margin: 0 !important;
+}
+
+.account-info-card,
+.user-info-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.account-info-card .ant-card-head,
+.user-info-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.account-info-card .ant-card-head-title,
+.user-info-card .ant-card-head-title {
+  font-weight: 600;
+  color: #262626;
+  font-size: 16px;
+}
+
+.account-info-card .ant-card-body,
+.user-info-card .ant-card-body {
+  padding: 24px;
+}
+
+/* Descriptions styling */
+.ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  font-weight: 500;
+  color: #262626;
+  width: 200px;
+}
+
+.ant-descriptions-bordered .ant-descriptions-item-content {
+  background-color: white;
+}
+
+/* Tags */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+}
+
+.ant-tag-blue {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  border: 1px solid #91d5ff;
+}
+
+.ant-tag-red {
+  background-color: #fff2f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
+/* Switch */
+.ant-switch {
+  background-color: #d9d9d9;
+}
+
+.ant-switch-checked {
+  background-color: #52c41a;
+}
+
+/* Buttons */
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-primary {
+  background-color: #1890ff;
+  border-color: #1890ff;
+}
+
+.ant-btn-primary:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+}
+
+/* .ant-btn-dangerous {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+} */
+
+.ant-btn-dangerous:hover {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+.ant-btn-text {
+  color: #1890ff;
+}
+
+.ant-btn-text:hover {
+  color: #40a9ff;
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+/* Modal */
+.ant-modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.ant-modal-title {
+  font-weight: 600;
+  color: #262626;
+}
+
+.ant-modal-body {
+  padding: 24px;
+}
+
+/* Alert */
+.ant-alert {
+  border-radius: 8px;
+}
+
+.ant-alert-error {
+  border-color: #ffccc7;
+}
+
+.ant-alert-warning {
+  border-color: #ffe58f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .account-detail-container {
+    padding: 16px;
+  }
+  
+  .account-detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .account-detail-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .account-info-card .ant-card-body,
+  .user-info-card .ant-card-body {
+    padding: 16px;
+  }
+  
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-detail-container {
+    padding: 12px;
+  }
+  
+  .account-detail-header {
+    padding: 16px;
+  }
+  
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    width: 120px;
+  }
+}

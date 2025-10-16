@@ -54,6 +54,42 @@ export const movieService = {
     }
   },
 
+  // Tìm kiếm phim
+  async searchMovies(title, page = 1, size = 10) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/movies/search?page=${page}&size=${size}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: title
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      
+      if (data.code === 1000) {
+        return {
+          success: true,
+          data: data.data
+        }
+      } else {
+        throw new Error(data.message || 'Lỗi tìm kiếm phim')
+      }
+    } catch (error) {
+      console.error('Error searching movies:', error)
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+  },
+
   // Lấy danh sách phim cho admin (cần đăng nhập)
   async getMoviesForAdmin(page = 1, size = 10) {
     try {

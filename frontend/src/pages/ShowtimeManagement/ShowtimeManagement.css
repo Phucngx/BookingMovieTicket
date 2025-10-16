@@ -1,0 +1,153 @@
+/* Showtime Management Styles */
+.showtime-management {
+  padding: 24px;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+/* Header */
+.showtime-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding: 20px 0;
+}
+
+.add-showtime-btn {
+  height: 40px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* Statistics Cards */
+.stat-card {
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+  background: #ffffff;
+}
+
+.stat-card .ant-card-body {
+  padding: 16px;
+}
+
+.stat-card .ant-statistic-title {
+  font-weight: 500;
+  color: #666666;
+  margin-bottom: 8px;
+}
+
+.stat-card .ant-statistic-content {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+}
+
+/* Filter Card */
+.filter-card {
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+  background: #ffffff;
+}
+
+.filter-card .ant-card-body {
+  padding: 16px;
+}
+
+/* Table Card */
+.table-card {
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+  background: #ffffff;
+}
+
+.table-card .ant-card-body {
+  padding: 0;
+}
+
+/* Table Styles */
+.showtime-table {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.showtime-table .ant-table-thead > tr > th {
+  background: #fafafa;
+  color: #333333;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.showtime-table .ant-table-tbody > tr:hover {
+  background: #f9f9f9;
+}
+
+.showtime-table .ant-table-tbody > tr > td {
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
+}
+
+/* Movie poster */
+.showtime-table img {
+  border: 1px solid #f0f0f0;
+}
+
+/* Action buttons */
+.showtime-table .ant-btn {
+  border-radius: 4px;
+}
+
+/* Tags */
+.showtime-table .ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  padding: 2px 8px;
+}
+
+/* Modal styles */
+.showtime-modal .ant-modal-header {
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.showtime-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.showtime-modal .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .showtime-management {
+    padding: 16px;
+  }
+  
+  .showtime-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .add-showtime-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .stat-card .ant-statistic-content {
+    font-size: 18px;
+  }
+  
+  .showtime-table {
+    font-size: 12px;
+  }
+  
+  .showtime-table .ant-table-tbody > tr > td {
+    padding: 8px;
+  }
+}
