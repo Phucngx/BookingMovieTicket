@@ -60,6 +60,9 @@ public class AuthService implements IAuthService{
         if(!isAuthenticated){
             throw new AppException(ErrorCode.SIGN_IN_FAIL);
         }
+        if(account.getStatus() == 0){
+            throw new AppException(ErrorCode.ACCOUNT_DISABLED);
+        }
         String token = generateToken(account);
         return AuthResponse.builder()
                 .accessToken(token)

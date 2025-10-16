@@ -1,6 +1,7 @@
 package com.ngp.MovieService.Service.Movie;
 
 import com.ngp.MovieService.DTO.Request.MovieRequest;
+import com.ngp.MovieService.DTO.Request.MovieSearchRequest;
 import com.ngp.MovieService.DTO.Response.MovieBriefResponse;
 import com.ngp.MovieService.DTO.Response.MovieLiteResponse;
 import com.ngp.MovieService.DTO.Response.MovieResponse;
@@ -148,5 +149,16 @@ public class MovieService implements IMovieService{
                 m.getRating(),
                 m.getDurationMinutes()
         )).toList();
+    }
+
+    @Override
+    public Page<MovieResponse> searchMovies(MovieSearchRequest request, int page, int size) {
+        Sort sort = Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<MovieEntity> moviePage = movieRepository.searchByMovieName(request.getTitle(), pageable);
+        if (moviePage.isEmpty()) {
+            throw new AppException(ErrorCode.MOVIE_NOT_FOUND);
+        }
+        return moviePage.map(movieMapper::toMovieResponse);
     }
 }

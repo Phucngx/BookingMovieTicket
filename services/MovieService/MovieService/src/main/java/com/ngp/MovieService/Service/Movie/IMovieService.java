@@ -1,6 +1,7 @@
 package com.ngp.MovieService.Service.Movie;
 
 import com.ngp.MovieService.DTO.Request.MovieRequest;
+import com.ngp.MovieService.DTO.Request.MovieSearchRequest;
 import com.ngp.MovieService.DTO.Response.MovieBriefResponse;
 import com.ngp.MovieService.DTO.Response.MovieLiteResponse;
 import com.ngp.MovieService.DTO.Response.MovieResponse;
@@ -16,4 +17,5 @@ public interface IMovieService {
     Page<MovieResponse> getAllMovies(int page, int size);
     MovieBriefResponse getMovieBrief(Long movieId);
     List<MovieLiteResponse> findAllByMovieIds(List<Long> Ids);
+    Page<MovieResponse> searchMovies(MovieSearchRequest request, int page, int size);
 }

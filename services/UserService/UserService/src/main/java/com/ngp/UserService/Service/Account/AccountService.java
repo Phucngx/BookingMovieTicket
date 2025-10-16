@@ -2,10 +2,9 @@ package com.ngp.UserService.Service.Account;
 
 import com.ngp.UserService.DTO.Request.AccountRequest;
 import com.ngp.UserService.DTO.Request.AccountUpdateRequest;
-import com.ngp.UserService.DTO.Response.AccountDetailResponse;
-import com.ngp.UserService.DTO.Response.AccountResponse;
-import com.ngp.UserService.DTO.Response.MeResponse;
-import com.ngp.UserService.DTO.Response.UserResponse;
+import com.ngp.UserService.DTO.Request.UpdatePasswordRequest;
+import com.ngp.UserService.DTO.Request.UpdateStatusRequest;
+import com.ngp.UserService.DTO.Response.*;
 import com.ngp.UserService.Entity.AccountEntity;
 import com.ngp.UserService.Entity.RoleEntity;
 import com.ngp.UserService.Entity.UserEntity;
@@ -57,6 +56,8 @@ public class AccountService implements IAccountService{
         }
         UserEntity user =  UserEntity.builder()
                 .fullName("User " + (int) (Math.random() * 1000))
+                .email(request.getEmail())
+                .phone(request.getPhone())
                 .build();
         user = userService.createUser(user);
         AccountEntity account = accountMapper.toAccount(request);
@@ -85,9 +86,6 @@ public class AccountService implements IAccountService{
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
             account.setRole(role);
         }
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }
 
@@ -101,9 +99,9 @@ public class AccountService implements IAccountService{
     public Page<AccountDetailResponse> getAllAccount(int page, int size) {
         Sort sort = Sort.by("createdAt").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        Page<AccountEntity> listAccounts = accountRepository.findAll(pageable);
-        UserResponse user = new UserResponse();
+        Page<AccountEntity> listAccounts = accountRepository.findByRole_RoleNameNot("ADMIN", pageable);
         return listAccounts.map(a -> {
+            UserResponse user = new UserResponse();
             UserEntity u = a.getUser();
             if (u != null) {
                 user.setUserId(String.valueOf(u.getUserId()));
@@ -149,6 +147,18 @@ public class AccountService implements IAccountService{
     }
 
     @Override
+    public AccountDetailsResponse getDetailsAccount(Long id) {
+        AccountEntity account = accountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        return AccountDetailsResponse.builder()
+                .accountId(account.getAccountId())
+                .username(account.getUsername())
+                .status(account.getStatus())
+                .roleName(account.getRole().getRoleName())
+                .build();
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public MeResponse getMe(Long accountId) {
         AccountEntity a = accountRepository.findDetailById(accountId)
@@ -166,6 +176,25 @@ public class AccountService implements IAccountService{
                 .phone(a.getUser().getPhone())
                 .address(a.getUser().getAddress())
                 .build();
+    }
+
+    @Override
+    public AccountResponse updatePassword(Long id, UpdatePasswordRequest request) {
+        AccountEntity account = accountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        if(!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_INCORRECT);
+        }
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        return accountMapper.toAccountResponse(accountRepository.save(account));
+    }
+
+    @Override
+    public AccountResponse updateStatus(Long id, UpdateStatusRequest request) {
+        AccountEntity account = accountRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        account.setStatus(request.getStatus());
+        return accountMapper.toAccountResponse(accountRepository.save(account));
     }
 
 }

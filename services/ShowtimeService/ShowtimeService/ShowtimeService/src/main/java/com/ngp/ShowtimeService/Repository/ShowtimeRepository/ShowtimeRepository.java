@@ -46,4 +46,7 @@ public interface ShowtimeRepository extends JpaRepository<ShowtimeEntity, Long>,
             @Param("start") LocalDateTime start,
             @Param("end")   LocalDateTime end
     );
+
+    List<ShowtimeEntity> findByStatusAndStartTimeBefore(String status, LocalDateTime now);
+
 }

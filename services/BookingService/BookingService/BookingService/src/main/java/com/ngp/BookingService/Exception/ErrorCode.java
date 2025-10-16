@@ -15,7 +15,7 @@ public enum ErrorCode {
     NOT_FOUND(1002, "Not found", HttpStatus.BAD_REQUEST),
     SHOWTIME_NOT_FOUND(1002, "SHOWTIME not found", HttpStatus.BAD_REQUEST),
     MOVIE_NOT_FOUND(1002, "MOVIE not found", HttpStatus.BAD_REQUEST),
-    BOOKING_NOT_FOUND(1002, "BOOKING not found", HttpStatus.BAD_REQUEST),
+    BOOKING_NOT_FOUND(1002, "Không có vé đã mua", HttpStatus.BAD_REQUEST),
     TICKET_NOT_FOUND(1002, "Thanh toán thất bại. Vui lòng thực hiện lại!", HttpStatus.BAD_REQUEST),
     RESOURCE_NOT_FOUND(1002, "RESOURCE_NOT_FOUND", HttpStatus.BAD_REQUEST),
     DEPENDENCY_UNAVAILABLE(1007, "DEPENDENCY_UNAVAILABLE", HttpStatus.INTERNAL_SERVER_ERROR),

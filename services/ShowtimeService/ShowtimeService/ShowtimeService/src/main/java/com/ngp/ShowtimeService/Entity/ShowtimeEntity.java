@@ -36,4 +36,7 @@ public class ShowtimeEntity extends BaseEntity{
 
     @Column(name = "roomId", nullable = false)
     Long roomId;
+
+    @Column(name = "status", nullable = false)
+    String status;
 }

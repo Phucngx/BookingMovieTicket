@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountUpdateRequest {
-    Long roleId;
+public class UpdateStatusRequest {
+    int status;
 }

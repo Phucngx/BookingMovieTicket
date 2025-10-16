@@ -17,4 +17,5 @@ public class ShowtimeResponse {
     Double price;
     Long movieId;
     Long roomId;
+    String status;
 }

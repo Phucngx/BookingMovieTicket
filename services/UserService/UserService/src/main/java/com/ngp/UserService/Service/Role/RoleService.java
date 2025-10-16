@@ -52,4 +52,12 @@ public class RoleService implements IRoleService{
         Page<RoleEntity> listRoles = roleRepository.findAll(pageable);
         return listRoles.map(roleMapper::toRoleResponse);
     }
+
+    @Override
+    public Page<RoleResponse> getAllRolesNotAdmin(int page, int size) {
+        Sort sort = Sort.by("createdAt").descending();
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<RoleEntity> listRoles = roleRepository.findByRoleNameNot("ADMIN", pageable);
+        return listRoles.map(roleMapper::toRoleResponse);
+    }
 }

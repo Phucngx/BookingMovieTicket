@@ -14,5 +14,6 @@ public interface IBookingService {
     Page<BookingFullResponse> getAllBookings(int page, int size);
     BookingDetailResponse handlePaymentCallback(PaymentCallbackRequest request);
     TicketResponse getTicketByBookingId(Long bookingId);
-    List<TicketResponse> getTicketsByAccountId(Long accountId);
+    Page<TicketResponse> getTicketsByAccountId(Long accountId, String period, int page, int size);
+    RevenueResponse getRevenueReport(String period);
 }

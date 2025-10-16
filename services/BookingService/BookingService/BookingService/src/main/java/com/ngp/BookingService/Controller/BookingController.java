@@ -73,10 +73,24 @@ public class BookingController {
     }
 
     @GetMapping("/get-my-ticket/{accountId}")
-    public ApiResponse<List<TicketResponse>> getTicketsByAccountId(@PathVariable Long accountId) {
-        return ApiResponse.<List<TicketResponse>>builder()
+    public ApiResponse<Page<TicketResponse>> getTicketsByAccountId(
+            @PathVariable Long accountId,
+            @RequestParam(required = false) String period, // today | month | year | all
+            @RequestParam(name = "page") int page, @RequestParam(name = "size") int size
+    ) {
+        return ApiResponse.<Page<TicketResponse>>builder()
                 .code(ErrorCode.SUCCESS.getCode())
-                .data(bookingService.getTicketsByAccountId(accountId))
+                .data(bookingService.getTicketsByAccountId(accountId, period, page, size))
+                .build();
+    }
+
+    @GetMapping("/report/revenue")
+    public ApiResponse<RevenueResponse> getRevenueReport(
+            @RequestParam(required = false) String period // today/ week | month | year |
+    ) {
+        return ApiResponse.<RevenueResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(bookingService.getRevenueReport(period))
                 .build();
     }
 }

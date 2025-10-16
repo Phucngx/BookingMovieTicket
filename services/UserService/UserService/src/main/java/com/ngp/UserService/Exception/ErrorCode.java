@@ -18,10 +18,11 @@ public enum ErrorCode {
     ACCOUNT_NOT_FOUND(1002, "Account not found", HttpStatus.BAD_REQUEST),
     NOT_EMPTY(1003, "This field is not empty", HttpStatus.BAD_REQUEST),
     NOT_NULL(1004, "This field is not null", HttpStatus.BAD_REQUEST),
-    USERNAME_EXISTS(1005, "Username is already exist", HttpStatus.BAD_REQUEST),
+    USERNAME_EXISTS(1005, "Tên đăng nhập đã tồn tại", HttpStatus.BAD_REQUEST),
     NOT_EXISTS(1006, "not exist", HttpStatus.NOT_FOUND),
     USERNAME_NOT_EXISTS(1006, "Username not exist", HttpStatus.NOT_FOUND),
     USERNAME_INVALID(1007, "Username must be in {min} - {max} characters", HttpStatus.BAD_REQUEST),
+    PASSWORD_INCORRECT(1007, "Nhập sai mật khẩu, vui vòng nhập lại", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(1007, "Password must be in {min} - {max} characters", HttpStatus.BAD_REQUEST),
     PHONE_INVALID(1007, "Password must be {min} or {max} characters", HttpStatus.BAD_REQUEST),
     EMAIL_INVALID(1007, "This field must be email", HttpStatus.BAD_REQUEST),
@@ -29,7 +30,8 @@ public enum ErrorCode {
     BOB_INVALID(1007, "Age must be at least {min}", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(1008, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1008, "You don't have permission", HttpStatus.FORBIDDEN),
-    SIGN_IN_FAIL(1009, "Log-in fail", HttpStatus.BAD_REQUEST),
+    SIGN_IN_FAIL(1009, "Tài khoản hoặc mật khẩu không đúng!", HttpStatus.BAD_REQUEST),
+    ACCOUNT_DISABLED(1009, "Tài khoản đang bị vô hiệu hóa!", HttpStatus.BAD_REQUEST),
     ;
     final int code;
     final String message;

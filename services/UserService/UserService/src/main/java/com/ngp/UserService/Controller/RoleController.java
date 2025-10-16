@@ -53,4 +53,12 @@ public class RoleController {
                 .data(roleService.getAllRoles(page, size))
                 .build();
     }
+
+    @GetMapping("/get-not-admin")
+    public ApiResponse<Page<RoleResponse>> getAllRolesNotAdmin(@RequestParam(name = "page") int page, @RequestParam(name = "size") int size) {
+        return ApiResponse.<Page<RoleResponse>>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(roleService.getAllRolesNotAdmin(page, size))
+                .build();
+    }
 }

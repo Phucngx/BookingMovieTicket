@@ -63,13 +63,13 @@ public class RoomController {
                 .build();
     }
 
-//    @GetMapping("/get-rooms/{id}")
-//    public ApiResponse<List<RoomResponse>> getRoomInTheater(@PathVariable Long id) {
-//        return ApiResponse.<List<RoomResponse>>builder()
-//                .code(ErrorCode.SUCCESS.getCode())
-//                .data(roomService.getRoomsByTheaterId(id))
-//                .build();
-//    }
+    @GetMapping("/get-rooms/{id}")
+    public ApiResponse<List<RoomResponse>> getRoomsInTheater(@PathVariable Long id) {
+        return ApiResponse.<List<RoomResponse>>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(roomService.getRoomsByTheaterId(id))
+                .build();
+    }
 
     @GetMapping("/internal/get-room/{id}")
     public ApiResponse<RoomBriefResponse> getRoomBrief(@PathVariable Long id) {
