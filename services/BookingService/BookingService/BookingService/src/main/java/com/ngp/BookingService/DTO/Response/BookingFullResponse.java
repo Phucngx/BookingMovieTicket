@@ -1,8 +1,7 @@
 package com.ngp.BookingService.DTO.Response;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import com.ngp.BookingService.Constrains.StatusType;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -11,9 +10,11 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BookingFullResponse {
     Long bookingId;
-    Long accountId;
+    String userName;
     String movieName;
     LocalDateTime startTime;
     LocalDateTime endTime;
@@ -21,6 +22,8 @@ public class BookingFullResponse {
     String roomName;
     List<String> foodNames;
     List<String> seatNames;
+    StatusType status;
+    Double totalPrice;
     LocalDateTime createdAt;
     String qrCode;
 }

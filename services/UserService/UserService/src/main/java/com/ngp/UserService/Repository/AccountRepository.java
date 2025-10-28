@@ -1,6 +1,8 @@
 package com.ngp.UserService.Repository;
 
 import com.ngp.UserService.Entity.AccountEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +23,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long>, J
      where a.accountId = :id
      """)
     Optional<AccountEntity> findDetailById(@Param("id") Long id);
+
+    Page<AccountEntity> findByRole_RoleNameNot(String roleName, Pageable pageable);
+
 }

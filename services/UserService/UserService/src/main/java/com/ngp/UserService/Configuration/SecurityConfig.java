@@ -30,11 +30,17 @@ public class SecurityConfig {
     protected String SIGNER_KEY;
 
     private static final String[] POST_PUBLIC_ENDPOINTS = {
-            "/users", "/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/accounts/get-detail/**"
+            "/users",
+            "/auth/login",
+            "/auth/introspect",
+            "/auth/logout",
+            "/auth/refresh",
+            "/accounts/create",
     };
 
     private static final String[] GET_PUBLIC_ENDPOINTS = {
-            "/accounts/get-detail/**"
+            "/accounts/get-detail/**",
+            "/accounts/internal/get-detail-account/**"
     };
 
     @Bean

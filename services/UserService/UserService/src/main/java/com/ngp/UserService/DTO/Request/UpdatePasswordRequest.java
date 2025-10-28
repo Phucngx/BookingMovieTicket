@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountUpdateRequest {
-    Long roleId;
+public class UpdatePasswordRequest {
+    String oldPassword;
+    String newPassword;
 }

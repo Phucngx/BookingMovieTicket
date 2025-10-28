@@ -11,9 +11,15 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountRequest {
-    @NotBlank(message = "username is required")
+    @NotBlank(message = "Vui lòng nhập username")
     String username;
 
-    @NotBlank(message = "password is required")
+    @NotBlank(message = "Vui lòng nhập password")
     String password;
+
+    @NotBlank(message = "Vui lòng nhâp email")
+    String email;
+
+    @NotBlank(message = "Vui lòng nhâp số điện thoại")
+    String phone;
 }

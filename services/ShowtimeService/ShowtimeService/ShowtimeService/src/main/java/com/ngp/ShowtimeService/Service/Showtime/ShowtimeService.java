@@ -59,6 +59,7 @@ public class ShowtimeService implements IShowtimeService{
         MovieBriefResponse movie = movieClient.getMovie(movieId).getData();
         RoomBriefResponse room = roomClient.getRoom(roomId).getData();
         ShowtimeEntity showtime = showtimeMapper.toShowtime(request);
+        showtime.setStatus("ACTIVE");
         return showtimeMapper.toShowtimeResponse(showtimeRepository.save(showtime));
     }
 
@@ -194,6 +195,7 @@ public class ShowtimeService implements IShowtimeService{
             item.setTime(st.getStartTime().toLocalTime().format(tf));
             item.setPrice(st.getPrice());
             item.setRoomId(st.getRoomId());
+            item.setStatus((st.getStatus()));
             block.getShowtimes().add(item);
         }
 

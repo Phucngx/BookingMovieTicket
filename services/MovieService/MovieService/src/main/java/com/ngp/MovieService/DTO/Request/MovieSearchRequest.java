@@ -1,4 +1,4 @@
-package com.ngp.UserService.DTO.Request;
+package com.ngp.MovieService.DTO.Request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountUpdateRequest {
-    Long roleId;
+public class MovieSearchRequest {
+    String title;
 }

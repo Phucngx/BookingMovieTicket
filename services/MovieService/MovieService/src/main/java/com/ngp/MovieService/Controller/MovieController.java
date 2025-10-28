@@ -1,6 +1,7 @@
 package com.ngp.MovieService.Controller;
 
 import com.ngp.MovieService.DTO.Request.MovieRequest;
+import com.ngp.MovieService.DTO.Request.MovieSearchRequest;
 import com.ngp.MovieService.DTO.Response.ApiResponse;
 import com.ngp.MovieService.DTO.Response.MovieBriefResponse;
 import com.ngp.MovieService.DTO.Response.MovieLiteResponse;
@@ -75,5 +76,17 @@ public class MovieController {
     @PostMapping("/internal/get-movie-lites")
     public List<MovieLiteResponse> getMovieLites(@RequestBody List<Long> movieIds) {
         return movieService.findAllByMovieIds(movieIds);
+    }
+
+    @PostMapping("/search")
+    public ApiResponse<Page<MovieResponse>> searchMovie(
+            @RequestBody MovieSearchRequest request,
+            @RequestParam(name = "page") int page,
+            @RequestParam(name = "size") int size
+    ) {
+        return ApiResponse.<Page<MovieResponse>>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(movieService.searchMovies(request, page, size))
+                .build();
     }
 }

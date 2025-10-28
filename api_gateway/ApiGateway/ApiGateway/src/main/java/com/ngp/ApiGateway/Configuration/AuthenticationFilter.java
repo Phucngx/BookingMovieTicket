@@ -43,6 +43,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "user-service/accounts/create",
             "movie-service/movies/get-all",
             "movie-service/movies/get-details/.*",
+            "movie-service/movies/search",
             "movie-service/genres/get-all",
             "movie-service/actors/get-all",
             "movie-service/actors/get-details/.*",

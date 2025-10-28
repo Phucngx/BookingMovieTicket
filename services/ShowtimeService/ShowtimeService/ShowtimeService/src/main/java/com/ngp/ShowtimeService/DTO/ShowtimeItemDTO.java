@@ -13,4 +13,5 @@ public class ShowtimeItemDTO {
     String time;     // "HH:mm" từ startTime
     Double price;
     Long roomId;
+    String status;
 }

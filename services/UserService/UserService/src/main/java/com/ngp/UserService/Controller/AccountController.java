@@ -1,10 +1,7 @@
 package com.ngp.UserService.Controller;
 
-import com.ngp.UserService.DTO.Request.AccountRequest;
-import com.ngp.UserService.DTO.Request.AccountUpdateRequest;
-import com.ngp.UserService.DTO.Response.AccountDetailResponse;
-import com.ngp.UserService.DTO.Response.AccountResponse;
-import com.ngp.UserService.DTO.Response.ApiResponse;
+import com.ngp.UserService.DTO.Request.*;
+import com.ngp.UserService.DTO.Response.*;
 import com.ngp.UserService.Exception.ErrorCode;
 import com.ngp.UserService.Service.Account.AccountService;
 import jakarta.validation.Valid;
@@ -59,6 +56,30 @@ public class AccountController {
         return ApiResponse.<AccountDetailResponse>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .data(accountService.getDetailAccount(id))
+                .build();
+    }
+
+    @GetMapping("internal/get-detail-account/{id}")
+    public ApiResponse<AccountDetailsResponse> getAccountDetails(@PathVariable Long id) {
+        return ApiResponse.<AccountDetailsResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(accountService.getDetailsAccount(id))
+                .build();
+    }
+
+    @PutMapping("/update-password/{id}")
+    public ApiResponse<AccountResponse> updatePassword(@PathVariable Long id, @RequestBody UpdatePasswordRequest request){
+        return ApiResponse.<AccountResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(accountService.updatePassword(id, request))
+                .build();
+    }
+
+    @PutMapping("/update-status/{id}")
+    public ApiResponse<AccountResponse> updateStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest request){
+        return ApiResponse.<AccountResponse>builder()
+                .code(ErrorCode.SUCCESS.getCode())
+                .data(accountService.updateStatus(id, request))
                 .build();
     }
 }

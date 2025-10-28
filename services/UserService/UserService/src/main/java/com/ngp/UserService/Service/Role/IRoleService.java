@@ -9,4 +9,5 @@ public interface IRoleService {
     RoleResponse updateRole(Long id, RoleRequest request);
     void deleteRole(Long id);
     Page<RoleResponse> getAllRoles(int page, int size);
+    Page<RoleResponse> getAllRolesNotAdmin(int page, int size);
 }
