@@ -15,6 +15,9 @@ import roleReducer from './slices/roleSlice'
 import showtimeManagementReducer from './slices/showtimeManagementSlice'
 import showtimeWizardReducer from './slices/showtimeWizardSlice'
 import bookingManagementReducer from './slices/bookingManagementSlice'
+import nowShowingReducer from './slices/nowShowingSlice'
+import comingSoonReducer from './slices/comingSoonSlice'
+import otpReducer from './slices/otpSlice'
 
 export const store = configureStore({
   reducer: {
@@ -34,5 +37,8 @@ export const store = configureStore({
     showtimeManagement: showtimeManagementReducer,
     showtimeWizard: showtimeWizardReducer,
     bookingManagement: bookingManagementReducer,
+    nowShowing: nowShowingReducer,
+    comingSoon: comingSoonReducer,
+    otp: otpReducer,
   },
 })

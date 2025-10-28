@@ -70,7 +70,7 @@ const TheaterDetail = () => {
       setRooms(response.data || [])
     } catch (error) {
       console.error('Error fetching theater rooms:', error)
-      message.error('Không thể tải danh sách phòng chiếu')
+      // message.error('Không thể tải danh sách phòng chiếu')
     } finally {
       setRoomsLoading(false)
     }
@@ -461,25 +461,25 @@ const TheaterDetail = () => {
 
           <Form.Item
             name="screenType"
-            label="Loại màn hình (screenType)"
+            label="Loại màn hình"
             rules={[{ required: true, message: 'Vui lòng chọn loại màn hình' }]}
           >
             <Select placeholder="Chọn loại màn hình">
-              <Option value="TWO_D">TWO_D</Option>
-              <Option value="THREE_D">THREE_D</Option>
-              <Option value="FOUR_D">FOUR_D</Option>
-              <Option value="IMAX">IMAX</Option>
+              <Option value="TWO_D">Định dạng 2D</Option>
+              <Option value="THREE_D">Định dạng 3D</Option>
+              <Option value="FOUR_D">Định dạng 4D</Option>
+              <Option value="IMAX">Định dạng IMAX</Option>
             </Select>
           </Form.Item>
 
           <Form.Item
             name="soundSystem"
-            label="Hệ thống âm thanh (soundSystem)"
+            label="Hệ thống âm thanh"
             rules={[{ required: true, message: 'Vui lòng chọn hệ thống âm thanh' }]}
           >
             <Select placeholder="Chọn hệ thống âm thanh">
-              <Option value="DOLBY_ATMOS">DOLBY_ATMOS</Option>
-              <Option value="DOLBY_DIGITAL">DOLBY_DIGITAL</Option>
+              <Option value="DOLBY_ATMOS">DOLBY ATMOS</Option>
+              <Option value="DOLBY_DIGITAL">DOLBY DIGITAL</Option>
               <Option value="DTS">DTS</Option>
               <Option value="THX">THX</Option>
             </Select>

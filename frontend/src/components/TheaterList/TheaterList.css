@@ -26,9 +26,9 @@
   transition: all 0.2s;
 }
 
-.theater-item:hover {
+/* .theater-item:hover {
   background-color: #f8f9fa;
-}
+} */
 
 .theater-item:last-child {
   border-bottom: none;
@@ -91,7 +91,7 @@
   justify-content: flex-end;
 }
 
-.book-button {
+.theater-actions .book-button {
   border-radius: 6px;
   font-weight: 500;
   height: 36px;

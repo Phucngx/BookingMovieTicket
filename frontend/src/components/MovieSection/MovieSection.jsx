@@ -3,14 +3,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Typography, Spin, Button } from 'antd'
 import { LeftOutlined, RightOutlined, FireOutlined } from '@ant-design/icons'
 import MovieCard from '../MovieCard/MovieCard'
-import { fetchMovies } from '../../store/slices/movieListSlice'
+import { fetchNowShowingMovies } from '../../store/slices/nowShowingSlice'
+import { useNavigate } from 'react-router-dom'
 import './MovieSection.css'
 
 const { Title, Text } = Typography
 
 const MovieSection = () => {
   const dispatch = useDispatch()
-  const { movies, loading, error } = useSelector((state) => state.movieList)
+  const navigate = useNavigate()
+  const { movies, loading, error, pagination } = useSelector((state) => state.nowShowing)
   const carouselRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
@@ -61,10 +63,10 @@ const MovieSection = () => {
     setIsDragging(false)
   }
 
-  // Fetch movies when component mounts (for all users)
+  // Fetch now showing movies when component mounts
   useEffect(() => {
     if (movies.length === 0) {
-      dispatch(fetchMovies({ page: 1, size: 10 })).catch(error => {
+      dispatch(fetchNowShowingMovies({ page: 1, size: 10 })).catch(error => {
         console.error('Failed to fetch movies:', error)
       })
     }
@@ -228,6 +230,11 @@ const MovieSection = () => {
                 {currentSlide + 1} / {calculateDots()}
               </Text>
             </div>
+            {pagination?.total > 10 && (
+              <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                <Button type="primary" onClick={() => navigate('/phim')}>Xem thêm</Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

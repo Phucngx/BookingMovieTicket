@@ -43,12 +43,10 @@ const MovieManagement = () => {
       return
     }
 
-    // Fetch movies when component mounts
-    if (movies.length === 0) {
-      console.log('Fetching movies for admin...')
-      dispatch(fetchMoviesForAdmin({ page: 1, size: 10 }))
-    }
-  }, [isAuthenticated, isAdmin, navigate, dispatch, movies.length])
+    // Luôn lấy danh sách phim đầy đủ cho trang quản lý, không dùng dữ liệu từ trang public
+    console.log('Fetching movies for admin...')
+    dispatch(fetchMoviesForAdmin({ page: 1, size: 10 }))
+  }, [isAuthenticated, isAdmin, navigate, dispatch])
 
   // Filter movies based on search text
   useEffect(() => {

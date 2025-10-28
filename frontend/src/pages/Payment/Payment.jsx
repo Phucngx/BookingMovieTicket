@@ -13,7 +13,9 @@ import {
   Radio,
   Space,
   Divider,
-  message
+  message,
+  Result,
+  Alert
 } from 'antd';
 import { 
   LeftOutlined,
@@ -23,7 +25,10 @@ import {
   UserOutlined,
   PhoneOutlined,
   MailOutlined,
-  EnvironmentOutlined
+  EnvironmentOutlined,
+  CloseCircleOutlined,
+  ReloadOutlined,
+  HomeOutlined
 } from '@ant-design/icons';
 import './Payment.css';
 import { bookingService } from '../../services/bookingService';
@@ -63,6 +68,7 @@ const Payment = () => {
   };
   
   const [paymentMethod, setPaymentMethod] = useState(statePaymentMethod || 'zalopay');
+  const [paymentError, setPaymentError] = useState(null);
 
   const seatLabels = (selectedSeats || []).map(seat => {
     if (typeof seat === 'object' && seat !== null) {
@@ -113,14 +119,128 @@ const Payment = () => {
 
       throw new Error('Tạo đơn đặt vé thất bại');
     } catch (error) {
-      message.error(error.message || 'Có lỗi xảy ra, vui lòng thử lại!');
-      // Điều hướng về màn chọn ghế và reset lựa chọn ghế
-      dispatch(clearSelectedSeats());
-      navigate('/seat-selection');
+      console.error('Payment error:', error);
+      setPaymentError({
+        title: 'Thanh toán thất bại',
+        message: error.message || 'Có lỗi xảy ra trong quá trình thanh toán',
+        details: 'Vui lòng kiểm tra lại thông tin và thử lại'
+      });
     } finally {
       setLoading(false);
     }
   };
+
+  // Payment Error Screen
+  if (paymentError) {
+    return (
+      <div className="payment">
+        <div className="container">
+          <div className="payment-error-container">
+            <Result
+              status="error"
+              icon={<CloseCircleOutlined style={{ color: '#ff4d4f', fontSize: '64px' }} />}
+              title={
+                <div className="error-title">
+                  <Title level={2} style={{ color: '#ff4d4f', margin: 0 }}>
+                    {paymentError.title}
+                  </Title>
+                </div>
+              }
+              subTitle={
+                <div className="error-content">
+                  <Alert
+                    message={paymentError.message}
+                    description={paymentError.details}
+                    type="error"
+                    showIcon
+                    style={{ marginBottom: 24 }}
+                  />
+                  
+                  <Card className="error-actions-card">
+                    <div className="error-actions">
+                      <Title level={4} style={{ marginBottom: 16 }}>
+                        Bạn có thể thử các cách sau:
+                      </Title>
+                      
+                      <div className="error-suggestions">
+                        <div className="suggestion-item">
+                          <div className="suggestion-icon">🔄</div>
+                          <div className="suggestion-text">
+                            <Text strong>Thử lại thanh toán</Text>
+                            <Text type="secondary" style={{ display: 'block', fontSize: '12px' }}>
+                              Kiểm tra kết nối mạng và thử lại
+                            </Text>
+                          </div>
+                        </div>
+                        
+                        <div className="suggestion-item">
+                          <div className="suggestion-icon">💳</div>
+                          <div className="suggestion-text">
+                            <Text strong>Kiểm tra phương thức thanh toán</Text>
+                            <Text type="secondary" style={{ display: 'block', fontSize: '12px' }}>
+                              Đảm bảo thông tin thẻ/tài khoản chính xác
+                            </Text>
+                          </div>
+                        </div>
+                        
+                        <div className="suggestion-item">
+                          <div className="suggestion-icon">📞</div>
+                          <div className="suggestion-text">
+                            <Text strong>Liên hệ hỗ trợ</Text>
+                            <Text type="secondary" style={{ display: 'block', fontSize: '12px' }}>
+                              Hotline: 1900 6017 (24/7)
+                            </Text>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Divider />
+                      
+                      <Space size="large" wrap>
+                        <Button 
+                          type="primary" 
+                          size="large"
+                          icon={<ReloadOutlined />}
+                          onClick={() => {
+                            setPaymentError(null);
+                            setLoading(false);
+                          }}
+                        >
+                          Thử lại thanh toán
+                        </Button>
+                        
+                        <Button 
+                          size="large"
+                          icon={<LeftOutlined />}
+                          onClick={() => {
+                            setPaymentError(null);
+                            navigate('/seat-selection');
+                          }}
+                        >
+                          Quay lại chọn ghế
+                        </Button>
+                        
+                        <Button 
+                          size="large"
+                          icon={<HomeOutlined />}
+                          onClick={() => {
+                            setPaymentError(null);
+                            navigate('/');
+                          }}
+                        >
+                          Về trang chủ
+                        </Button>
+                      </Space>
+                    </div>
+                  </Card>
+                </div>
+              }
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!movie || !showtime) {
     return (

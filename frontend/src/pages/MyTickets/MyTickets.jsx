@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Typography, Select, Table, Tag, Space, Image, Empty } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchMyTickets, setSelectedPeriod } from '../../store/slices/bookingsSlice'
+import { fetchMyTickets, setSelectedPeriod, clearTickets } from '../../store/slices/bookingsSlice'
 import './MyTickets.css'
 
 const { Title, Text } = Typography
@@ -38,6 +38,8 @@ const MyTickets = () => {
   const handlePeriodChange = (value) => {
     dispatch(setSelectedPeriod(value))
     setPage(1)
+    // Clear tickets immediately when period changes to show loading state
+    dispatch(clearTickets())
   }
 
   const columns = [
@@ -127,7 +129,19 @@ const MyTickets = () => {
             showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} vé`,
             onChange: (p, ps) => { setPage(p); setPageSize(ps) }
           }}
-          locale={{ emptyText: error ? <Empty description={error} /> : <Empty description="Chưa có vé nào" /> }}
+          locale={{ 
+            emptyText: error 
+              ? <Empty description={error} /> 
+              : <Empty description={
+                  selectedPeriod === 'today' 
+                    ? "Không có vé đã mua hôm nay" 
+                    : selectedPeriod === 'month'
+                    ? "Không có vé đã mua trong tháng này"
+                    : selectedPeriod === 'year'
+                    ? "Không có vé đã mua trong năm nay"
+                    : "Chưa có vé nào"
+                } />
+          }}
         />
       </Card>
     </div>

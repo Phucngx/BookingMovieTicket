@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Card, List, Typography, Tag, Space, Button, Empty } from 'antd'
-import { EnvironmentOutlined, PhoneOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons'
+import { Card, List, Typography, Tag, Space, Button, Empty, Modal, Descriptions, message, Spin } from 'antd'
+import { EnvironmentOutlined, PhoneOutlined, UserOutlined, VideoCameraOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { theaterService } from '../../services/theaterService'
 import ShowtimeModal from '../ShowtimeModal'
 import './TheaterList.css'
 
@@ -11,6 +12,9 @@ const TheaterList = ({ movie, onTheaterSelect, selectedTheater }) => {
   const { theaters, selectedCity, selectedDate, loading, error } = useSelector((state) => state.theaters)
   const [showtimeModalVisible, setShowtimeModalVisible] = useState(false)
   const [internalSelectedTheater, setInternalSelectedTheater] = useState(null)
+  const [theaterDetailModalVisible, setTheaterDetailModalVisible] = useState(false)
+  const [theaterDetail, setTheaterDetail] = useState(null)
+  const [theaterDetailLoading, setTheaterDetailLoading] = useState(false)
 
   // Debug Redux state
   console.log('TheaterList - Redux state:', { 
@@ -91,6 +95,28 @@ const TheaterList = ({ movie, onTheaterSelect, selectedTheater }) => {
     console.log('Date:', selectedDate)
   }
 
+  const handleTheaterInfoClick = async (theater) => {
+    try {
+      setTheaterDetailLoading(true)
+      setTheaterDetailModalVisible(true)
+      const response = await theaterService.getTheaterDetail(theater.theaterId)
+      if (response.code === 1000 && response.data) {
+        setTheaterDetail(response.data)
+      } else {
+        message.error('Không thể lấy thông tin rạp phim')
+      }
+    } catch (error) {
+      message.error(error.message || 'Có lỗi xảy ra khi tải thông tin rạp')
+    } finally {
+      setTheaterDetailLoading(false)
+    }
+  }
+
+  const handleTheaterDetailClose = () => {
+    setTheaterDetailModalVisible(false)
+    setTheaterDetail(null)
+  }
+
   return (
     <Card className="theater-list-card">
       <div className="theater-list-header">
@@ -149,7 +175,11 @@ const TheaterList = ({ movie, onTheaterSelect, selectedTheater }) => {
                   >
                     {selectedTheater?.theaterId === theater.theaterId ? "Đã chọn" : "Xem lịch chiếu"}
                   </Button>
-                  <Button type="default">
+                  <Button 
+                    type="default"
+                    icon={<InfoCircleOutlined />}
+                    onClick={() => handleTheaterInfoClick(theater)}
+                  >
                     Thông tin rạp
                   </Button>
                 </Space>
@@ -167,6 +197,65 @@ const TheaterList = ({ movie, onTheaterSelect, selectedTheater }) => {
         date={selectedDate}
         onSelectShowtime={handleSelectShowtime}
       />
+
+      {/* Theater Detail Modal */}
+      <Modal
+        title={
+          <Space>
+            <InfoCircleOutlined />
+            Thông tin rạp phim
+          </Space>
+        }
+        open={theaterDetailModalVisible}
+        onCancel={handleTheaterDetailClose}
+        footer={[
+          <Button key="close" onClick={handleTheaterDetailClose}>
+            Đóng
+          </Button>
+        ]}
+        width={600}
+        destroyOnClose
+      >
+        <Spin spinning={theaterDetailLoading}>
+          {theaterDetail && (
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Tên rạp">
+                <Text strong style={{ fontSize: '16px', color: '#1890ff' }}>
+                  {theaterDetail.theaterName}
+                </Text>
+              </Descriptions.Item>
+              <Descriptions.Item label="Địa chỉ">
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                    <EnvironmentOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
+                    <Text>{theaterDetail.address}</Text>
+                  </div>
+                  <Text type="secondary" style={{ fontSize: '12px', marginLeft: '24px' }}>
+                    {theaterDetail.district}, {theaterDetail.city}
+                  </Text>
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item label="Số điện thoại">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <PhoneOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
+                  <Text>{theaterDetail.phone}</Text>
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item label="Quản lý">
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <UserOutlined style={{ marginRight: '8px', color: '#8c8c8c' }} />
+                  <Text>{theaterDetail.managerName}</Text>
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item label="Số phòng chiếu">
+                <Tag color="blue" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  {theaterDetail.totalRooms} phòng
+                </Tag>
+              </Descriptions.Item>
+            </Descriptions>
+          )}
+        </Spin>
+      </Modal>
     </Card>
   )
 }

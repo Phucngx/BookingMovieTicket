@@ -20,6 +20,9 @@ import TicketInfo from './pages/TicketInfo'
 import Admin from './pages/Admin'
 import MyTickets from './pages/MyTickets/MyTickets'
 import MovieSearch from './pages/MovieSearch'
+import Movies from './pages/Movies'
+import NowShowing from './pages/Movies/NowShowing'
+import ComingSoon from './pages/Movies/ComingSoon'
 import './App.css'
 
 const { Content } = Layout
@@ -47,6 +50,9 @@ function App() {
             <Route path="/admin/*" element={<Admin />} />
             <Route path="/ve-da-mua" element={<MyTickets />} />
             <Route path="/tim-kiem" element={<MovieSearch />} />
+            <Route path="/phim" element={<Movies />} />
+            <Route path="/dang-chieu" element={<NowShowing />} />
+            <Route path="/sap-chieu" element={<ComingSoon />} />
           </Routes>
         </Content>
         <Footer />

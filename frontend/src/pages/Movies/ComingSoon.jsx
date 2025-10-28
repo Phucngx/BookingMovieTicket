@@ -1,24 +1,24 @@
 import React, { useEffect } from 'react'
 import { Layout, Typography, Row, Col, Card, Pagination, Spin, Empty, Tag, Space, Button } from 'antd'
-import { CalendarOutlined, ClockCircleOutlined, StarOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import { CalendarOutlined, ClockCircleOutlined, StarOutlined, PlayCircleOutlined, RocketOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { fetchNowShowingMovies } from '../../store/slices/nowShowingSlice'
+import { fetchComingSoonMovies } from '../../store/slices/comingSoonSlice'
 
 const { Content } = Layout
 const { Title, Text } = Typography
 
-const NowShowing = () => {
+const ComingSoon = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { movies, loading, error, pagination } = useSelector(state => state.nowShowing)
+  const { movies, loading, error, pagination } = useSelector(state => state.comingSoon)
 
   useEffect(() => {
-    dispatch(fetchNowShowingMovies({ page: 1, size: 10 }))
+    dispatch(fetchComingSoonMovies({ page: 1, size: 10 }))
   }, [dispatch])
 
   const onPageChange = (page, pageSize) => {
-    dispatch(fetchNowShowingMovies({ page, size: pageSize }))
+    dispatch(fetchComingSoonMovies({ page, size: pageSize }))
   }
 
   const formatDate = (dateString) => {
@@ -47,7 +47,7 @@ const NowShowing = () => {
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
         {/* Header Section */}
         <div style={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', 
           borderRadius: '12px', 
           padding: '40px 24px', 
           marginBottom: '32px',
@@ -55,12 +55,12 @@ const NowShowing = () => {
           textAlign: 'center'
         }}>
           <Title level={1} style={{ color: 'white', marginBottom: '16px' }}>
-            🎬 Phim đang chiếu
+            🚀 Phim sắp chiếu
           </Title>
           <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px' }}>
-            Khám phá những bộ phim hay nhất đang được chiếu tại rạp
+            Những bộ phim hấp dẫn sắp ra mắt tại rạp
           </Text>
-      </div>
+        </div>
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px' }}>
@@ -75,7 +75,7 @@ const NowShowing = () => {
           </div>
         ) : movies.length === 0 ? (
           <Empty 
-            description="Không có phim đang chiếu" 
+            description="Không có phim sắp chiếu" 
             style={{ padding: '60px' }}
           />
         ) : (
@@ -111,14 +111,14 @@ const NowShowing = () => {
                           position: 'absolute',
                           top: '12px',
                           right: '12px',
-                          background: 'rgba(0,0,0,0.7)',
+                          background: 'linear-gradient(45deg, #ff6b6b, #feca57)',
                           color: 'white',
                           padding: '4px 8px',
                           borderRadius: '4px',
                           fontSize: '12px',
                           fontWeight: 'bold'
                         }}>
-                          ĐANG CHIẾU
+                          <RocketOutlined /> SẮP CHIẾU
                         </div>
                         <div style={{
                           position: 'absolute',
@@ -131,7 +131,7 @@ const NowShowing = () => {
                           fontSize: '12px'
                         }}>
                           <ClockCircleOutlined /> {formatDuration(movie.durationMinutes)}
-                    </div>
+                        </div>
                       </div>
                     }
                     actions={[
@@ -161,7 +161,7 @@ const NowShowing = () => {
                       
                       <Space direction="vertical" size="small" style={{ width: '100%' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <CalendarOutlined style={{ color: '#1890ff' }} />
+                          <CalendarOutlined style={{ color: '#ff6b6b' }} />
                           <Text type="secondary">{formatDate(movie.releaseDate)}</Text>
                         </div>
                         
@@ -169,13 +169,13 @@ const NowShowing = () => {
                           <Text type="secondary">{movie.language}</Text>
                           <Text type="secondary">•</Text>
                           <Text type="secondary">{movie.country}</Text>
-                  </div>
-                  
+                        </div>
+                        
                         {movie.genres && movie.genres.length > 0 && (
                           <div style={{ marginTop: '8px' }}>
                             <Space wrap size="small">
                               {movie.genres.slice(0, 2).map(genre => (
-                                <Tag key={genre.genreId} color="blue" style={{ fontSize: '11px' }}>
+                                <Tag key={genre.genreId} color="orange" style={{ fontSize: '11px' }}>
                                   {genre.genreName}
                                 </Tag>
                               ))}
@@ -224,4 +224,6 @@ const NowShowing = () => {
   )
 }
 
-export default NowShowing
+export default ComingSoon
+
+

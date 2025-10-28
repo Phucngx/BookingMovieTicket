@@ -222,8 +222,8 @@ const MovieSearch = () => {
             </div>
           ) : error ? (
             <Alert
-              message="Lỗi tìm kiếm"
-              description={error}
+              message="Không có phim bạn tìm"
+              // description={error}
               type="error"
               showIcon
               style={{ marginBottom: 24 }}

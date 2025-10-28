@@ -573,3 +573,155 @@
     font-size: 11px;
   }
 }
+
+/* Payment Error Screen Styles */
+.payment-error-container {
+  padding: 40px 20px;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-error-container .ant-result {
+  max-width: 600px;
+  width: 100%;
+}
+
+.error-title {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.error-content {
+  text-align: left;
+}
+
+.error-actions-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  margin-top: 24px;
+}
+
+.error-actions-card .ant-card-body {
+  padding: 24px;
+}
+
+.error-actions {
+  text-align: center;
+}
+
+.error-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #1890ff;
+  transition: all 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background: #f0f8ff;
+  transform: translateX(4px);
+}
+
+.suggestion-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.suggestion-text {
+  flex: 1;
+}
+
+.suggestion-text .ant-typography {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.error-actions .ant-btn {
+  margin: 4px 8px;
+  min-width: 140px;
+}
+
+.error-actions .ant-btn-primary {
+  background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+.error-actions .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #69c0ff 100%);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.error-actions .ant-btn:not(.ant-btn-primary) {
+  border: 1px solid #d9d9d9;
+  color: #595959;
+}
+
+.error-actions .ant-btn:not(.ant-btn-primary):hover {
+  border-color: #1890ff;
+  color: #1890ff;
+  transform: translateY(-1px);
+}
+
+/* Responsive Error Screen */
+@media (max-width: 768px) {
+  .payment-error-container {
+    padding: 20px 16px;
+  }
+  
+  .error-actions-card .ant-card-body {
+    padding: 16px;
+  }
+  
+  .error-suggestions {
+    gap: 12px;
+  }
+  
+  .suggestion-item {
+    padding: 10px;
+  }
+  
+  .error-actions .ant-btn {
+    margin: 4px;
+    min-width: 120px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-error-container {
+    padding: 16px 12px;
+  }
+  
+  .error-actions-card .ant-card-body {
+    padding: 12px;
+  }
+  
+  .suggestion-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .error-actions .ant-btn {
+    width: 100%;
+    margin: 4px 0;
+    min-width: auto;
+  }
+}

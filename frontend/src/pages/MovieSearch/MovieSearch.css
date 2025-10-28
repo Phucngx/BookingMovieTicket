@@ -135,7 +135,7 @@
   border-color: #1890ff;
 }
 
-.movie-search-page .movie-poster-container {
+.movie-search-card .movie-poster-container {
   position: relative;
   height: 280px;
   overflow: hidden;
@@ -152,7 +152,7 @@
   transform: scale(1.02);
 }
 
-.movie-search-page .movie-overlay {
+.movie-search-card .movie-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -260,7 +260,7 @@
     padding: 16px;
   }
   
-  .movie-search-page .movie-poster-container {
+  .movie-search-card .movie-poster-container {
     height: 220px;
   }
   
@@ -286,7 +286,7 @@
     padding: 12px;
   }
   
-  .movie-search-page .movie-poster-container {
+  .movie-search-card .movie-poster-container {
     height: 180px;
   }
 }

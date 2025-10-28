@@ -14,6 +14,19 @@ export const fetchMovies = createAsyncThunk(
   }
 )
 
+// Async thunk để lấy danh sách phim đang chiếu (không cần login)
+export const fetchNowShowingMovies = createAsyncThunk(
+  'movieList/fetchNowShowingMovies',
+  async ({ page = 1, size = 10 }, { rejectWithValue }) => {
+    try {
+      const response = await movieService.getNowShowing(page, size)
+      return response
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 // Async thunk để lấy danh sách phim cho admin (cần login)
 export const fetchMoviesForAdmin = createAsyncThunk(
   'movieList/fetchMoviesForAdmin',
@@ -78,6 +91,27 @@ const movieListSlice = createSlice({
         state.error = null
       })
       .addCase(fetchMovies.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+        state.movies = []
+      })
+      // Fetch now showing movies cases
+      .addCase(fetchNowShowingMovies.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchNowShowingMovies.fulfilled, (state, action) => {
+        state.loading = false
+        state.movies = action.payload.data.content || []
+        state.pagination = {
+          current: action.payload.data.pageable.pageNumber + 1,
+          pageSize: action.payload.data.pageable.pageSize,
+          total: action.payload.data.totalElements,
+          totalPages: action.payload.data.totalPages
+        }
+        state.error = null
+      })
+      .addCase(fetchNowShowingMovies.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
         state.movies = []
