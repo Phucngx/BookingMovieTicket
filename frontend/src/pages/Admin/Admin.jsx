@@ -11,6 +11,7 @@ import RoomManagement from '../../components/RoomManagement'
 import AccountManagement from './Users'
 import AccountDetail from '../../components/AccountDetail'
 import Settings from './Settings'
+import SupportChat from './SupportChat'
 
 const Admin = () => {
   return (
@@ -25,6 +26,7 @@ const Admin = () => {
         <Route path="/showtimes" element={<ShowtimeManagement />} />
         <Route path="/bookings" element={<BookingManagement />} />
         <Route path="/users" element={<AccountManagement />} />
+        <Route path="/support-chat" element={<SupportChat />} />
         <Route path="/accounts/:accountId" element={<AccountDetail />} />
         <Route path="/settings" element={<Settings />} />
       </Routes>

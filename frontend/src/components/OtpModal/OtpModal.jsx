@@ -194,7 +194,7 @@ const OtpModal = ({
                   loading={isSending}
                   disabled={secondsLeft > 0}
                   className="resend-button"
-                >
+                > 
                   {secondsLeft > 0 
                     ? `Gửi lại sau ${formatTime(secondsLeft)}` 
                     : 'Gửi lại OTP'

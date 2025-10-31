@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Card, Input, Button, Typography, Spin, Empty, message } from 'antd'
 import { SendOutlined, UserOutlined, RobotOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendMessage, fetchMessages, markAllAsRead } from '../../store/slices/chatSlice'
+import { sendMessage, fetchMessages, markAllAsRead, createConversation } from '../../store/slices/chatSlice'
 import { chatService } from '../../services/chatService'
 import ChatMessage from '../ChatMessage'
 import './ChatWindow.css'
@@ -13,7 +13,7 @@ const { TextArea } = Input
 const ChatWindow = () => {
   const dispatch = useDispatch()
   const { userInfo, isAuthenticated } = useSelector(state => state.user)
-  const { messages, loading, sending, isConnected } = useSelector(state => state.chat)
+  const { messages, loading, sending, isConnected, conversationId, creating } = useSelector(state => state.chat)
   
   const [inputMessage, setInputMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
@@ -29,36 +29,42 @@ const ChatWindow = () => {
     scrollToBottom()
   }, [messages])
 
-  // Load messages when chat window opens
+  // Create/get conversation and load messages when chat window opens
   useEffect(() => {
     if (isAuthenticated) {
-      dispatch(fetchMessages({ page: 1, limit: 50 }))
-      dispatch(markAllAsRead())
+      const init = async () => {
+        await dispatch(createConversation())
+        dispatch(fetchMessages())
+        dispatch(markAllAsRead())
+      }
+      init()
     }
   }, [dispatch, isAuthenticated])
 
   // WebSocket connection
   useEffect(() => {
     if (isAuthenticated) {
-      const handleWebSocketMessage = (data) => {
-        if (data.type === 'message') {
-          dispatch({ type: 'chat/addMessage', payload: data.message })
-        } else if (data.type === 'typing') {
-          setIsTyping(data.isTyping)
-        }
+      const handleIncoming = (msg) => {
+        try {
+          // Only append messages for current conversation
+          if (!msg) return
+          if (msg.conversationId && conversationId && msg.conversationId !== conversationId) return
+          // Normalize: ensure boolean me is respected from backend
+          // Dispatch to store to render immediately
+          dispatch({ type: 'chat/addMessage', payload: msg })
+        } catch (_) {}
       }
 
-      const handleConnectionChange = (connected) => {
-        dispatch({ type: 'chat/setConnectionStatus', payload: connected })
+      const handleStatus = (connected) => {
+        try { dispatch({ type: 'chat/setConnectionStatus', payload: connected }) } catch (_) {}
       }
 
-      chatService.connectWebSocket(handleWebSocketMessage, handleConnectionChange)
-
+      chatService.connectSocketIO(handleIncoming, handleStatus)
       return () => {
-        chatService.disconnectWebSocket()
+        chatService.disconnectSocketIO()
       }
     }
-  }, [dispatch, isAuthenticated])
+  }, [dispatch, isAuthenticated, conversationId])
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
@@ -68,19 +74,8 @@ const ChatWindow = () => {
       return
     }
 
-    const messageData = {
-      content: inputMessage.trim(),
-      sender: 'user',
-      timestamp: new Date().toISOString()
-    }
-
     try {
-      // Send via WebSocket if connected, otherwise via API
-      if (isConnected && chatService.isConnected()) {
-        chatService.sendWebSocketMessage(messageData)
-      } else {
-        await dispatch(sendMessage(messageData)).unwrap()
-      }
+      await dispatch(sendMessage(inputMessage.trim())).unwrap()
       
       setInputMessage('')
     } catch (error) {
@@ -99,12 +94,12 @@ const ChatWindow = () => {
     setInputMessage(e.target.value)
     
     // Send typing indicator
-    if (isAuthenticated && isConnected) {
-      chatService.sendWebSocketMessage({
-        type: 'typing',
-        isTyping: e.target.value.length > 0
-      })
-    }
+    // if (isAuthenticated && isConnected) {
+    //   chatService.sendWebSocketMessage({
+    //     type: 'typing',
+    //     isTyping: e.target.value.length > 0
+    //   })
+    // }
   }
 
   const renderWelcomeMessage = () => (
@@ -117,6 +112,11 @@ const ChatWindow = () => {
         <Text type="secondary">
           Chúng tôi ở đây để giúp bạn. Hãy gửi tin nhắn để bắt đầu cuộc trò chuyện.
         </Text>
+        {!conversationId && isAuthenticated && (
+          <Button type="primary" loading={creating} onClick={() => dispatch(createConversation()).then(() => dispatch(fetchMessages()))} style={{ marginTop: 12 }}>
+            Bắt đầu chat
+          </Button>
+        )}
       </div>
     </div>
   )
@@ -168,8 +168,10 @@ const ChatWindow = () => {
           </div>
         ) : (
           <div className="messages-list">
-            {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} />
+            {messages.map((msg, idx) => (
+              <ChatMessage key={msg.id || `${msg.conversationId || 'conv'}-${msg.createdDate || 'time'}-${idx}`}
+                message={msg}
+              />
             ))}
             {isTyping && (
               <div className="typing-indicator">
@@ -195,9 +197,9 @@ const ChatWindow = () => {
             value={inputMessage}
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
-            placeholder={isAuthenticated ? "Nhập tin nhắn..." : "Đăng nhập để gửi tin nhắn"}
+            placeholder={isAuthenticated ? (conversationId ? "Nhập tin nhắn..." : "Nhấn Bắt đầu chat để tạo cuộc trò chuyện") : "Đăng nhập để gửi tin nhắn"}
             autoSize={{ minRows: 1, maxRows: 4 }}
-            disabled={!isAuthenticated}
+            disabled={!isAuthenticated || !conversationId}
             className="message-input"
           />
           <Button
@@ -205,7 +207,7 @@ const ChatWindow = () => {
             icon={<SendOutlined />}
             onClick={handleSendMessage}
             loading={sending}
-            disabled={!inputMessage.trim() || !isAuthenticated}
+            disabled={!inputMessage.trim() || !isAuthenticated || !conversationId}
             className="send-button"
           />
         </div>

@@ -1,12 +1,29 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { chatService } from '../../services/chatService'
+import { logout } from './userSlice'
 
 // Async thunks
+export const createConversation = createAsyncThunk(
+  'chat/createConversation',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await chatService.createConversation()
+      // API returns { code, data }
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
 export const fetchMessages = createAsyncThunk(
   'chat/fetchMessages',
-  async ({ page = 1, limit = 50 }, { rejectWithValue }) => {
+  async (_, { getState, rejectWithValue }) => {
     try {
-      const response = await chatService.getMessages({ page, limit })
+      const { selectedConversationId, conversationId } = getState().chat
+      const id = selectedConversationId || conversationId
+      if (!id) return []
+      const response = await chatService.getMessages(id)
       return response.data || []
     } catch (error) {
       return rejectWithValue(error.message)
@@ -16,10 +33,25 @@ export const fetchMessages = createAsyncThunk(
 
 export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
-  async (messageData, { rejectWithValue }) => {
+  async (message, { getState, rejectWithValue }) => {
     try {
-      const response = await chatService.sendMessage(messageData)
+      const { selectedConversationId, conversationId } = getState().chat
+      const id = selectedConversationId || conversationId
+      if (!id) throw new Error('Chưa có cuộc trò chuyện')
+      const response = await chatService.sendMessage({ conversationId: id, message })
       return response.data
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+export const fetchConversations = createAsyncThunk(
+  'chat/fetchConversations',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await chatService.getConversations()
+      return response.data || []
     } catch (error) {
       return rejectWithValue(error.message)
     }
@@ -51,15 +83,18 @@ export const getUnreadCount = createAsyncThunk(
 )
 
 const initialState = {
+  conversationId: null,
+  conversations: [],
+  selectedConversationId: null,
   messages: [],
   unreadCount: 0,
   loading: false,
   sending: false,
+  creating: false,
+  loadingConversations: false,
   error: null,
   isConnected: false,
   chatWindowOpen: false,
-  currentPage: 1,
-  hasMore: true
 }
 
 const chatSlice = createSlice({
@@ -78,13 +113,17 @@ const chatSlice = createSlice({
     closeChatWindow: (state) => {
       state.chatWindowOpen = false
     },
+    setSelectedConversation: (state, action) => {
+      state.selectedConversationId = action.payload
+      state.messages = []
+    },
     addMessage: (state, action) => {
       const newMessage = action.payload
       const existingIndex = state.messages.findIndex(msg => msg.id === newMessage.id)
       
       if (existingIndex === -1) {
-        state.messages.unshift(newMessage)
-        if (newMessage.sender !== 'user') {
+        state.messages.push(newMessage)
+        if (!newMessage.me) {
           state.unreadCount += 1
         }
       }
@@ -122,8 +161,6 @@ const chatSlice = createSlice({
     clearMessages: (state) => {
       state.messages = []
       state.unreadCount = 0
-      state.currentPage = 1
-      state.hasMore = true
     },
     setTyping: (state, action) => {
       state.isTyping = action.payload
@@ -131,6 +168,20 @@ const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Create conversation
+      .addCase(createConversation.pending, (state) => {
+        state.creating = true
+        state.error = null
+      })
+      .addCase(createConversation.fulfilled, (state, action) => {
+        state.creating = false
+        state.conversationId = action.payload?.id || state.conversationId
+        state.error = null
+      })
+      .addCase(createConversation.rejected, (state, action) => {
+        state.creating = false
+        state.error = action.payload
+      })
       // Fetch messages
       .addCase(fetchMessages.pending, (state) => {
         state.loading = true
@@ -139,18 +190,29 @@ const chatSlice = createSlice({
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.loading = false
         const newMessages = action.payload
-        
-        if (state.currentPage === 1) {
-          state.messages = newMessages
-        } else {
-          state.messages = [...state.messages, ...newMessages]
-        }
-        
-        state.hasMore = newMessages.length === 50 // Assuming 50 is the limit
+        state.messages = [...newMessages].sort((a, b) => {
+          const ta = new Date(a.createdDate).getTime()
+          const tb = new Date(b.createdDate).getTime()
+          return ta - tb
+        })
         state.error = null
       })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.loading = false
+        state.error = action.payload
+      })
+      // Fetch conversations
+      .addCase(fetchConversations.pending, (state) => {
+        state.loadingConversations = true
+        state.error = null
+      })
+      .addCase(fetchConversations.fulfilled, (state, action) => {
+        state.loadingConversations = false
+        state.conversations = action.payload
+        state.error = null
+      })
+      .addCase(fetchConversations.rejected, (state, action) => {
+        state.loadingConversations = false
         state.error = action.payload
       })
       
@@ -162,7 +224,10 @@ const chatSlice = createSlice({
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.sending = false
         const newMessage = action.payload
-        state.messages.unshift(newMessage)
+        const exists = state.messages.some(m => m.id === newMessage?.id)
+        if (!exists) {
+          state.messages.push(newMessage)
+        }
         state.error = null
       })
       .addCase(sendMessage.rejected, (state, action) => {
@@ -187,6 +252,9 @@ const chatSlice = createSlice({
       .addCase(getUnreadCount.fulfilled, (state, action) => {
         state.unreadCount = action.payload.count || 0
       })
+
+      // Reset chat on user logout
+      .addCase(logout, () => ({ ...initialState }))
   }
 })
 
@@ -195,6 +263,7 @@ export const {
   toggleChatWindow,
   openChatWindow,
   closeChatWindow,
+  setSelectedConversation,
   addMessage,
   updateMessage,
   setConnectionStatus,
