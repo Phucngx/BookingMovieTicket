@@ -139,9 +139,9 @@ const Schedule = () => {
     <div className="schedule">
       <div className="schedule-header">
         <Title level={2} className="page-title">Lịch chiếu</Title>
-        <Text type="secondary" className="page-subtitle">
+        {/* <Text type="secondary" className="page-subtitle">
           Tìm lịch chiếu phim / rạp nhanh nhất với chỉ 1 bước!
-        </Text>
+        </Text> */}
       </div>
 
       <div className="schedule-content">

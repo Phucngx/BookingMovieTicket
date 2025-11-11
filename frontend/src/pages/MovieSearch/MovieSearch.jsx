@@ -94,166 +94,88 @@ const MovieSearch = () => {
   }
 
   const renderMovieCard = (movie) => (
-    <Col xs={24} sm={12} md={8} lg={6} xl={4} key={movie.id}>
-      <Card
-        hoverable
-        className="movie-search-card"
-        cover={
-          <div className="movie-poster-container">
-            <Image
-              src={movie.posterUrl}
-              alt={movie.title}
-              className="movie-poster"
-              fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RnG4W+FgYxN"
-            />
-            <div className="movie-overlay">
-              <Button 
-                type="primary" 
-                size="large"
-                onClick={() => handleMovieClick(movie.id)}
-                className="view-detail-btn"
-              >
-                Xem chi tiết
-              </Button>
-            </div>
+    <Col xs={24} sm={12} md={8} lg={6} xl={6} key={movie.id}>
+      <div className="ms-card" onClick={() => handleMovieClick(movie.id)}>
+        <div className="ms-thumb">
+          <img src={movie.posterUrl} alt={movie.title} className="ms-thumb-img" />
+          <div className="ms-thumb-overlay">
+            <Button type="primary" size="middle" className="ms-detail-btn">Xem chi tiết</Button>
           </div>
-        }
-        onClick={() => handleMovieClick(movie.id)}
-      >
-        <Card.Meta
-          title={
-            <Title level={5} className="movie-title" ellipsis={{ rows: 2 }}>
-              {movie.title}
-            </Title>
-          }
-          description={
-            <Space direction="vertical" size={4} style={{ width: '100%' }}>
-              <div className="movie-info">
-                <Space size={4}>
-                  <CalendarOutlined style={{ color: '#1890ff' }} />
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {formatDate(movie.releaseDate)}
-                  </Text>
-                </Space>
-              </div>
-              
-              <div className="movie-info">
-                <Space size={4}>
-                  <ClockCircleOutlined style={{ color: '#52c41a' }} />
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {movie.durationMinutes} phút
-                  </Text>
-                </Space>
-              </div>
-
-              <div className="movie-info">
-                <Space size={4}>
-                  <UserOutlined style={{ color: '#fa8c16' }} />
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {movie.director?.name}
-                  </Text>
-                </Space>
-              </div>
-
-              <div className="movie-genres">
-                {movie.genres?.slice(0, 2).map(genre => (
-                  <Tag key={genre.genreId} color="blue" size="small">
-                    {genre.genreName}
-                  </Tag>
-                ))}
-                {movie.genres?.length > 2 && (
-                  <Tag color="default" size="small">
-                    +{movie.genres.length - 2}
-                  </Tag>
-                )}
-              </div>
-            </Space>
-          }
-        />
-      </Card>
+        </div>
+        <div className="ms-body">
+          <div className="ms-title" title={movie.title}>{movie.title}</div>
+          <div className="ms-meta">
+            <span className="ms-meta-item"><CalendarOutlined /> {formatDate(movie.releaseDate)}</span>
+            <span className="ms-meta-item"><ClockCircleOutlined /> {movie.durationMinutes} phút</span>
+            {movie.director?.name && (
+              <span className="ms-meta-item"><UserOutlined /> {movie.director.name}</span>
+            )}
+          </div>
+          <div className="ms-tags">
+            {movie.genres?.slice(0, 3).map(g => (
+              <span className="ms-tag" key={g.genreId}>{g.genreName}</span>
+            ))}
+            {movie.genres?.length > 3 && (
+              <span className="ms-tag more">+{movie.genres.length - 3}</span>
+            )}
+          </div>
+        </div>
+      </div>
     </Col>
   )
 
   return (
-    <div className="movie-search-page">
-      <div className="search-container">
-        {/* Header */}
-        <div className="search-header">
-          <Button 
-            icon={<ArrowLeftOutlined />} 
-            onClick={() => navigate(-1)}
-            className="back-btn"
-          >
-            Quay lại
-          </Button>
-          
-          <div className="search-title">
-            <Title level={2} style={{ margin: 0 }}>
-              Kết quả tìm kiếm
-            </Title>
-            {searchQuery && (
-              <Text type="secondary" style={{ fontSize: 14 }}>
-                Tìm kiếm cho: "<Text strong style={{ color: '#1890ff' }}>{searchQuery}</Text>"
-              </Text>
-            )}
+    <div className="ms-page">
+      <div className="ms-container">
+        <div className="ms-header">
+          <div className="ms-header-left">
+            <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} className="ms-back">Quay lại</Button>
+            <div className="ms-heading">
+              <div className="ms-title-text">Kết quả tìm kiếm</div>
+              {searchQuery && (
+                <div className="ms-subtitle">Tìm kiếm cho: <span className="ms-highlight">{searchQuery}</span></div>
+              )}
+            </div>
           </div>
+          {/* <div className="ms-searchbar">
+            <Search
+              placeholder="Tìm kiếm phim..."
+              enterButton={<SearchOutlined />}
+              onSearch={handleNewSearch}
+              defaultValue={searchQuery}
+              className="ms-input"
+              allowClear
+            />
+          </div> */}
         </div>
 
-        {/* Search Bar */}
-        {/* <div className="search-bar-container">
-          <Search
-            placeholder="Tìm kiếm phim..."
-            size="large"
-            enterButton={<SearchOutlined />}
-            onSearch={handleNewSearch}
-            defaultValue={searchQuery}
-            className="search-input"
-          />
-        </div> */}
-
-        {/* Results */}
-        <div className="search-results">
+        <div className="ms-results">
           {loading ? (
-            <div className="loading-container">
+            <div className="ms-loading">
               <Spin size="large" />
-              <Text style={{ marginTop: 16, display: 'block' }}>
-                Đang tìm kiếm phim...
-              </Text>
+              <div className="ms-loading-text">Đang tìm kiếm phim...</div>
             </div>
           ) : error ? (
-            <Alert
-              message="Không có phim bạn tìm"
-              // description={error}
-              type="error"
-              showIcon
-              style={{ marginBottom: 24 }}
-            />
+            <Alert message="Không có phim bạn tìm" type="error" showIcon style={{ marginBottom: 24 }} />
           ) : movies.length === 0 ? (
-            <div className="no-results">
-              <Title level={4} type="secondary">
-                Không tìm thấy phim nào
-              </Title>
-              <Text type="secondary">
-                Hãy thử tìm kiếm với từ khóa khác
-              </Text>
+            <div className="ms-empty">
+              <div className="ms-empty-title">Không tìm thấy phim nào</div>
+              <div className="ms-empty-sub">Hãy thử tìm kiếm với từ khóa khác</div>
             </div>
           ) : (
             <>
-              <div className="results-info">
-                <Text style={{ fontSize: 14 }}>
-                  Tìm thấy <Text strong style={{ color: '#1890ff' }}>{totalElements}</Text> phim
-                  {totalPages > 1 && (
-                    <span style={{ color: '#666' }}> - Trang {currentPage}/{totalPages}</span>
-                  )}
-                </Text>
+              <div className="ms-summary">
+                Tìm thấy <span className="ms-highlight">{totalElements}</span> phim{totalPages > 1 && (
+                  <span className="ms-dim"> - Trang {currentPage}/{totalPages}</span>
+                )}
               </div>
 
-              <Row gutter={[16, 16]} className="movies-grid">
+              <Row gutter={[16, 16]} className="ms-grid">
                 {movies.map(renderMovieCard)}
               </Row>
 
               {totalPages > 1 && (
-                <div className="pagination-container">
+                <div className="ms-pagination">
                   <Pagination
                     current={currentPage}
                     total={totalElements}

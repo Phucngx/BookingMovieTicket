@@ -18,6 +18,7 @@ import bookingManagementReducer from './slices/bookingManagementSlice'
 import nowShowingReducer from './slices/nowShowingSlice'
 import comingSoonReducer from './slices/comingSoonSlice'
 import otpReducer from './slices/otpSlice'
+import notificationReducer from './slices/notificationSlice'
 
 export const store = configureStore({
   reducer: {
@@ -40,5 +41,6 @@ export const store = configureStore({
     nowShowing: nowShowingReducer,
     comingSoon: comingSoonReducer,
     otp: otpReducer,
+    notification: notificationReducer,
   },
 })

@@ -1,5 +1,6 @@
 const API_BASE_URL = 'http://localhost:8080/api/v1/chat-service'
 import { io } from 'socket.io-client'
+// UI notifications should be handled at the component level (e.g., AntD notification)
 
 // Helper function to get auth token
 const getAuthToken = () => {
@@ -16,13 +17,21 @@ let reconnectAttempts = 0
 const maxReconnectAttempts = 5
 const reconnectDelay = 3000
 let socketIO = null
+let socketAux = null
+
+// (desktop notification helpers removed; handled by UI if needed)
 
 export const chatService = {
   // Lấy danh sách cuộc trò chuyện của tài khoản hiện tại
-  async getConversations() {
+  async getConversations(type) {
     try {
       const token = getAuthToken()
-      const url = `${API_BASE_URL}/conversations/my-conversations`
+      let url = `${API_BASE_URL}/conversations/my-conversations`
+      
+      // Thêm query parameter type nếu được cung cấp
+      if (type) {
+        url += `?type=${encodeURIComponent(type)}`
+      }
 
       const response = await fetch(url, {
         method: 'GET',
@@ -44,15 +53,25 @@ export const chatService = {
       throw error
     }
   },
-  // Tạo (hoặc lấy) cuộc trò chuyện với admin
-  async createConversation() {
+  // Tạo (hoặc lấy) cuộc trò chuyện với admin hoặc bot
+  async createConversation(type = 'LIVECHAT', participantIds = null) {
     try {
       const token = getAuthToken()
       const url = `${API_BASE_URL}/conversations/create`
 
+      // Xác định participantIds dựa trên type
+      let participantIdsToUse = participantIds
+      if (!participantIdsToUse) {
+        if (type === 'CHATBOT') {
+          participantIdsToUse = ['22']
+        } else {
+          participantIdsToUse = ['2'] // LIVECHAT với admin
+        }
+      }
+
       const body = {
-        type: 'LIVECHAT',
-        participantIds: ['2']
+        type: type,
+        participantIds: participantIdsToUse
       }
 
       const response = await fetch(url, {
@@ -334,12 +353,76 @@ export const chatService = {
           }
         } catch (_) {}
         try { onMessage && onMessage(payload) } catch (_) {}
+        // Do not show UI notifications here; components decide based on their open state
       })
 
       return socketIO
     } catch (error) {
       console.error('Socket.IO connection error:', error)
       return null
+    }
+  },
+
+  // Secondary Socket.IO connection (port 8899)
+  connectAuxSocket(onMessage, onConnectionChange) {
+    try {
+      if (socketAux && socketAux.connected) {
+        console.log('[AuxSocket] Already connected:', socketAux.id)
+        return socketAux
+      }
+      const token = getAuthToken()
+      if (!token) {
+        console.warn('[AuxSocket] No token found, skipping connection')
+        return null
+      }
+      socketAux = io('http://localhost:8899', {
+        transports: ['websocket'],
+        autoConnect: true,
+        query: { token },
+      })
+
+      socketAux.on('connect', () => {
+        console.log('[AuxSocket] connected:', socketAux.id)
+        try { onConnectionChange && onConnectionChange(true) } catch (_) {}
+      })
+
+      socketAux.on('disconnect', (reason) => {
+        console.log('[AuxSocket] disconnected:', reason)
+        try { onConnectionChange && onConnectionChange(false) } catch (_) {}
+      })
+
+      socketAux.on('connect_error', (err) => {
+        console.error('[AuxSocket] connect_error:', err?.message || err)
+        try { onConnectionChange && onConnectionChange(false) } catch (_) {}
+      })
+
+      socketAux.on('notification', (message) => {
+        console.log('New notification received:', message)
+        let payload = message
+        try {
+          if (typeof message === 'string') {
+            payload = JSON.parse(message)
+          }
+        } catch (_) {}
+        try { onMessage && onMessage(payload) } catch (_) {}
+      })
+
+      return socketAux
+    } catch (error) {
+      console.error('Aux Socket.IO connection error:', error)
+      return null
+    }
+  },
+
+  disconnectAuxSocket() {
+    try {
+      if (socketAux) {
+        socketAux.removeAllListeners()
+        socketAux.disconnect()
+        socketAux = null
+      }
+    } catch (error) {
+      console.error('Aux Socket.IO disconnect error:', error)
     }
   },
 
@@ -353,5 +436,17 @@ export const chatService = {
     } catch (error) {
       console.error('Socket.IO disconnect error:', error)
     }
+  },
+  
+  emitMarkAsRead(conversationId) {
+    try {
+      if (socketIO && socketIO.connected && conversationId) {
+        socketIO.emit('markAsRead',  conversationId )
+        return true
+      }
+    } catch (error) {
+      console.error('emitMarkAsRead error:', error)
+    }
+    return false
   },
 }

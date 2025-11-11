@@ -11,7 +11,8 @@ import {
   MenuUnfoldOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
-  MessageOutlined
+  MessageOutlined,
+  BellOutlined
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -69,6 +70,11 @@ const AdminLayout = ({ children }) => {
       key: '/admin/support-chat',
       icon: <MessageOutlined />,
       label: 'Tin nhắn hỗ trợ',
+    },
+    {
+      key: '/admin/notifications',
+      icon: <BellOutlined />,
+      label: 'Quản lý thông báo',
     },
     {
       key: '/admin/settings',

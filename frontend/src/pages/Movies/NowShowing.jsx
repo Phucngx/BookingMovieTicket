@@ -14,7 +14,7 @@ const NowShowing = () => {
   const { movies, loading, error, pagination } = useSelector(state => state.nowShowing)
 
   useEffect(() => {
-    dispatch(fetchNowShowingMovies({ page: 1, size: 10 }))
+    dispatch(fetchNowShowingMovies({ page: 1, size: 12 }))
   }, [dispatch])
 
   const onPageChange = (page, pageSize) => {
@@ -43,21 +43,21 @@ const NowShowing = () => {
   }
 
   return (
-    <Content className="movies-content" style={{ background: '#f5f5f5', minHeight: '100vh' }}>
-      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+    <Content className="movies-content" style={{ background: '#f6f7fb' }}>
+      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
         {/* Header Section */}
         <div style={{ 
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
           borderRadius: '12px', 
-          padding: '40px 24px', 
-          marginBottom: '32px',
+          padding: '24px 16px', 
+          marginBottom: '16px',
           color: 'white',
           textAlign: 'center'
         }}>
-          <Title level={1} style={{ color: 'white', marginBottom: '16px' }}>
+          <Title level={2} style={{ color: 'white', marginBottom: '8px' }}>
             🎬 Phim đang chiếu
           </Title>
-          <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '16px' }}>
+          <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px' }}>
             Khám phá những bộ phim hay nhất đang được chiếu tại rạp
           </Text>
       </div>
@@ -80,28 +80,28 @@ const NowShowing = () => {
           />
         ) : (
           <>
-            <Row gutter={[24, 24]}>
+            <Row gutter={[16, 16]}>
               {movies.map(movie => (
-                <Col xs={24} sm={12} md={8} lg={6} key={movie.id}>
+                <Col xs={12} sm={12} md={8} lg={6} xl={4} key={movie.id}>
                   <Card
                     hoverable
                     style={{ 
                       borderRadius: '12px', 
                       overflow: 'hidden',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                      transition: 'all 0.3s ease'
+                      boxShadow: '0 3px 10px rgba(0,0,0,0.08)',
+                      transition: 'all 0.25s ease'
                     }}
-                    bodyStyle={{ padding: '16px' }}
+                    bodyStyle={{ padding: '12px' }}
                     cover={
                       <div style={{ position: 'relative', overflow: 'hidden' }}>
                         <img 
                           alt={movie.title} 
                           src={movie.posterUrl} 
                           style={{ 
-                            height: '320px', 
+                            height: '240px', 
                             width: '100%',
                             objectFit: 'cover',
-                            transition: 'transform 0.3s ease'
+                            transition: 'transform 0.25s ease'
                           }}
                           onError={(e) => {
                             e.target.src = 'https://via.placeholder.com/200x320/cccccc/666666?text=No+Image'
@@ -115,7 +115,7 @@ const NowShowing = () => {
                           color: 'white',
                           padding: '4px 8px',
                           borderRadius: '4px',
-                          fontSize: '12px',
+                          fontSize: '11px',
                           fontWeight: 'bold'
                         }}>
                           ĐANG CHIẾU
@@ -128,29 +128,19 @@ const NowShowing = () => {
                           color: 'white',
                           padding: '4px 8px',
                           borderRadius: '4px',
-                          fontSize: '12px'
+                          fontSize: '11px'
                         }}>
                           <ClockCircleOutlined /> {formatDuration(movie.durationMinutes)}
                     </div>
                       </div>
                     }
-                    actions={[
-                      <Button 
-                        type="primary" 
-                        icon={<PlayCircleOutlined />}
-                        onClick={() => handleMovieClick(movie.id)}
-                        style={{ width: '100%' }}
-                      >
-                        Xem chi tiết
-                      </Button>
-                    ]}
                   >
                     <div>
-                      <Title level={4} style={{ 
-                        marginBottom: '12px', 
-                        fontSize: '16px',
-                        lineHeight: '1.4',
-                        height: '44px',
+                      <Title level={5} style={{ 
+                        marginBottom: '8px', 
+                        fontSize: '14px',
+                        lineHeight: '1.35',
+                        height: '38px',
                         overflow: 'hidden',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -159,34 +149,31 @@ const NowShowing = () => {
                         {movie.title}
                       </Title>
                       
-                      <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                      <Space direction="vertical" size={6} style={{ width: '100%' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <CalendarOutlined style={{ color: '#1890ff' }} />
-                          <Text type="secondary">{formatDate(movie.releaseDate)}</Text>
+                          <Text type="secondary" style={{ fontSize: 12 }}>{formatDate(movie.releaseDate)}</Text>
                         </div>
-                        
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <Text type="secondary">{movie.language}</Text>
-                          <Text type="secondary">•</Text>
-                          <Text type="secondary">{movie.country}</Text>
-                  </div>
-                  
                         {movie.genres && movie.genres.length > 0 && (
-                          <div style={{ marginTop: '8px' }}>
-                            <Space wrap size="small">
+                          <div>
+                            <Space wrap size={4}>
                               {movie.genres.slice(0, 2).map(genre => (
-                                <Tag key={genre.genreId} color="blue" style={{ fontSize: '11px' }}>
+                                <Tag key={genre.genreId} color="blue" style={{ fontSize: 11 }}>
                                   {genre.genreName}
                                 </Tag>
                               ))}
-                              {movie.genres.length > 2 && (
-                                <Tag color="default" style={{ fontSize: '11px' }}>
-                                  +{movie.genres.length - 2}
-                                </Tag>
-                              )}
                             </Space>
                           </div>
                         )}
+                        <Button 
+                          type="primary" 
+                          icon={<PlayCircleOutlined />}
+                          onClick={() => handleMovieClick(movie.id)}
+                          size="middle"
+                          block
+                        >
+                          Xem chi tiết
+                        </Button>
                       </Space>
                     </div>
                   </Card>
@@ -194,26 +181,17 @@ const NowShowing = () => {
               ))}
             </Row>
             
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              marginTop: '40px',
-              padding: '24px',
-              background: 'white',
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, padding: 12, background: 'white', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
               <Pagination
                 current={pagination.current}
                 pageSize={pagination.pageSize}
                 total={pagination.total}
                 onChange={onPageChange}
-                showSizeChanger
+                showSizeChanger={false}
                 showQuickJumper
                 showTotal={(total, range) => 
                   `${range[0]}-${range[1]} của ${total} phim`
                 }
-                pageSizeOptions={['10', '20', '30']}
                 style={{ textAlign: 'center' }}
               />
             </div>

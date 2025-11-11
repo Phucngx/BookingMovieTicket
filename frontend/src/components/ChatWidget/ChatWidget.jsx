@@ -3,7 +3,6 @@ import { Button, Badge, Tooltip } from 'antd'
 import { MessageOutlined, CloseOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleChatWindow, getUnreadCount } from '../../store/slices/chatSlice'
-import { createConversation, fetchMessages } from '../../store/slices/chatSlice'
 import ChatWindow from '../ChatWindow'
 import './ChatWidget.css'
 
@@ -31,15 +30,7 @@ const ChatWidget = () => {
 
   const handleToggleChat = () => {
     dispatch(toggleChatWindow())
-    // Khi mở cửa sổ chat, tạo/gọi cuộc trò chuyện và tải tin nhắn
-    setTimeout(() => {
-      const willOpen = !chatWindowOpen
-      if (willOpen && isAuthenticated) {
-        dispatch(createConversation()).then(() => {
-          dispatch(fetchMessages())
-        })
-      }
-    }, 0)
+    // ChatWindow sẽ tự xử lý việc khởi tạo conversation khi mở
   }
 
   if (!isVisible) {

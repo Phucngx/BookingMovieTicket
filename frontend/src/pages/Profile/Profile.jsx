@@ -249,16 +249,16 @@ const Profile = () => {
 
             <Divider />
 
-            <div className="action-buttons">
+            {/* <div className="action-buttons">
               <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                {/* <Button 
+                <Button 
                   type="primary" 
                   icon={<EditOutlined />} 
                   block
                   className="action-btn"
                 >
                   Chỉnh sửa thông tin
-                </Button> */}
+                </Button>
                 <Button 
                   icon={<LockOutlined />} 
                   block
@@ -268,7 +268,8 @@ const Profile = () => {
                   Đổi mật khẩu
                 </Button>
               </Space>
-            </div>
+            </div> */}
+
           </Card>
         </Col>
       </Row>

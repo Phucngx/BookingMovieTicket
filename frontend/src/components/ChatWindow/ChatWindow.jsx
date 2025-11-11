@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Card, Input, Button, Typography, Spin, Empty, message } from 'antd'
-import { SendOutlined, UserOutlined, RobotOutlined } from '@ant-design/icons'
+import { SendOutlined, UserOutlined, RobotOutlined, CustomerServiceOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
-import { sendMessage, fetchMessages, markAllAsRead, createConversation } from '../../store/slices/chatSlice'
+import { sendMessage, fetchMessages, markAllAsRead, createConversation, getConversationByType, clearChat, setChatType } from '../../store/slices/chatSlice'
 import { chatService } from '../../services/chatService'
 import ChatMessage from '../ChatMessage'
 import './ChatWindow.css'
@@ -13,33 +13,45 @@ const { TextArea } = Input
 const ChatWindow = () => {
   const dispatch = useDispatch()
   const { userInfo, isAuthenticated } = useSelector(state => state.user)
-  const { messages, loading, sending, isConnected, conversationId, creating } = useSelector(state => state.chat)
+  const { messages, loading, sending, isConnected, conversationId, creating, chatType, chatbotThinking, loadingConversations } = useSelector(state => state.chat)
   
   const [inputMessage, setInputMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [showChatTypeSelection, setShowChatTypeSelection] = useState(false)
   const messagesEndRef = useRef(null)
   const chatContainerRef = useRef(null)
 
   // Scroll to bottom when new messages arrive
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  const firstScrollDoneRef = useRef(false)
+  const scrollToBottom = (behavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior })
   }
 
   useEffect(() => {
-    scrollToBottom()
+    if (!firstScrollDoneRef.current) {
+      scrollToBottom('auto')
+      firstScrollDoneRef.current = true
+    } else {
+      scrollToBottom('smooth')
+    }
   }, [messages])
 
-  // Create/get conversation and load messages when chat window opens
+  // Kiểm tra xem có cần hiển thị selection UI không
   useEffect(() => {
-    if (isAuthenticated) {
-      const init = async () => {
-        await dispatch(createConversation())
-        dispatch(fetchMessages())
-        dispatch(markAllAsRead())
-      }
-      init()
+    if (isAuthenticated && !conversationId && !chatType) {
+      setShowChatTypeSelection(true)
+    } else {
+      setShowChatTypeSelection(false)
     }
-  }, [dispatch, isAuthenticated])
+  }, [isAuthenticated, conversationId, chatType])
+
+  // Load messages khi đã có conversationId (chỉ khi chat window mở)
+  useEffect(() => {
+    if (isAuthenticated && conversationId && chatType && !showChatTypeSelection) {
+      dispatch(fetchMessages())
+      dispatch(markAllAsRead())
+    }
+  }, [dispatch, isAuthenticated, conversationId, chatType, showChatTypeSelection])
 
   // WebSocket connection
   useEffect(() => {
@@ -66,6 +78,14 @@ const ChatWindow = () => {
     }
   }, [dispatch, isAuthenticated, conversationId])
 
+  // Emit markAsRead when user has an active conversation (open chat)
+  useEffect(() => {
+    if (isAuthenticated && conversationId) {
+      chatService.emitMarkAsRead(conversationId)
+      dispatch({ type: 'chat/markConversationAsRead', payload: conversationId })
+    }
+  }, [dispatch, isAuthenticated, conversationId])
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
 
@@ -75,9 +95,9 @@ const ChatWindow = () => {
     }
 
     try {
-      await dispatch(sendMessage(inputMessage.trim())).unwrap()
-      
+      const text = inputMessage.trim()
       setInputMessage('')
+      await dispatch(sendMessage(text)).unwrap()
     } catch (error) {
       message.error('Không thể gửi tin nhắn. Vui lòng thử lại.')
     }
@@ -102,21 +122,104 @@ const ChatWindow = () => {
     // }
   }
 
+  // Xử lý khi người dùng chọn loại chat
+  const handleSelectChatType = async (type) => {
+    try {
+      // Xoá tin nhắn hiện tại để tránh hiển thị lẫn khi chuyển nhanh giữa 2 cuộc trò chuyện
+      dispatch({ type: 'chat/clearMessages' })
+      // Thử lấy conversation theo type
+      const result = await dispatch(getConversationByType(type)).unwrap()
+      
+      if (result?.conversation?.id) {
+        // Đã có conversation, useEffect sẽ tự động load messages
+        setShowChatTypeSelection(false)
+      } else {
+        // Chưa có conversation, tạo mới
+        await dispatch(createConversation({ type })).unwrap()
+        // useEffect sẽ tự động load messages sau khi conversationId được set
+        setShowChatTypeSelection(false)
+      }
+      
+      // Đánh dấu đã đọc sẽ được gọi trong useEffect
+    } catch (error) {
+      message.error('Không thể khởi tạo cuộc trò chuyện. Vui lòng thử lại.')
+      console.error('Error selecting chat type:', error)
+      setShowChatTypeSelection(true) // Hiển thị lại selection nếu lỗi
+    }
+  }
+
+  const renderChatTypeSelection = () => (
+    <div className="chat-type-selection">
+      <div className="selection-header">
+        <Text strong style={{ fontSize: '16px' }}>Chọn loại hỗ trợ</Text>
+        <Text type="secondary" style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
+          Bạn muốn chat với ai?
+        </Text>
+      </div>
+      <div className="selection-options">
+        <Button
+          type="default"
+          size="large"
+          icon={<CustomerServiceOutlined />}
+          onClick={() => handleSelectChatType('LIVECHAT')}
+          loading={loadingConversations && chatType === 'LIVECHAT'}
+          className="chat-type-btn"
+          style={{
+            width: '100%',
+            height: '60px',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <div style={{ textAlign: 'left', flex: 1 }}>
+            <div style={{ fontWeight: 500 }}>Chat với Admin</div>
+            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Hỗ trợ trực tiếp từ nhân viên</div>
+          </div>
+        </Button>
+        <Button
+          type="default"
+          size="large"
+          icon={<RobotOutlined />}
+          onClick={() => handleSelectChatType('CHATBOT')}
+          loading={loadingConversations && chatType === 'CHATBOT'}
+          className="chat-type-btn"
+          style={{
+            width: '100%',
+            height: '60px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          <div style={{ textAlign: 'left', flex: 1 }}>
+            <div style={{ fontWeight: 500 }}>Chat với Bot</div>
+            <div style={{ fontSize: '12px', color: '#8c8c8c' }}>Hỗ trợ tự động 24/7</div>
+          </div>
+        </Button>
+      </div>
+    </div>
+  )
+
   const renderWelcomeMessage = () => (
     <div className="welcome-message">
       <div className="welcome-icon">
-        <RobotOutlined />
+        {chatType === 'CHATBOT' ? <RobotOutlined /> : <CustomerServiceOutlined />}
       </div>
       <div className="welcome-content">
-        <Text strong>Chào mừng bạn đến với hệ thống hỗ trợ!</Text>
-        <Text type="secondary">
-          Chúng tôi ở đây để giúp bạn. Hãy gửi tin nhắn để bắt đầu cuộc trò chuyện.
+        <Text strong>
+          {chatType === 'CHATBOT' 
+            ? 'Chào mừng bạn đến với Chatbot!' 
+            : 'Chào mừng bạn đến với hệ thống hỗ trợ!'}
         </Text>
-        {!conversationId && isAuthenticated && (
-          <Button type="primary" loading={creating} onClick={() => dispatch(createConversation()).then(() => dispatch(fetchMessages()))} style={{ marginTop: 12 }}>
-            Bắt đầu chat
-          </Button>
-        )}
+        <Text type="secondary">
+          {chatType === 'CHATBOT'
+            ? 'Tôi có thể giúp bạn trả lời các câu hỏi. Hãy gửi tin nhắn để bắt đầu!'
+            : 'Chúng tôi ở đây để giúp bạn. Hãy gửi tin nhắn để bắt đầu cuộc trò chuyện.'}
+        </Text>
       </div>
     </div>
   )
@@ -141,15 +244,38 @@ const ChatWindow = () => {
       <div className="chat-header">
         <div className="chat-header-info">
           <div className="chat-avatar">
-            <RobotOutlined />
+            {chatType === 'CHATBOT' ? <RobotOutlined /> : <CustomerServiceOutlined />}
           </div>
           <div className="chat-title">
-            <Text strong>Hỗ trợ khách hàng</Text>
+            <Text strong>
+              {chatType === 'CHATBOT' ? 'Chatbot hỗ trợ' : 'Hỗ trợ khách hàng'}
+            </Text>
             <div className="chat-status">
               <div className={`status-indicator ${isConnected ? 'online' : 'offline'}`}></div>
               <Text type="secondary" style={{ fontSize: '12px' }}>
-                {isConnected ? 'Đang hoạt động' : 'Không kết nối'}
+                {chatType === 'CHATBOT' 
+                  ? 'Sẵn sàng' 
+                  : (isConnected ? 'Đang hoạt động' : 'Không kết nối')}
               </Text>
+            </div>
+            {/* Quick switch between Admin and Chatbot */}
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <Button
+                size="small"
+                type={chatType === 'LIVECHAT' ? 'primary' : 'default'}
+                onClick={() => handleSelectChatType('LIVECHAT')}
+                disabled={!isAuthenticated}
+              >
+                Admin
+              </Button>
+              <Button
+                size="small"
+                type={chatType === 'CHATBOT' ? 'primary' : 'default'}
+                onClick={() => handleSelectChatType('CHATBOT')}
+                disabled={!isAuthenticated}
+              >
+                Chatbot
+              </Button>
             </div>
           </div>
         </div>
@@ -157,7 +283,11 @@ const ChatWindow = () => {
 
       {/* Messages Container */}
       <div className="chat-messages">
-        {loading ? (
+        {showChatTypeSelection ? (
+          <div className="chat-empty">
+            {renderChatTypeSelection()}
+          </div>
+        ) : loading ? (
           <div className="chat-loading">
             <Spin size="small" />
             <Text type="secondary">Đang tải tin nhắn...</Text>
@@ -173,15 +303,15 @@ const ChatWindow = () => {
                 message={msg}
               />
             ))}
-            {isTyping && (
+            {(chatbotThinking || isTyping) && (
               <div className="typing-indicator">
                 <div className="typing-dots">
                   <span></span>
                   <span></span>
                   <span></span>
                 </div>
-                <Text type="secondary" style={{ fontSize: '12px' }}>
-                  Đang nhập...
+                <Text type="secondary" className="typing-text">
+                  {chatbotThinking ? 'Chatbot đang suy nghĩ...' : 'Đang nhập...'}
                 </Text>
               </div>
             )}
@@ -197,9 +327,9 @@ const ChatWindow = () => {
             value={inputMessage}
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
-            placeholder={isAuthenticated ? (conversationId ? "Nhập tin nhắn..." : "Nhấn Bắt đầu chat để tạo cuộc trò chuyện") : "Đăng nhập để gửi tin nhắn"}
+            placeholder={isAuthenticated ? (conversationId ? "Nhập tin nhắn..." : "Chọn loại chat để bắt đầu") : "Đăng nhập để gửi tin nhắn"}
             autoSize={{ minRows: 1, maxRows: 4 }}
-            disabled={!isAuthenticated || !conversationId}
+            disabled={!isAuthenticated || !conversationId || showChatTypeSelection}
             className="message-input"
           />
           <Button

@@ -5,11 +5,28 @@ import { logout } from './userSlice'
 // Async thunks
 export const createConversation = createAsyncThunk(
   'chat/createConversation',
-  async (_, { rejectWithValue }) => {
+  async ({ type = 'LIVECHAT', participantIds = null }, { rejectWithValue }) => {
     try {
-      const response = await chatService.createConversation()
+      const response = await chatService.createConversation(type, participantIds)
       // API returns { code, data }
-      return response.data
+      return { ...response.data, chatType: type }
+    } catch (error) {
+      return rejectWithValue(error.message)
+    }
+  }
+)
+
+// Lấy conversation theo type (LIVECHAT hoặc CHATBOT)
+export const getConversationByType = createAsyncThunk(
+  'chat/getConversationByType',
+  async (type, { rejectWithValue }) => {
+    try {
+      const response = await chatService.getConversations(type)
+      // API returns { code, data } với data là array of conversations
+      const conversations = response.data || []
+      // Tìm conversation đầu tiên với type tương ứng
+      const conversation = conversations.find(c => c.type === type) || null
+      return { conversation, chatType: type }
     } catch (error) {
       return rejectWithValue(error.message)
     }
@@ -48,9 +65,9 @@ export const sendMessage = createAsyncThunk(
 
 export const fetchConversations = createAsyncThunk(
   'chat/fetchConversations',
-  async (_, { rejectWithValue }) => {
+  async (type, { rejectWithValue }) => {
     try {
-      const response = await chatService.getConversations()
+      const response = await chatService.getConversations(type)
       return response.data || []
     } catch (error) {
       return rejectWithValue(error.message)
@@ -95,6 +112,8 @@ const initialState = {
   error: null,
   isConnected: false,
   chatWindowOpen: false,
+  chatType: null, // 'LIVECHAT' hoặc 'CHATBOT'
+  chatbotThinking: false, // Trạng thái chatbot đang suy nghĩ
 }
 
 const chatSlice = createSlice({
@@ -123,8 +142,12 @@ const chatSlice = createSlice({
       
       if (existingIndex === -1) {
         state.messages.push(newMessage)
-        if (!newMessage.me) {
+        if (!newMessage.me && newMessage.read === false) {
           state.unreadCount += 1
+        }
+        // Nếu nhận tin nhắn từ bot (không phải từ user), tắt trạng thái thinking
+        if (state.chatType === 'CHATBOT' && !newMessage.me) {
+          state.chatbotThinking = false
         }
       }
     },
@@ -152,11 +175,47 @@ const chatSlice = createSlice({
     },
     markAllAsRead: (state) => {
       state.messages.forEach(message => {
-        if (message.sender !== 'user') {
-          message.isRead = true
+        if (!message.me) {
+          message.read = true
         }
       })
       state.unreadCount = 0
+    },
+    markConversationAsRead: (state, action) => {
+      const conversationId = action.payload
+      state.messages.forEach(m => {
+        if (m.conversationId === conversationId) {
+          m.read = true
+        }
+      })
+      // Recalculate total unread
+      state.unreadCount = state.messages.reduce((acc, m) => acc + ((!m.me && m.read === false) ? 1 : 0), 0)
+      // Reset unread for the conversation in list
+      const cIdx = state.conversations.findIndex(c => c.id === conversationId)
+      if (cIdx !== -1) {
+        state.conversations[cIdx].unreadCount = 0
+      }
+    },
+    updateConversationOnNewMessage: (state, action) => {
+      const msg = action.payload
+      if (!msg?.conversationId) return
+      const idx = state.conversations.findIndex(c => c.id === msg.conversationId)
+      if (idx === -1) return
+      const updated = { ...state.conversations[idx], modifiedDate: msg.createdDate }
+      // Move to top
+      state.conversations.splice(idx, 1)
+      state.conversations.unshift(updated)
+    },
+    updateConversationUnreadOnIncoming: (state, action) => {
+      const msg = action.payload
+      if (!msg?.conversationId) return
+      const idx = state.conversations.findIndex(c => c.id === msg.conversationId)
+      if (idx === -1) return
+      // Only count unread from đối phương
+      if (msg.read === false && msg.me === false) {
+        const prev = state.conversations[idx].unreadCount || 0
+        state.conversations[idx].unreadCount = prev + 1
+      }
     },
     clearMessages: (state) => {
       state.messages = []
@@ -164,6 +223,18 @@ const chatSlice = createSlice({
     },
     setTyping: (state, action) => {
       state.isTyping = action.payload
+    },
+    setChatType: (state, action) => {
+      state.chatType = action.payload
+    },
+    setChatbotThinking: (state, action) => {
+      state.chatbotThinking = action.payload
+    },
+    clearChat: (state) => {
+      state.conversationId = null
+      state.messages = []
+      state.chatType = null
+      state.chatbotThinking = false
     }
   },
   extraReducers: (builder) => {
@@ -176,10 +247,28 @@ const chatSlice = createSlice({
       .addCase(createConversation.fulfilled, (state, action) => {
         state.creating = false
         state.conversationId = action.payload?.id || state.conversationId
+        state.chatType = action.payload?.chatType || state.chatType
         state.error = null
       })
       .addCase(createConversation.rejected, (state, action) => {
         state.creating = false
+        state.error = action.payload
+      })
+      // Get conversation by type
+      .addCase(getConversationByType.pending, (state) => {
+        state.loadingConversations = true
+        state.error = null
+      })
+      .addCase(getConversationByType.fulfilled, (state, action) => {
+        state.loadingConversations = false
+        if (action.payload?.conversation) {
+          state.conversationId = action.payload.conversation.id
+          state.chatType = action.payload.chatType
+        }
+        state.error = null
+      })
+      .addCase(getConversationByType.rejected, (state, action) => {
+        state.loadingConversations = false
         state.error = action.payload
       })
       // Fetch messages
@@ -208,7 +297,24 @@ const chatSlice = createSlice({
       })
       .addCase(fetchConversations.fulfilled, (state, action) => {
         state.loadingConversations = false
-        state.conversations = action.payload
+        const normalizeDate = (item) => (
+          item.modifiedDate || item.lastMessageDate || item.lastMessageTime || item.lastMessageCreatedDate || item.updatedDate || item.createdDate
+        )
+        const normalizeUnread = (item) => {
+          const val = item.unreadCount ?? item.unread ?? item.unreadMessageCount
+          return typeof val === 'number' ? val : 0
+        }
+        state.conversations = (action.payload || [])
+          .map(c => ({
+            ...c,
+            modifiedDate: normalizeDate(c),
+            unreadCount: normalizeUnread(c),
+          }))
+          .sort((a, b) => {
+            const ta = new Date(a.modifiedDate || a.createdDate || 0).getTime()
+            const tb = new Date(b.modifiedDate || b.createdDate || 0).getTime()
+            return tb - ta
+          })
         state.error = null
       })
       .addCase(fetchConversations.rejected, (state, action) => {
@@ -220,6 +326,10 @@ const chatSlice = createSlice({
       .addCase(sendMessage.pending, (state) => {
         state.sending = true
         state.error = null
+        // Nếu là chatbot, hiển thị trạng thái "đang suy nghĩ"
+        if (state.chatType === 'CHATBOT') {
+          state.chatbotThinking = true
+        }
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.sending = false
@@ -232,6 +342,7 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.sending = false
+        state.chatbotThinking = false
         state.error = action.payload
       })
       
@@ -270,7 +381,10 @@ export const {
   markMessageAsRead,
   markAllAsRead,
   clearMessages,
-  setTyping
+  setTyping,
+  setChatType,
+  setChatbotThinking,
+  clearChat
 } = chatSlice.actions
 
 export default chatSlice.reducer
