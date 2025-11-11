@@ -41,6 +41,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String[] publicEndpoints = {
             "user-service/auth/.*",
             "user-service/accounts/create",
+            "user-service/otp/send-otp",
+            "user-service/otp/verify-otp",
             "movie-service/movies/get-all",
             "movie-service/movies/get-details/.*",
             "movie-service/movies/search",
@@ -49,14 +51,18 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "movie-service/actors/get-details/.*",
             "movie-service/directors/get-all",
             "movie-service/directors/get-details/.*",
+            "movie-service/movies/now-showing",
+            "movie-service/movies/coming-soon",
             "theater-service/theaters/get-all",
             "theater-service/theaters/get-details/.*",
+            "theater-service/theaters/get-detail/.*",
             "theater-service/theaters/get-theaters",
             "showtime-service/showtimes/get-all",
             "showtime-service/showtimes/get-details/.*",
-            "showtime-service/showtimes/get-details/.*",
             "showtime-service/showtimes/get-showtimes/.*",
             "showtime-service/showtimes/get-showtimes-by-date/.*",
+            "notification-service/emails/send-email",
+            "post-service/posts/get-all"
     };
 
     @Override
