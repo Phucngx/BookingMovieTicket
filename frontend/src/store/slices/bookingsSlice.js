@@ -61,6 +61,14 @@ const bookingsSlice = createSlice({
     },
     setSelectedPeriod(state, action) {
       state.selectedPeriod = action.payload
+    },
+    clearTickets(state) {
+      state.myTickets = []
+      state.ticketsTotal = 0
+      state.ticketsPage = 1
+      state.ticketsTotalPages = 0
+      state.ticketsFirst = true
+      state.ticketsLast = true
     }
   },
   extraReducers: (builder) => {
@@ -101,7 +109,7 @@ const bookingsSlice = createSlice({
   }
 })
 
-export const { setLastBooking, clearBookingsState, setSelectedPeriod } = bookingsSlice.actions
+export const { setLastBooking, clearBookingsState, setSelectedPeriod, clearTickets } = bookingsSlice.actions
 export default bookingsSlice.reducer
 
 

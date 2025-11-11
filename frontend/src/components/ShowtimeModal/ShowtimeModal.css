@@ -69,20 +69,23 @@
 
 .showtimes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 12px;
 }
 
 .showtime-card {
   border: 2px solid #f0f0f0;
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: white;
   position: relative;
   overflow: hidden;
-  min-height: 80px;
+  min-height: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .showtime-card.disabled {
@@ -94,25 +97,25 @@
   border-color: #d9d9d9 !important;
 }
 
-.showtime-card:hover:not(.disabled) {
+/* .showtime-card:hover:not(.disabled) {
   border-color: #1890ff;
   box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
   transform: translateY(-2px);
-}
+} */
 
-.showtime-card:active:not(.disabled) {
+/* .showtime-card:active:not(.disabled) {
   transform: translateY(0);
-}
+} */
 
 .showtime-time {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .time-icon {
-  font-size: 16px;
+  font-size: 14px;
   color: #1890ff;
 }
 
@@ -121,34 +124,35 @@
 }
 
 .start-time {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #262626;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .end-time {
-  font-size: 12px;
+  font-size: 11px;
   color: #8c8c8c;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .showtime-price {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .price-icon {
-  font-size: 14px;
+  font-size: 12px;
   color: #52c41a;
 }
 
 .price-text {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #52c41a;
+  white-space: nowrap;
 }
 
 .showtime-room {
@@ -168,13 +172,13 @@
   }
   
   .showtimes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 10px;
   }
   
   .showtime-card {
-    padding: 10px;
-    min-height: 70px;
+    padding: 8px 10px;
+    min-height: 60px;
   }
   
   .start-time {
@@ -193,8 +197,8 @@
   }
   
   .showtime-card {
-    padding: 8px;
-    min-height: 60px;
+    padding: 6px 8px;
+    min-height: 55px;
   }
   
   .showtime-time {

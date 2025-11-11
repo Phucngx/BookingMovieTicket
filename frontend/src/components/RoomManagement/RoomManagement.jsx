@@ -76,7 +76,7 @@ const RoomManagement = () => {
       setRooms(response.data || [])
     } catch (error) {
       console.error('Error fetching rooms:', error)
-      message.error('Không thể tải danh sách phòng chiếu')
+      // message.error('Không thể tải danh sách phòng chiếu')
     } finally {
       setRoomsLoading(false)
     }
@@ -108,8 +108,7 @@ const RoomManagement = () => {
       cancelText: 'Hủy',
       onOk: async () => {
         try {
-          // TODO: Implement delete room API
-          console.log('Delete room:', room)
+          await theaterService.deleteRoom(room.roomId)
           message.success('Xóa phòng chiếu thành công!')
           fetchRooms()
         } catch (error) {

@@ -1,300 +1,205 @@
-import React, { useState } from 'react';
-import { Button, Dropdown } from 'antd';
-import { DownOutlined, HeartOutlined, StarOutlined, CheckOutlined } from '@ant-design/icons';
-import './NowShowing.css';
+import React, { useEffect } from 'react'
+import { Layout, Typography, Row, Col, Card, Pagination, Spin, Empty, Tag, Space, Button } from 'antd'
+import { CalendarOutlined, ClockCircleOutlined, StarOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { fetchNowShowingMovies } from '../../store/slices/nowShowingSlice'
+
+const { Content } = Layout
+const { Title, Text } = Typography
 
 const NowShowing = () => {
-  const [popularFilter, setPopularFilter] = useState('Phổ biến');
-  const [genreFilter, setGenreFilter] = useState('Thể loại');
-  const [languageFilter, setLanguageFilter] = useState('Ngôn ngữ');
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { movies, loading, error, pagination } = useSelector(state => state.nowShowing)
 
-  const popularItems = [
-    { key: 'popular', label: 'Phổ biến nhất' },
-    { key: 'newest', label: 'Mới nhất' },
-    { key: 'rating', label: 'Đánh giá cao' },
-  ];
+  useEffect(() => {
+    dispatch(fetchNowShowingMovies({ page: 1, size: 12 }))
+  }, [dispatch])
 
-  const genreItems = [
-    { key: 'action', label: 'Hành động' },
-    { key: 'comedy', label: 'Hài hước' },
-    { key: 'drama', label: 'Tâm lý' },
-    { key: 'horror', label: 'Kinh dị' },
-    { key: 'romance', label: 'Tình cảm' },
-    { key: 'animation', label: 'Hoạt hình' },
-  ];
+  const onPageChange = (page, pageSize) => {
+    dispatch(fetchNowShowingMovies({ page, size: pageSize }))
+  }
 
-  const languageItems = [
-    { key: 'vietnamese', label: 'Tiếng Việt' },
-    { key: 'english', label: 'Tiếng Anh' },
-    { key: 'korean', label: 'Tiếng Hàn' },
-    { key: 'chinese', label: 'Tiếng Trung' },
-    { key: 'japanese', label: 'Tiếng Nhật' },
-  ];
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Chưa cập nhật'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+  }
 
-  const movies = [
-    {
-      id: 1,
-      title: 'Thanh Gươm D...',
-      date: '15/08',
-      rating: null,
-      label: 'CHIẾU SỚM',
-      image: 'https://via.placeholder.com/200x300/4A90E2/FFFFFF?text=Thanh+Gươm+D...',
-      isAnimated: true
-    },
-    {
-      id: 2,
-      title: 'Mang Mẹ Đi Bỏ',
-      date: '01/08',
-      rating: '68%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E24A4A/FFFFFF?text=Mang+Mẹ+Đi+Bỏ',
-      isAnimated: false
-    },
-    {
-      id: 3,
-      title: 'Dính Lẹo',
-      date: '15/08',
-      rating: null,
-      label: 'CHIẾU SỚM',
-      image: 'https://via.placeholder.com/200x300/4AE24A/FFFFFF?text=Dính+Lẹo',
-      isAnimated: false
-    },
-    {
-      id: 4,
-      title: 'Zombie Cung Của Ba',
-      date: '08/08',
-      rating: '100%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/8A4AE2/FFFFFF?text=Zombie+Cung+Của+Ba',
-      isAnimated: false
-    },
-    {
-      id: 5,
-      title: 'Conan Movie 2...',
-      date: '25/07',
-      rating: '92%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E2A84A/FFFFFF?text=Conan+Movie+2...',
-      isAnimated: true
-    },
-    {
-      id: 6,
-      title: 'Chốt Đơn',
-      date: '08/08',
-      rating: null,
-      label: null,
-      image: 'https://via.placeholder.com/200x300/4AE2A8/FFFFFF?text=Chốt+Đơn',
-      isAnimated: false
-    },
-    {
-      id: 7,
-      title: 'JUMBO',
-      date: '08/08',
-      rating: null,
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E24A8A/FFFFFF?text=JUMBO',
-      isAnimated: true
-    },
-    {
-      id: 8,
-      title: 'HỌNG SÚNG',
-      date: '08/08',
-      rating: null,
-      label: null,
-      image: 'https://via.placeholder.com/200x300/8AE24A/FFFFFF?text=HỌNG+SÚNG',
-      isAnimated: false
-    },
-    {
-      id: 9,
-      title: 'Thám Tử Tư: Phía Sau Vết Máu',
-      date: '25/07',
-      rating: null,
-      label: null,
-      image: 'https://via.placeholder.com/200x300/4A90E2/FFFFFF?text=Thám+Tử+Tư',
-      isAnimated: false
-    },
-    {
-      id: 10,
-      title: 'Kaiju No.8: Nhi...',
-      date: '25/07',
-      rating: null,
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E24A4A/FFFFFF?text=Kaiju+No.8',
-      isAnimated: true
-    },
-    {
-      id: 11,
-      title: 'Quỷ Ăn Hồn',
-      date: '25/07',
-      rating: '60%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/4AE24A/FFFFFF?text=Quỷ+Ăn+Hồn',
-      isAnimated: false
-    },
-    {
-      id: 12,
-      title: 'Phim Xì Trum',
-      date: '18/07',
-      rating: '83%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/8A4AE2/FFFFFF?text=Phim+Xì+Trum',
-      isAnimated: true
-    },
-    {
-      id: 13,
-      title: 'Superman (2025)',
-      date: '11/07',
-      rating: '93%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E2A84A/FFFFFF?text=Superman+2025',
-      isAnimated: false
-    },
-    {
-      id: 14,
-      title: 'Tiếng Ồn Quỷ Dị',
-      date: '18/07',
-      rating: null,
-      label: null,
-      image: 'https://via.placeholder.com/200x300/4AE2A8/FFFFFF?text=Tiếng+Ồn+Quỷ+Dị',
-      isAnimated: false
-    },
-    {
-      id: 15,
-      title: 'Một Nửa Hoàn Hảo',
-      date: '04/07',
-      rating: '100%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E24A8A/FFFFFF?text=Một+Nửa+Hoàn+Hảo',
-      isAnimated: false
-    },
-    {
-      id: 16,
-      title: 'Thế Giới Khủng Long',
-      date: '04/07',
-      rating: '75%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/4A90E2/FFFFFF?text=Thế+Giới+Khủng+Long',
-      isAnimated: false
-    },
-    {
-      id: 17,
-      title: 'F1',
-      date: '27/06',
-      rating: '78%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/E24A4A/FFFFFF?text=F1',
-      isAnimated: false
-    },
-    {
-      id: 18,
-      title: 'Lilo & Stitch live action',
-      date: '23/05',
-      rating: '100%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/4AE24A/FFFFFF?text=Lilo+Stitch',
-      isAnimated: true
-    },
-    {
-      id: 19,
-      title: 'Bí Kíp Luyện Rồng',
-      date: '13/06',
-      rating: '93%',
-      label: null,
-      image: 'https://via.placeholder.com/200x300/8A4AE2/FFFFFF?text=Bí+Kíp+Luyện+Rồng',
-      isAnimated: true
-    }
-  ];
+  const formatDuration = (minutes) => {
+    if (!minutes) return 'Chưa cập nhật'
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+  }
+
+  const handleMovieClick = (movieId) => {
+    navigate(`/phim/${movieId}`)
+  }
 
   return (
-    <div className="now-showing-page">
-      {/* Banner Section */}
-      <div className="banner-section">
-        <div className="banner-overlay">
-          <h1 className="main-title">Phim đang chiếu</h1>
-          <p className="main-description">
-            Danh sách các phim hiện đang chiếu rạp trên toàn quốc 14/08/2025. 
-            Xem lịch chiếu phim, giá vé tiện lợi, đặt vé nhanh chỉ với 1 bước!
-          </p>
-        </div>
+    <Content className="movies-content" style={{ background: '#f6f7fb' }}>
+      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
+        {/* Header Section */}
+        <div style={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+          borderRadius: '12px', 
+          padding: '24px 16px', 
+          marginBottom: '16px',
+          color: 'white',
+          textAlign: 'center'
+        }}>
+          <Title level={2} style={{ color: 'white', marginBottom: '8px' }}>
+            🎬 Phim đang chiếu
+          </Title>
+          <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px' }}>
+            Khám phá những bộ phim hay nhất đang được chiếu tại rạp
+          </Text>
       </div>
 
-      {/* Main Content */}
-      <div className="main-content">
-        <div className="content-wrapper">
-          {/* Left Sidebar - Filters */}
-          <div className="left-sidebar">
-            <div className="filter-section">
-              <h3>Bộ lọc</h3>
-              
-              <Dropdown
-                menu={{ items: popularItems, onClick: (e) => setPopularFilter(e.key) }}
-                placement="bottomLeft"
-                trigger={['click']}
-              >
-                <Button className="filter-button">
-                  {popularFilter} <DownOutlined />
-                </Button>
-              </Dropdown>
-
-              <Dropdown
-                menu={{ items: genreItems, onClick: (e) => setGenreFilter(e.key) }}
-                placement="bottomLeft"
-                trigger={['click']}
-              >
-                <Button className="filter-button">
-                  {genreFilter} <DownOutlined />
-                </Button>
-              </Dropdown>
-
-              <Dropdown
-                menu={{ items: languageItems, onClick: (e) => setLanguageFilter(e.key) }}
-                placement="bottomLeft"
-                trigger={['click']}
-              >
-                <Button className="filter-button">
-                  {languageFilter} <DownOutlined />
-                </Button>
-              </Dropdown>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '60px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px' }}>
+              <Text>Đang tải danh sách phim...</Text>
             </div>
           </div>
-
-          {/* Right Content - Movie Grid */}
-          <div className="right-content">
-            <div className="movie-grid">
-              {movies.map((movie) => (
-                <div key={movie.id} className="movie-card">
-                  <div className="movie-poster">
-                    <img src={movie.image} alt={movie.title} />
-                    
-                    {/* Special Label */}
-                    {movie.label && (
-                      <div className="movie-label">{movie.label}</div>
-                    )}
-                    
-                    {/* Top Right Icons */}
-                    <div className="movie-icons">
-                      <HeartOutlined className="icon heart-icon" />
-                      <StarOutlined className="icon star-icon" />
+        ) : error ? (
+          <div style={{ textAlign: 'center', padding: '60px' }}>
+            <Text type="danger" style={{ fontSize: '16px' }}>{error}</Text>
+          </div>
+        ) : movies.length === 0 ? (
+          <Empty 
+            description="Không có phim đang chiếu" 
+            style={{ padding: '60px' }}
+          />
+        ) : (
+          <>
+            <Row gutter={[16, 16]}>
+              {movies.map(movie => (
+                <Col xs={12} sm={12} md={8} lg={6} xl={4} key={movie.id}>
+                  <Card
+                    hoverable
+                    style={{ 
+                      borderRadius: '12px', 
+                      overflow: 'hidden',
+                      boxShadow: '0 3px 10px rgba(0,0,0,0.08)',
+                      transition: 'all 0.25s ease'
+                    }}
+                    bodyStyle={{ padding: '12px' }}
+                    cover={
+                      <div style={{ position: 'relative', overflow: 'hidden' }}>
+                        <img 
+                          alt={movie.title} 
+                          src={movie.posterUrl} 
+                          style={{ 
+                            height: '240px', 
+                            width: '100%',
+                            objectFit: 'cover',
+                            transition: 'transform 0.25s ease'
+                          }}
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/200x320/cccccc/666666?text=No+Image'
+                          }}
+                        />
+                        <div style={{
+                          position: 'absolute',
+                          top: '12px',
+                          right: '12px',
+                          background: 'rgba(0,0,0,0.7)',
+                          color: 'white',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: 'bold'
+                        }}>
+                          ĐANG CHIẾU
+                        </div>
+                        <div style={{
+                          position: 'absolute',
+                          bottom: '12px',
+                          right: '12px',
+                          background: 'rgba(0,0,0,0.7)',
+                          color: 'white',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px'
+                        }}>
+                          <ClockCircleOutlined /> {formatDuration(movie.durationMinutes)}
                     </div>
-                  </div>
-                  
-                  <div className="movie-info">
-                    <h3 className="movie-title">{movie.title}</h3>
-                    <div className="movie-meta">
-                      <span className="movie-date">{movie.date}</span>
-                      {movie.rating && (
-                        <span className="movie-rating">{movie.rating}</span>
-                      )}
+                      </div>
+                    }
+                  >
+                    <div>
+                      <Title level={5} style={{ 
+                        marginBottom: '8px', 
+                        fontSize: '14px',
+                        lineHeight: '1.35',
+                        height: '38px',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical'
+                      }}>
+                        {movie.title}
+                      </Title>
+                      
+                      <Space direction="vertical" size={6} style={{ width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <CalendarOutlined style={{ color: '#1890ff' }} />
+                          <Text type="secondary" style={{ fontSize: 12 }}>{formatDate(movie.releaseDate)}</Text>
+                        </div>
+                        {movie.genres && movie.genres.length > 0 && (
+                          <div>
+                            <Space wrap size={4}>
+                              {movie.genres.slice(0, 2).map(genre => (
+                                <Tag key={genre.genreId} color="blue" style={{ fontSize: 11 }}>
+                                  {genre.genreName}
+                                </Tag>
+                              ))}
+                            </Space>
+                          </div>
+                        )}
+                        <Button 
+                          type="primary" 
+                          icon={<PlayCircleOutlined />}
+                          onClick={() => handleMovieClick(movie.id)}
+                          size="middle"
+                          block
+                        >
+                          Xem chi tiết
+                        </Button>
+                      </Space>
                     </div>
-                  </div>
-                </div>
+                  </Card>
+                </Col>
               ))}
+            </Row>
+            
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, padding: 12, background: 'white', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+              <Pagination
+                current={pagination.current}
+                pageSize={pagination.pageSize}
+                total={pagination.total}
+                onChange={onPageChange}
+                showSizeChanger={false}
+                showQuickJumper
+                showTotal={(total, range) => 
+                  `${range[0]}-${range[1]} của ${total} phim`
+                }
+                style={{ textAlign: 'center' }}
+              />
             </div>
-          </div>
-        </div>
-        </div>
+          </>
+        )}
       </div>
-  );
-};
+    </Content>
+  )
+}
 
-export default NowShowing;
+export default NowShowing

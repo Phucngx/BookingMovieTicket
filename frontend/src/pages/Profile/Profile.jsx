@@ -4,7 +4,11 @@ import { UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, EditOut
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { userService } from '../../services/userService'
+import { authService } from '../../services/authService'
 import { fetchUserInfo } from '../../store/slices/userSlice'
+import { sendOtpStart, sendOtpSuccess, sendOtpFailure, resetOtp } from '../../store/slices/otpSlice'
+import { otpService } from '../../services/otpService'
+import OtpModal from '../../components/OtpModal'
 import './Profile.css'
 
 const { Title, Text } = Typography
@@ -17,6 +21,8 @@ const Profile = () => {
   const [form] = Form.useForm()
   const [isPasswordOpen, setIsPasswordOpen] = useState(false)
   const [passwordForm] = Form.useForm()
+  const [isOtpOpen, setIsOtpOpen] = useState(false)
+  const [pendingPasswordData, setPendingPasswordData] = useState(null)
 
   const openEdit = () => {
     form.setFieldsValue({
@@ -69,16 +75,68 @@ const Profile = () => {
         message.error('Mật khẩu mới không được trùng với mật khẩu cũ')
         return
       }
-      await userService.updatePassword(userInfo.accountId, {
+      
+      // Validate old password with backend (login attempt)
+      try {
+        await authService.login(userInfo.username, values.oldPassword)
+      } catch (e) {
+        message.error('Mật khẩu hiện tại không chính xác')
+        return
+      }
+
+      // Lưu thông tin mật khẩu để sử dụng sau khi xác thực OTP
+      setPendingPasswordData({
         oldPassword: values.oldPassword,
-        newPassword: values.newPassword,
+        newPassword: values.newPassword
       })
-      message.success('Đổi mật khẩu thành công')
-      setIsPasswordOpen(false)
+
+      // Gửi OTP trước khi đổi mật khẩu
+      await handleSendOtp()
+      
     } catch (error) {
       if (error?.errorFields) return
       message.error(error?.message || 'Đổi mật khẩu thất bại')
     }
+  }
+
+  const handleSendOtp = async () => {
+    try {
+      dispatch(sendOtpStart())
+      const data = await otpService.sendOtp(userInfo.email, userInfo.fullName)
+      dispatch(sendOtpSuccess(data))
+      
+      // Đóng modal đổi mật khẩu và mở modal OTP
+      setIsPasswordOpen(false)
+      setIsOtpOpen(true)
+      
+      message.success('OTP đã được gửi đến email của bạn')
+    } catch (error) {
+      dispatch(sendOtpFailure(error.message))
+      message.error(error.message || 'Không thể gửi OTP')
+    }
+  }
+
+  const handleOtpSuccess = async () => {
+    // Đóng popup OTP ngay khi xác thực thành công, không hiển thị toast thành công
+    setIsOtpOpen(false)
+    try {
+      if (pendingPasswordData) {
+        await userService.updatePassword(userInfo.accountId, pendingPasswordData)
+        // Hiển thị thông báo đổi mật khẩu thành công và đảm bảo đóng mọi popup
+        message.success('Đổi mật khẩu thành công')
+        setPendingPasswordData(null)
+        dispatch(resetOtp())
+        setIsPasswordOpen(false)
+      }
+    } catch (error) {
+      message.error(error?.message || 'Đổi mật khẩu thất bại')
+    }
+  }
+
+  const handleOtpCancel = () => {
+    setPendingPasswordData(null)
+    dispatch(resetOtp())
+    setIsOtpOpen(false)
   }
 
   if (!isAuthenticated || !userInfo) {
@@ -114,9 +172,14 @@ const Profile = () => {
               </Space>
             }
             extra={
-              <Button type="primary" icon={<EditOutlined />} onClick={openEdit}>
-                Chỉnh sửa
-              </Button>
+              <Space>
+                <Button icon={<LockOutlined />} onClick={openChangePassword}>
+                  Đổi mật khẩu
+                </Button>
+                <Button type="primary" icon={<EditOutlined />} onClick={openEdit}>
+                  Chỉnh sửa
+                </Button>
+              </Space>
             }
             className="profile-card"
           >
@@ -146,15 +209,15 @@ const Profile = () => {
 
         {/* Avatar và thông tin tài khoản */}
         <Col xs={24} lg={8}>
-          <Card className="profile-card">
+          <Card className="profile-card profile-side-card">
             <div className="avatar-section">
               <Avatar 
-                size={120} 
+                size={96} 
                 src={userInfo.avatarUrl}
                 icon={<UserOutlined />}
                 className="profile-avatar"
               />
-              <Title level={4} style={{ marginTop: '16px', marginBottom: '8px' }}>
+              <Title level={5} style={{ marginTop: '12px', marginBottom: '6px' }}>
                 {userInfo.fullName}
               </Title>
               <Tag color="blue" className="role-tag">
@@ -165,8 +228,8 @@ const Profile = () => {
             <Divider />
 
             <div className="account-info">
-              <Title level={5}>Thông tin tài khoản</Title>
-              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+              <Title level={5} style={{ marginBottom: 8 }}>Thông tin tài khoản</Title>
+              <Space direction="vertical" size={6} style={{ width: '100%' }}>
                 <div className="info-item">
                   <Text type="secondary">ID Tài khoản:</Text>
                   <Text strong>{userInfo.accountId}</Text>
@@ -186,16 +249,16 @@ const Profile = () => {
 
             <Divider />
 
-            <div className="action-buttons">
-              <Space direction="vertical" style={{ width: '100%' }}>
-                {/* <Button 
+            {/* <div className="action-buttons">
+              <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                <Button 
                   type="primary" 
                   icon={<EditOutlined />} 
                   block
                   className="action-btn"
                 >
                   Chỉnh sửa thông tin
-                </Button> */}
+                </Button>
                 <Button 
                   icon={<LockOutlined />} 
                   block
@@ -205,7 +268,8 @@ const Profile = () => {
                   Đổi mật khẩu
                 </Button>
               </Space>
-            </div>
+            </div> */}
+
           </Card>
         </Col>
       </Row>
@@ -333,6 +397,15 @@ const Profile = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* OTP Modal */}
+      <OtpModal
+        visible={isOtpOpen}
+        onCancel={handleOtpCancel}
+        onSuccess={handleOtpSuccess}
+        email={userInfo?.email}
+        fullName={userInfo?.fullName}
+      />
     </div>
   )
 }

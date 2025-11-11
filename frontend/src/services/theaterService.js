@@ -6,7 +6,33 @@ const getAuthToken = () => {
 }
 
 export const theaterService = {
-  // Lấy danh sách rạp theo thành phố (không cần đăng nhập)
+  async getTheaterDetail(theaterId) {
+    try {
+      const url = `${API_BASE_URL}/theaters/get-detail/${theaterId}`
+      console.log('Theater Detail API URL:', url)
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      const data = await response.json()
+      console.log('Theater Detail API Response:', data)
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể lấy thông tin rạp phim')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Get theater detail error:', error)
+      throw error
+    }
+  },
+
+  // Lấy danh sách rạp theo thành phố
   async getTheaters(city) {
     try {
       const url = `${API_BASE_URL}/theaters/get-theaters?city=${encodeURIComponent(city)}`

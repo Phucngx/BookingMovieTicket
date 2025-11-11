@@ -30,6 +30,7 @@ const ChatWidget = () => {
 
   const handleToggleChat = () => {
     dispatch(toggleChatWindow())
+    // ChatWindow sẽ tự xử lý việc khởi tạo conversation khi mở
   }
 
   if (!isVisible) {

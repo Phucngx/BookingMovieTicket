@@ -223,6 +223,8 @@ const ShowtimeManagement = () => {
     try {
       await dispatch(deleteShowtime(showtimeId)).unwrap()
       message.success('Xóa suất chiếu thành công')
+      // Refresh list after delete
+      loadShowtimes()
     } catch (error) {
       message.error('Không thể xóa suất chiếu')
     }
@@ -250,6 +252,9 @@ const ShowtimeManagement = () => {
         message.success('Thêm suất chiếu thành công')
       }
       
+      // Refresh list after create/update
+      loadShowtimes()
+
       setModalVisible(false)
       form.resetFields()
       setEditingShowtime(null)

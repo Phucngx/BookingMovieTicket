@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Layout, Menu, Input, Button, Space, Avatar, Dropdown, message } from 'antd'
-import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined, ShakeOutlined } from '@ant-design/icons'
+import { Layout, Menu, Input, Button, Space, Avatar, Dropdown, message, Badge, List, Tabs, Spin, Popover } from 'antd'
+import { SearchOutlined, EnvironmentOutlined, QuestionCircleOutlined, UserOutlined, DownOutlined, LogoutOutlined, ShakeOutlined, BellOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import AuthModal from '../AuthModal/AuthModal'
 import { logout, restoreAuth } from '../../store/slices/userSlice'
@@ -19,6 +19,9 @@ const Header = () => {
   
   // Lấy state từ Redux
   const { isAuthenticated, userInfo, loading } = useSelector(state => state.user)
+  const { unreadCount, items, loading: notifLoading } = useSelector(state => state.notification || { unreadCount: 0, items: [], loading: false })
+  const [notifOpen, setNotifOpen] = useState(false)
+  const [notifTab, setNotifTab] = useState('all')
 
   // Khôi phục trạng thái đăng nhập khi component mount
   useEffect(() => {
@@ -43,6 +46,15 @@ const Header = () => {
     dispatch(logout())
     message.success('Đăng xuất thành công!')
     navigate('/')
+  }
+
+  const openNotifications = async () => {
+    if (!isAuthenticated) {
+      message.info('Vui lòng đăng nhập để xem thông báo')
+      setAuthModalVisible(true)
+      return
+    }
+    setNotifOpen(true)
   }
 
   const onMenuClick = (e) => {
@@ -218,6 +230,69 @@ const Header = () => {
           />
           
           <Space size="middle" className="header-user-actions">
+            <Popover
+              open={notifOpen}
+              onOpenChange={async (open) => {
+                if (open) {
+                  if (!isAuthenticated) return openNotifications()
+                  try {
+                    const accountId = userInfo?.id || userInfo?.accountId
+                    const { fetchMyNotifications, clearUnread } = await import('../../store/slices/notificationSlice')
+                    await dispatch(fetchMyNotifications(accountId))
+                    dispatch(clearUnread())
+                  } catch (_) {}
+                }
+                setNotifOpen(open)
+              }}
+              trigger={["click"]}
+              placement="bottomRight"
+              overlayStyle={{ width: 360 }}
+              content={
+                <div style={{ width: 328 }}>
+                  <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Thông báo</div>
+                  <Tabs
+                    activeKey={notifTab}
+                    onChange={setNotifTab}
+                    items={[
+                      { key: 'all', label: 'Tất cả' },
+                      { key: 'unread', label: 'Chưa đọc' },
+                    ]}
+                    size="small"
+                  />
+                  {notifLoading ? (
+                    <div style={{ textAlign: 'center', padding: 16 }}><Spin size="small" /></div>
+                  ) : (
+                    <List
+                      locale={{ emptyText: 'Chưa có thông báo' }}
+                      dataSource={(items || []).filter(it => notifTab === 'all' ? true : it.read === false)}
+                      renderItem={(item) => (
+                        <List.Item style={{ paddingLeft: 0, paddingRight: 0 }}>
+                          <List.Item.Meta
+                            avatar={<div style={{ width: 36, height: 36, borderRadius: '50%', background: '#f0f5ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1677ff' }}>🎬</div>}
+                            title={<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <span style={{ fontWeight: 600 }}>{item.title}</span>
+                              {!item.read && <span style={{ width: 8, height: 8, background: '#1890ff', borderRadius: '50%', display: 'inline-block' }}></span>}
+                            </div>}
+                            description={<span style={{ color: '#595959' }}>{item.message}</span>}
+                          />
+                        </List.Item>
+                      )}
+                      style={{ maxHeight: 360, overflowY: 'auto' }}
+                    />
+                  )}
+                </div>
+              }
+            >
+              <Badge count={isAuthenticated ? unreadCount : 0} size="small">
+                <Button 
+                  type="text" 
+                  icon={<BellOutlined />} 
+                  className="header-icon-btn"
+                  title="Thông báo"
+                  onClick={openNotifications}
+                />
+              </Badge>
+            </Popover>
             <Button 
               type="text" 
               icon={<EnvironmentOutlined />} 
@@ -295,6 +370,8 @@ const Header = () => {
         visible={authModalVisible}
         onCancel={handleAuthModalCancel}
       />
+
+      
     </AntHeader>
   )
 }

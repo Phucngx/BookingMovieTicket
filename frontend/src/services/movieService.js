@@ -24,6 +24,52 @@ export const movieService = {
     }
   },
 
+  // Lấy danh sách phim đang chiếu (không cần đăng nhập)
+  async getNowShowing(page = 1, size = 10) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/movies/now-showing?page=${page}&size=${size}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể lấy danh sách phim đang chiếu')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Get now showing movies error:', error)
+      throw error
+    }
+  },
+
+  // Lấy danh sách phim sắp chiếu (không cần đăng nhập)
+  async getComingSoon(page = 1, size = 10) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/movies/coming-soon?page=${page}&size=${size}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể lấy danh sách phim sắp chiếu')
+      }
+
+      return data
+    } catch (error) {
+      console.error('Get coming soon movies error:', error)
+      throw error
+    }
+  },
+
   // Cập nhật phim
   async updateMovie(movieId, movieData) {
     try {

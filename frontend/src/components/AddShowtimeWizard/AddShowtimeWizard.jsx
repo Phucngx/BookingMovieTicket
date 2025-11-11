@@ -49,6 +49,7 @@ import {
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import './AddShowtimeWizard.css'
+import { fetchAllShowtimes } from '../../store/slices/showtimeManagementSlice'
 
 // Enable dayjs plugins
 dayjs.extend(isBetween)
@@ -179,7 +180,7 @@ const AddShowtimeWizard = () => {
     return slots
   }
 
-  // Check if a time slot is occupied by existing showtime
+  // Check if a time slot is occupied by existing showtime (improved logic)
   const isTimeSlotOccupied = (slotTime) => {
     // If there's an error loading existing showtimes, assume no conflicts
     if (existingShowtimesError) return false
@@ -187,23 +188,34 @@ const AddShowtimeWizard = () => {
     
     try {
       const slotDateTime = dayjs(`${selectedDate}T${slotTime}:00`)
+      const movieDuration = selectedMovie?.durationMinutes || 0
+      const slotEndTime = slotDateTime.add(movieDuration, 'minute')
       
       return existingShowtimes.some(showtime => {
         // Only check showtimes for the same room
         if (showtime.roomId !== selectedRoomId) return false
         
         try {
-          const startTime = dayjs(showtime.startTime)
-          const endTime = dayjs(showtime.endTime)
+          const existingStartTime = dayjs(showtime.startTime)
+          const existingEndTime = dayjs(showtime.endTime)
           
           // Check if both dates are valid
-          if (!startTime.isValid() || !endTime.isValid() || !slotDateTime.isValid()) {
+          if (!existingStartTime.isValid() || !existingEndTime.isValid() || !slotDateTime.isValid()) {
             console.warn('Invalid date in showtime:', showtime)
             return false
           }
           
-          // Check if slot time falls within existing showtime period (inclusive)
-          return slotDateTime.isBetween(startTime, endTime, null, '[]')
+          // Check for time conflicts:
+          // 1. New slot starts during existing showtime
+          // 2. New slot ends during existing showtime  
+          // 3. New slot completely contains existing showtime
+          // 4. Existing showtime completely contains new slot
+          return (
+            slotDateTime.isBetween(existingStartTime, existingEndTime, null, '[)') ||
+            slotEndTime.isBetween(existingStartTime, existingEndTime, null, '(]') ||
+            (slotDateTime.isBefore(existingStartTime) && slotEndTime.isAfter(existingEndTime)) ||
+            (slotDateTime.isAfter(existingStartTime) && slotEndTime.isBefore(existingEndTime))
+          )
         } catch (error) {
           console.error('Error checking showtime overlap:', error, showtime)
           return false
@@ -233,10 +245,22 @@ const AddShowtimeWizard = () => {
     }
   }
 
-  // Get time slot status
+  // Get time slot status with active range highlighting
   const getTimeSlotStatus = (slotTime) => {
     if (isTimeSlotPast(slotTime)) return 'past'
     if (isTimeSlotOccupied(slotTime)) return 'occupied'
+    
+    // Check if this slot is in the selected time range
+    if (selectedStartTime && selectedEndTime) {
+      const slotDateTime = dayjs(`${selectedDate}T${slotTime}:00`)
+      const startDateTime = dayjs(selectedStartTime)
+      const endDateTime = dayjs(selectedEndTime)
+      
+      if (slotDateTime.isBetween(startDateTime, endDateTime, null, '[)')) {
+        return 'active-range'
+      }
+    }
+    
     return 'available'
   }
 
@@ -277,6 +301,8 @@ const AddShowtimeWizard = () => {
       })).unwrap()
       
       message.success('Tạo suất chiếu thành công!')
+      // Refresh admin showtime list using its current pagination defaults
+      dispatch(fetchAllShowtimes({ page: 1, size: 10 }))
     } catch (error) {
       message.error(error || 'Có lỗi xảy ra khi tạo suất chiếu')
     }
@@ -718,7 +744,7 @@ const AddShowtimeWizard = () => {
               </Space>
             </div>
 
-            {/* Time Header */}
+            {/* Time Header
             <div className="timeline-header">
               <div className="room-label"></div>
               {timeSlots.map(slot => (
@@ -726,40 +752,108 @@ const AddShowtimeWizard = () => {
                   {slot.display}
                 </div>
               ))}
-            </div>
+            </div> */}
 
-            {/* Room Timeline */}
+            {/* Room Timeline - New Grid Layout */}
             {rooms.length > 0 ? (
               rooms.map(room => (
                 <div key={room.roomId} className="room-timeline">
                   <div className="room-label">
                     <Text strong>{room.roomName}</Text>
                   </div>
-                  {timeSlots.map(slot => {
-                    const status = getTimeSlotStatus(slot.time)
-                    const isSelected = selectedStartTime && 
-                      dayjs(selectedStartTime).format('HH:mm') === slot.time
-                    
-                    return (
-                      <Tooltip
-                        key={slot.time}
-                        title={
-                          status === 'past' ? 'Thời gian đã qua' :
-                          status === 'occupied' ? 'Đã có suất chiếu' :
-                          status === 'available' ? `Chọn ${slot.display}` : ''
+                  
+                  {/* Time Slots Grid */}
+                  <div className="time-slots-grid">
+                    {timeSlots.map(slot => {
+                      const status = getTimeSlotStatus(slot.time)
+                      const isSelected = selectedStartTime && 
+                        dayjs(selectedStartTime).format('HH:mm') === slot.time
+                      
+                      // Calculate end time for display
+                      const startDateTime = dayjs(`${selectedDate}T${slot.time}:00`)
+                      const endDateTime = startDateTime.add(selectedMovie?.durationMinutes || 0, 'minute')
+                      
+                      // Get conflict info for tooltip
+                      const getConflictInfo = () => {
+                        if (status === 'past') return 'Thời gian đã qua'
+                        if (status === 'occupied') {
+                          const conflictingShowtime = existingShowtimes.find(showtime => {
+                            if (showtime.roomId !== selectedRoomId) return false
+                            const existingStartTime = dayjs(showtime.startTime)
+                            const existingEndTime = dayjs(showtime.endTime)
+                            const slotDateTime = dayjs(`${selectedDate}T${slot.time}:00`)
+                            const slotEndTime = slotDateTime.add(selectedMovie?.durationMinutes || 0, 'minute')
+                            
+                            return (
+                              slotDateTime.isBetween(existingStartTime, existingEndTime, null, '[)') ||
+                              slotEndTime.isBetween(existingStartTime, existingEndTime, null, '(]') ||
+                              (slotDateTime.isBefore(existingStartTime) && slotEndTime.isAfter(existingEndTime)) ||
+                              (slotDateTime.isAfter(existingStartTime) && slotEndTime.isBefore(existingEndTime))
+                            )
+                          })
+                          
+                          if (conflictingShowtime) {
+                            return `Xung đột với suất chiếu: ${dayjs(conflictingShowtime.startTime).format('HH:mm')} - ${dayjs(conflictingShowtime.endTime).format('HH:mm')}`
+                          }
+                          return 'Đã có suất chiếu'
                         }
-                      >
-                        <div
-                          className={`time-slot ${status} ${isSelected ? 'selected' : ''}`}
-                          onClick={() => handleTimeSlotClick(slot.time)}
-                          style={{
-                            cursor: status === 'available' ? 'pointer' : 'not-allowed'
-                          }}
+                        if (status === 'active-range') {
+                          return `Trong khoảng thời gian đã chọn: ${dayjs(selectedStartTime).format('HH:mm')} - ${dayjs(selectedEndTime).format('HH:mm')}`
+                        }
+                        return `Chọn ${slot.display} - ${endDateTime.format('HH:mm')}`
+                      }
+
+                      return (
+                        <Tooltip
+                          key={slot.time}
+                          title={getConflictInfo()}
                         >
-                        </div>
-                      </Tooltip>
-                    )
-                  })}
+                          <div
+                            className={`time-slot-card ${status} ${isSelected ? 'selected' : ''}`}
+                            onClick={() => handleTimeSlotClick(slot.time)}
+                            style={{
+                              cursor: status === 'available' ? 'pointer' : 'not-allowed'
+                            }}
+                          >
+                            <div className="time-slot-time">{slot.display}</div>
+                            {/* <div className="time-slot-duration">
+                              {selectedMovie?.durationMinutes ? 
+                                `${endDateTime.format('HH:mm')} kết thúc` : 
+                                'Chọn phim trước'
+                              }
+                            </div> */}
+                            {isSelected && (
+                              <div style={{ 
+                                fontSize: '10px', 
+                                marginTop: '2px',
+                                color: 'rgba(255,255,255,0.8)'
+                              }}>
+                                ✓ Đã chọn
+                              </div>
+                            )}
+                            {status === 'active-range' && !isSelected && (
+                              <div style={{ 
+                                fontSize: '10px', 
+                                marginTop: '2px',
+                                color: '#1890ff'
+                              }}>
+                                Trong khung giờ
+                              </div>
+                            )}
+                            {status === 'occupied' && (
+                              <div style={{ 
+                                fontSize: '10px', 
+                                marginTop: '2px',
+                                color: '#ff4d4f'
+                              }}>
+                                Đã có suất chiếu
+                              </div>
+                            )}
+                          </div>
+                        </Tooltip>
+                      )
+                    })}
+                  </div>
                 </div>
               ))
             ) : (

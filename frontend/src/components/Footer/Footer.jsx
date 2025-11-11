@@ -94,7 +94,7 @@ const Footer = () => {
               </div>
               <div className="contact-item">
                 <ClockCircleOutlined className="contact-icon" />
-                <span>8:00 - 22:00 (Hàng ngày)</span>
+                <span>24/7</span>
               </div>
             </div>
           </div>

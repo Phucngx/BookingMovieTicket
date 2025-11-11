@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Button, Space, Typography, Table, Tag, message, Input } from 'antd'
-import { SearchOutlined, ReloadOutlined, EyeOutlined } from '@ant-design/icons'
+import { Card, Button, Space, Typography, Table, Tag, message, Input, Row, Col, Statistic } from 'antd'
+import { SearchOutlined, ReloadOutlined, EyeOutlined, ShoppingCartOutlined, DollarOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { fetchAllBookings } from '../../store/slices/bookingManagementSlice'
+import { fetchAllBookings, fetchBookingStats } from '../../store/slices/bookingManagementSlice'
 import './BookingManagement.css'
 
 const { Title, Text } = Typography
@@ -12,7 +12,17 @@ const BookingManagement = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { userInfo, isAuthenticated } = useSelector(state => state.user)
-  const { bookings, loading, error, total, currentPage, pageSize } = useSelector(state => state.bookingManagement)
+  const { 
+    bookings, 
+    loading, 
+    error, 
+    total, 
+    currentPage, 
+    pageSize,
+    stats,
+    statsLoading,
+    statsError
+  } = useSelector(state => state.bookingManagement)
   
   const [searchText, setSearchText] = useState('')
   const [filteredBookings, setFilteredBookings] = useState([])
@@ -32,7 +42,9 @@ const BookingManagement = () => {
       return
     }
 
-    // Fetch all bookings with pagination
+    // Fetch statistics first (fast)
+    dispatch(fetchBookingStats())
+    // Then fetch paginated data
     dispatch(fetchAllBookings({ page: 1, size: 10 }))
   }, [isAuthenticated, isAdmin, navigate, dispatch])
 
@@ -60,6 +72,9 @@ const BookingManagement = () => {
   // Handle refresh
   const handleRefresh = () => {
     setSearchText('')
+    // Fetch statistics first (fast)
+    dispatch(fetchBookingStats())
+    // Then fetch paginated data
     dispatch(fetchAllBookings({ page: 1, size: 10 }))
   }
 
@@ -83,6 +98,9 @@ const BookingManagement = () => {
   const formatDateTime = (dateString) => {
     return new Date(dateString).toLocaleString('vi-VN')
   }
+
+  // Use statistics from Redux state (complete dataset)
+  const displayStats = stats
 
   const columns = [
     {
@@ -274,6 +292,63 @@ const BookingManagement = () => {
           </Button>
         </Space>
       </div>
+
+      {/* Statistics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        {statsError && (
+          <Col span={24}>
+            <Card style={{ marginBottom: 16, border: '1px solid #ff4d4f' }}>
+              <Text type="danger">Lỗi tải thống kê: {statsError}</Text>
+            </Card>
+          </Col>
+        )}
+        <Col xs={24} sm={12} md={8}>
+          <Card className="stat-card">
+            <Statistic
+              title="Tổng đặt vé"
+              value={displayStats.totalBookings}
+              prefix={<ShoppingCartOutlined style={{ color: '#1890ff' }} />}
+              valueStyle={{ color: '#1890ff' }}
+              loading={statsLoading}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <Card className="stat-card">
+            <Statistic
+              title="Đã xác nhận"
+              value={displayStats.confirmedBookings}
+              prefix={<CheckCircleOutlined style={{ color: '#52c41a' }} />}
+              valueStyle={{ color: '#52c41a' }}
+              loading={statsLoading}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <Card className="stat-card">
+            <Statistic
+              title="Chờ xác nhận"
+              value={displayStats.pendingBookings}
+              prefix={<ClockCircleOutlined style={{ color: '#faad14' }} />}
+              valueStyle={{ color: '#faad14' }}
+              loading={statsLoading}
+            />
+          </Card>
+        </Col>
+        {/* <Col xs={24} sm={12} md={6}>
+          <Card className="stat-card">
+            <Statistic
+              title="Tổng doanh thu"
+              value={displayStats.totalRevenue}
+              prefix={<DollarOutlined style={{ color: '#f5222d' }} />}
+              valueStyle={{ color: '#f5222d' }}
+              formatter={(value) => formatCurrency(value)}
+              loading={statsLoading}
+            />
+          </Card>
+        </Col> */}
+      </Row>
+      
 
       {/* Search Bar */}
       <Card className="search-card" style={{ marginBottom: '24px' }}>
